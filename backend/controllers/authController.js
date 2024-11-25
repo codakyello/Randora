@@ -5,7 +5,6 @@ const { catchAsync } = require("../utils/helpers");
 const AppError = require("../utils/appError");
 const { verifyJwt } = require("../utils/jwt.js");
 const Email = require("../utils/email");
-
 const { createSendToken } = require("../utils/helpers");
 const { FRONTEND_URL } = require("../utils/const.js");
 
@@ -187,7 +186,14 @@ exports.userLogin = catchAsync(async (req, res) => {
   if (!email || !password)
     throw new AppError("Please provide email and password", 400);
 
-  const user = await User.findOne({ email, authType: "credentials" }).select(
+  let user = await User.findOne({ email, authType: { $ne: "credentials" } });
+  if (user)
+    throw new AppError(
+      `You are already signed up with ${user.authType}. Please sign in with ${user.authType}`,
+      400
+    );
+
+  user = await User.findOne({ email, authType: "credentials" }).select(
     "+password"
   );
 
@@ -195,7 +201,6 @@ exports.userLogin = catchAsync(async (req, res) => {
     throw new AppError("Incorrect email or password", 401);
 
   const otp = await user.generateOtp();
-  console.log(otp);
   try {
     await new Email(user).sendOTP(otp);
   } catch (e) {

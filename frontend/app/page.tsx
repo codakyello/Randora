@@ -16,7 +16,7 @@ const CsvUploader = () => {
     const formData = new FormData(e.currentTarget);
     console.log(formData.get("file"));
 
-    formData.append("eventId", "123456"); // Example event ID (adjust as needed)
+    formData.append("eventId", "123456");
 
     try {
       const res = await fetch(

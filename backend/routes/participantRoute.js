@@ -32,7 +32,7 @@ router
   .post(
     authenticate,
     authorize("user"),
-    participantController.createParticipants
+    participantController.createParticipant
   );
 
 module.exports = router;
