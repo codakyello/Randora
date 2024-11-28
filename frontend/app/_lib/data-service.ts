@@ -9,8 +9,8 @@ import { notFound } from "next/navigation";
 import { BookingData, CabinData } from "../_utils/types";
 import AppError from "../_utils/AppError";
 
-const URL = "https://the-elegant-escape-4iqb.vercel.app/api/v1";
-// const DEV_URL = "http://localhost:3001/api/v1";
+const URL = "https://mega-draw.vercel.app/api/v1";
+// const DEV_URL = "http://localhost:5000/api/v1";
 
 // /////////////
 // // AUTH
@@ -74,7 +74,7 @@ export async function login(formData: FormData) {
   console.log(email, password);
 
   try {
-    const res = await fetch(`${URL}/admins/login`, {
+    const res = await fetch(`${URL}/users/login`, {
       method: "POST",
       body: JSON.stringify({
         email,
@@ -84,20 +84,15 @@ export async function login(formData: FormData) {
         "Content-Type": "application/json",
       },
     });
-    console.log("not crashded");
 
     const data = await res.json();
 
     // Check if the response was successful
     if (!res.ok) throw new Error(data.message || "Login failed");
 
-    // Destructure token and user from response
+    return data;
 
-    const {
-      token,
-      data: { user },
-    } = data;
-    return { token, user };
+    // Destructure token and user from response
   } catch (err: unknown) {
     console.log(err);
     // Improved error handling
@@ -173,6 +168,37 @@ export async function authorize(token: string) {
     return false;
   }
 }
+
+export async function verifyOtp(email: string, otp: string) {
+  const res = await fetch(`${URL}/users/verify-otp`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, otp }),
+  });
+  const data = await res.json();
+
+  if (!res.ok) throw new Error(data.message);
+
+  return data;
+}
+
+export async function resendOtp(email: string) {
+  const res = await fetch(`${URL}/users/resend-otp`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email }),
+  });
+  const data = await res.json();
+
+  if (!res.ok) throw new Error(data.message);
+
+  return data;
+}
+
 export async function getAdmin(token: string | undefined) {
   let statusCode;
   try {

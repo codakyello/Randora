@@ -60,7 +60,7 @@ app.get("/", (_req, res) => {
   res.send("<h1>Deployment Check</h1>");
 });
 
-app.get("*", (req, _res, next) => {
+app.use("*", (req, _res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 

@@ -9,7 +9,6 @@ import React, {
 import { useRouter } from "next/navigation";
 import { authorize } from "@/app/_lib/data-service";
 import Cookies from "js-cookie";
-import toast from "react-hot-toast";
 
 type User = {
   token: string;
@@ -181,7 +180,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const token: string | null = storedToken ? JSON.parse(storedToken) : null;
     if (!token) {
       logout();
-      toast.error("You are not logged in!");
       router.push("/login");
     }
     return token;

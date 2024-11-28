@@ -348,6 +348,35 @@ module.exports.verityUserOTP = catchAsync(async (req, res) => {
   await createSendToken(user, res);
 });
 
+module.exports.resendUserOTP = catchAsync(async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) throw new AppError("Please provide an email", 400);
+
+  let user = await User.findOne({ email, authType: "credentials" });
+
+  if (!user) throw new AppError("No user with such email exists", 404);
+
+  const otp = await user.generateOtp();
+
+  try {
+    await new Email(user).sendOTP(otp);
+  } catch (e) {
+    console.log(e);
+
+    throw new AppError(
+      "An error occurred while sending the OTP. Please try again later.",
+      500
+    );
+  }
+
+  await user.save({ validateBeforeSave: false });
+  res.status(200).json({
+    status: "success",
+    message: "A one time otp has been sent to your email",
+  });
+});
+
 module.exports.verityAdminOTP = catchAsync(async (req, res) => {
   const { email, otp } = req.body;
   if (!email) throw new AppError("Include an email", 401);

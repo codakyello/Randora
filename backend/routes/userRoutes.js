@@ -18,6 +18,8 @@ router.get("/authenticate", authController.authenticateUser);
 
 router.post("/verify-otp", authController.verityUserOTP);
 
+router.post("/resend-otp", authController.resendUserOTP);
+
 router.patch(
   "/update-my-password",
   authController.authenticate,

@@ -1,4 +1,4 @@
-import { Poppins } from "next/font/google";
+import { Poppins, Sono, Inter } from "next/font/google";
 import "./globals.css";
 import AuthProvider from "./_contexts/AuthProvider";
 import QueryProvider from "./_contexts/QueryProvider";
@@ -11,10 +11,15 @@ const poppins = Poppins({
   weight: ["400", "500", "600", "700"], // Specify the font weights you need
 });
 
-// const sono = Sono({
-//   subsets: ["latin"],
-//   weight: ["400", "500", "600", "700"], // Specify the font weights you need
-// });
+const sono = Sono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"], // Specify the font weights you need
+});
+
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"], // Specify the font weights you need
+});
 
 export const metadata = {
   title: {
@@ -30,7 +35,9 @@ export default function RootLayout({
 }) {
   return (
     <html className="lg:text-[62.5%] md:text-[56.25%] text-[50%]" lang="en">
-      <body className={`${poppins.className} `}>
+      <body
+        className={`${inter.className} ${poppins.className} ${sono.className} `}
+      >
         <ChakraProvider>
           <QueryProvider>
             <DarkModeProvider>
@@ -43,6 +50,7 @@ export default function RootLayout({
           position="top-center"
           toastOptions={{
             success: {
+              duration: 3000,
               style: {
                 background: "green",
                 color: "white",
@@ -50,6 +58,7 @@ export default function RootLayout({
               },
             },
             error: {
+              duration: 5000,
               style: {
                 background: "red",
                 color: "white",
