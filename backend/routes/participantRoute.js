@@ -6,7 +6,7 @@ const multer = require("multer");
 
 const upload = multer({
   dest: "uploads/", // Define where files should be stored
-  fileFilter: (req, file, cb) => {
+  fileFilter: (_req, file, cb) => {
     console.log("here");
     if (file.mimetype === "text/csv") {
       cb(null, true); // Accept CSV files
@@ -35,4 +35,16 @@ router
     participantController.createParticipant
   );
 
+router
+  .route("/:id")
+  .patch(
+    authenticate,
+    authorize("user"),
+    participantController.updateParticipant
+  )
+  .delete(
+    authenticate,
+    authorize("user"),
+    participantController.deleteParticipant
+  );
 module.exports = router;

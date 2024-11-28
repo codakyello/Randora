@@ -3,7 +3,7 @@ import {
   useQueryClient,
   UseMutateFunction,
 } from "@tanstack/react-query";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 import { useHandleUnAuthorisedResponse } from "../_utils/utils";
 import AppError from "../_utils/AppError";
 

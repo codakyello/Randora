@@ -26,9 +26,29 @@ module.exports.getParticipant = catchAsync(async (req, res) => {
 
 module.exports.uploadParticipants = catchAsync(async (req, res) => {
   const csvFilePath = req.file?.path;
-  if (!csvFilePath) throw new AppError("No CSV File uploaded", 400);
+
+  const eventId = req.body.eventId;
 
   try {
+    if (!csvFilePath) throw new AppError("No CSV File uploaded", 400);
+
+    // Before uploading check if the event is inactive
+
+    // Lets get all participants by eventId. Participants that already exists
+    const existingParticipants = await Participant.find({ eventId });
+
+    const event = await Event.findById(eventId);
+
+    if (!event) throw new AppError("No Event with this ID exists", 404);
+
+    if (event.status !== "inactive")
+      throw new AppError(
+        `You cannot upload csv for event that is ${event.status}`
+      );
+
+    if (event.csvUploaded)
+      throw new AppError("Csv has already been uploaded for this event.", 400);
+
     const participants = await new Promise((resolve, reject) => {
       const rows = [];
       fs.createReadStream(csvFilePath)
@@ -39,6 +59,9 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
           reject(new AppError("Error reading the CSV file.", 500))
         );
     });
+
+    if (participants.length > 10000)
+      throw new AppError("The uploaded file exceeds the 10,000-row limit.");
 
     if (participants.length === 0) {
       throw new AppError("CSV file is empty.", 400);
@@ -75,6 +98,22 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
         throw new AppError(`Name at row ${rowNumber} is missing`, 400);
       }
 
+      existingParticipants.forEach((participant) => {
+        if (participant.ticketNumber === ticketNumber) {
+          throw new AppError(
+            `The ticket number at row number ${rowNumber} already exists for this event`,
+            400
+          );
+        }
+
+        if (participant.email.toLowerCase() === email) {
+          throw new AppError(
+            `The participant with email ${email} at row number ${rowNumber} already exists for this event`,
+            400
+          );
+        }
+      });
+
       // validate email
       if (hasEmail) {
         const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -87,7 +126,7 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
       for (let i = index + 1; i < participants.length; i++) {
         // For duplicate Email
         if (hasEmail)
-          if (participants[i].email === email) {
+          if (participants[i].email.toLowerCase() === email) {
             throw new AppError(
               `Duplicate email address: ${email} at row ${rowNumber} and at row ${
                 i + 2
@@ -111,21 +150,27 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
         name,
         email,
         ticketNumber,
-        eventId: req.body.eventId,
+        eventId,
       };
     });
 
     try {
+      // Incase the want to upload again.
+      // The frontend will tell them this so they will know
       await Participant.insertMany(processedParticipants);
+      event.csvUploaded = true;
+      await event.save();
       sendSuccessResponseData(res, "participants", processedParticipants);
-    } catch (error) {
+    } catch (err) {
       // Rollback by deleting participants with the same eventId
-      await Participant.deleteMany({ eventId: req.body.eventId });
-
-      throw new AppError(
-        "Invalid input data. Please upload correct data.",
-        400
-      );
+      await Participant.deleteMany({ eventId });
+      throw err;
+    } finally {
+      // Delete the uploaded CSV file
+      fs.unlink(csvFilePath, (unlinkErr) => {
+        if (unlinkErr)
+          console.error("Error deleting the file:", unlinkErr.message);
+      });
     }
   } catch (err) {
     throw err;
@@ -142,12 +187,18 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
 module.exports.createParticipant = catchAsync(async (req, res) => {
   const { ticketNumber, eventId } = req.body;
 
+  const event = await Event.findById(eventId);
+
+  if (!event) throw new AppError("The Event with this ID does not exist", 404);
+
+  if (event.status !== "inactive")
+    throw new AppError(
+      `You cannot create more participants for and event that is ${event.status} `,
+      400
+    );
+
   if (!ticketNumber) {
     throw new AppError("Ticket Number is required", 400);
-  }
-
-  if (!eventId) {
-    throw new AppError("Event ID is required", 400);
   }
 
   // Check for duplicate ticket number
@@ -170,18 +221,19 @@ module.exports.createParticipant = catchAsync(async (req, res) => {
 });
 
 module.exports.updateParticipant = catchAsync(async (req, res) => {
-  const { ticketNumber, eventId, isWinner, email } = req.body;
+  const { ticketNumber, isWinner, email } = req.body;
+
+  const participant = await Participant.findById(req.params.id);
+  if (!participant) {
+    throw new AppError("No participant found with that ID.", 404);
+  }
+
+  const eventId = participant.eventId;
 
   // Validate event existence
   const event = await Event.findById(eventId);
   if (!event) {
     throw new AppError("Event does not exist.", 404);
-  }
-
-  // Fetch the participant to ensure its existence
-  const participant = await Participant.findById(req.params.id);
-  if (!participant) {
-    throw new AppError("No participant found with that ID.", 404);
   }
 
   // Handle `isWinner` updates
@@ -254,7 +306,12 @@ module.exports.updateParticipant = catchAsync(async (req, res) => {
 });
 
 module.exports.deleteParticipant = catchAsync(async (req, res) => {
-  const { eventId } = req.body;
+  const participant = await Participant.findById(req.params.id);
+
+  if (!participant) {
+    throw new AppError("No participant found with that ID.", 404);
+  }
+  const eventId = participant.eventId;
 
   // Validate event existence
   const event = await Event.findById(eventId);
@@ -278,10 +335,14 @@ module.exports.deleteParticipant = catchAsync(async (req, res) => {
   }
 
   // Delete the participant
-  const participant = await Participant.findByIdAndDelete(req.params.id);
-  if (!participant) {
-    throw new AppError("No participant found with that ID.", 404);
-  }
+  await participant.deleteOne();
 
+  const participants = await Participant.find({ eventId });
+
+  if (!participants.length) {
+    event.csvUploaded = false;
+
+    await event.save();
+  }
   sendSuccessResponseData(res);
 });

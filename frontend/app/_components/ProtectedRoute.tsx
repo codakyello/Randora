@@ -18,7 +18,7 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
         toast.error("Login to access your dashboard");
       }
       // If not authenticated after loading, redirect to login
-      router.push("/darkmode/login");
+      router.push("/login");
     }
   }, [router, isAuthenticating, isLogoutAction, authenticated]);
 

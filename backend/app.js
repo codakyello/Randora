@@ -8,24 +8,24 @@ const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const hpp = require("hpp");
 const AppError = require("./utils/appError");
-const multer = require("multer");
-const path = require("path");
 
 const userRoutes = require("./routes/userRoutes");
 const participantRoutes = require("./routes/participantRoute");
+const eventRoutes = require("./routes/eventRoutes");
+const prizeRoutes = require("./routes/prizeRoute");
 
 dotenv.config({ path: "./config.env" });
 
 const app = express();
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "uploads/");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname));
+//   },
+// });
 
 app.use(cors());
 
@@ -51,6 +51,10 @@ app.use(express.static(`${__dirname}/public`));
 app.use("/api/v1/users", userRoutes);
 
 app.use("/api/v1/participants", participantRoutes);
+
+app.use("/api/v1/events", eventRoutes);
+
+app.use("/api/v1/prizes", prizeRoutes);
 
 app.get("/", (_req, res) => {
   res.send("<h1>Deployment Check</h1>");

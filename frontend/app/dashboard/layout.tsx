@@ -1,9 +1,9 @@
 import { Box } from "@chakra-ui/react";
-import Header from "../_components/Header";
-import ProtectedRoute from "../_components/ProtectedRoute";
-import SideBar from "../_components/SideBar";
+import Header from "@/app/_components/Header";
+import ProtectedRoute from "@/app/_components/ProtectedRoute";
+import SideBar from "@/app/_components/SideBar";
 import { ReactNode } from "react";
-import { NavProvider } from "../_contexts/NavProvider";
+import { NavProvider } from "@/app/_contexts/NavProvider";
 
 function Page({ children }: { children: ReactNode }) {
   return (

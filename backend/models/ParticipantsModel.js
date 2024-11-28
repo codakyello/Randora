@@ -9,18 +9,20 @@ const participantSchema = new mongoose.Schema({
     type: String,
     trim: true,
     lowercase: true,
+    required: [true, "Email is required"],
+    match: [
+      /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+      "Please enter a valid email address",
+    ],
   },
+
   ticketNumber: {
     type: String,
     required: true,
   },
-  // eventId: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "Event",
-  //   required: true,
-  // },
   eventId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Event",
     required: true,
   },
   createdAt: {
@@ -33,7 +35,7 @@ const participantSchema = new mongoose.Schema({
   },
 });
 
-participantSchema.index({ ticketNumber: 1 });
+participantSchema.index({ ticketNumber: 1, eventId: 1 });
 
 const Participant = mongoose.model("Participant", participantSchema);
 

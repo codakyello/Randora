@@ -28,6 +28,10 @@ const eventSchema = new Schema({
     ref: "User",
     required: true,
   },
+  csvUploaded: {
+    type: Boolean,
+    default: false,
+  },
   status: {
     type: String,
     enum: ["ongoing", "inactive", "completed", "cancelled"],

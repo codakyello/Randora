@@ -44,6 +44,13 @@ router
   );
 
 router.get(
+  "/me/events",
+  authController.authenticate,
+  authController.authorize("user"),
+  userController.getMyEvents
+);
+
+router.get(
   "/",
   authController.authenticate,
   authController.authorize("admin"),

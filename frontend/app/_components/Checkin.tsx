@@ -12,7 +12,7 @@ import { formatCurrency } from "../_utils/helpers";
 import useBooking from "../_hooks/useBooking";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import SpinnerFull from "./SpinnerFull";
-import { toast } from "sonner";
+import toast from "react-hot-toast";
 import { useAuth } from "../_contexts/AuthProvider";
 
 export default function CheckIn({

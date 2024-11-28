@@ -1,3 +1,4 @@
+const Event = require("../models/EventModel");
 const User = require("../models/userModel");
 const APIFEATURES = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
@@ -66,4 +67,8 @@ module.exports.Me = catchAsync(async function (req, res) {
   sendSuccessResponseData(res, "user", user);
 });
 
-module.exports.getMyEvents = catchAsync(async (req, res) => {});
+module.exports.getMyEvents = catchAsync(async (req, res) => {
+  const events = await Event.find({ userId: req.user.id });
+
+  sendSuccessResponseData(res, "events", events);
+});

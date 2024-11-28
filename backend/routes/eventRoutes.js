@@ -1,15 +1,44 @@
 const express = require("express");
 const eventController = require("../controllers/eventController");
+const { authenticate, authorize } = require("../controllers/authController");
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
+router
+  .route("/")
+  .get(authenticate, authorize("admin"), eventController.getAllEvents)
+  .post(authenticate, authorize("user", "admin"), eventController.createEvent);
 
-const upload = multer({ storage: storage }).single("csvFile");
-router.post("/upload", upload, uploadParticipants);
+router
+  .route("/:id")
+  .get(authenticate, authorize("user", "admin"), eventController.getEvent)
+  .patch(authenticate, authorize("user", "admin"), eventController.updateEvent)
+  .delete(
+    authenticate,
+    authorize("user", "admin"),
+    eventController.updateEvent
+  );
+
+// get all event participants
+router
+  .route("/:id/participants")
+  .get(
+    authenticate,
+    authorize("user", "admin"),
+    eventController.getEventParticipants
+  )
+  .delete(
+    authenticate,
+    authorize("user", "admin"),
+    eventController.deleteEventParticipants
+  );
+
+// get all event prizes
+router
+  .route("/:id/prizes")
+  .get(
+    authenticate,
+    authorize("user", "admin"),
+    eventController.getEventPrizes
+  );
+
+module.exports = router;

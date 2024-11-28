@@ -11,7 +11,7 @@ export const metadata = {
 function Page() {
   return (
     <Box className="flex flex-col gap-[3.2rem]">
-      <Box className="flex flex-col justify-between  xl:flex-row gap-8 pt-1 pr-1 whitespace-nowrap">
+      <Box className="flex flex-col justify-between xl:flex-row gap-8 pt-1 pr-1 whitespace-nowrap">
         <h1 className="">All Bookings</h1>
         <Box className="flex flex-col md:flex-row flex-wrap gap-6">
           <Filter

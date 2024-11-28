@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "./_components/Button";
+import Button from "@/app/_components/Button";
 
 // Show error from frontend
 export default function Error({

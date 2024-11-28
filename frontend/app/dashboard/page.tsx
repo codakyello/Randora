@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react";
 import Filter from "@/app/_components/Filter";
-import DashboardLayout from "../_components/DashboardLayout";
-import { getAllCabins } from "../_lib/data-service";
+import DashboardLayout from "@/app/_components/DashboardLayout";
+import { getAllCabins } from "@/app/_lib/data-service";
 
 export const metadata = {
   title: "Dashboard",

@@ -1,4 +1,5 @@
 "use client";
+import { usePathname } from "next/navigation";
 import {
   createContext,
   ReactNode,
@@ -26,15 +27,19 @@ function DarkModeProvider({ children }: { children: ReactNode }) {
     return false; // Fallback for server-side rendering
   });
 
+  const pathName = usePathname();
+
   // Update the class on mount and whenever isDarkMode changes
   useLayoutEffect(() => {
-    document.documentElement.classList.toggle("dark-mode", isDarkMode);
-    document.documentElement.classList.toggle("light-mode", !isDarkMode);
-
+    if (pathName !== "/") {
+      console.log("Darkmode");
+      document.documentElement.classList.toggle("dark-mode", isDarkMode);
+      document.documentElement.classList.toggle("light-mode", !isDarkMode);
+    }
     if (typeof window !== "undefined") {
       localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));
     }
-  }, [isDarkMode]);
+  }, [isDarkMode, pathName]);
 
   function toggleDarkMode() {
     setIsDarkMode((prevMode) => !prevMode);
