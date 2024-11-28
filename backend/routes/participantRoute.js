@@ -4,16 +4,21 @@ const { authenticate, authorize } = require("../controllers/authController");
 const router = express.Router();
 const multer = require("multer");
 
+const storage = multer.memoryStorage();
+
+// Set up file filter to accept only CSV files
+const fileFilter = (_req, file, cb) => {
+  if (file.mimetype === "text/csv") {
+    cb(null, true); // Accept the file
+  } else {
+    cb(new Error("Only CSV files are allowed!"), false); // Reject the file
+  }
+};
+
+// Configure Multer
 const upload = multer({
-  dest: "uploads/", // Define where files should be stored
-  fileFilter: (_req, file, cb) => {
-    console.log("here");
-    if (file.mimetype === "text/csv") {
-      cb(null, true); // Accept CSV files
-    } else {
-      cb(new Error("Only CSV files are allowed."), false); // Reject non-CSV files
-    }
-  },
+  storage,
+  fileFilter,
 });
 
 router.post(
