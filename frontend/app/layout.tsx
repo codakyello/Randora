@@ -1,4 +1,5 @@
 import "./globals.css";
+import { Poppins } from "next/font/google";
 import AuthProvider from "./_contexts/AuthProvider";
 import QueryProvider from "./_contexts/QueryProvider";
 import { Toaster } from "react-hot-toast";
@@ -12,6 +13,11 @@ export const metadata = {
   },
 };
 
+const poppins = Poppins({
+  subsets: ["latin"], // Add other subsets if needed
+  weight: ["400", "500", "600", "700"], // Specify the font weights you need
+});
+
 export default function RootLayout({
   children,
 }: {
@@ -19,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html className="lg:text-[62.5%] md:text-[56.25%] text-[50%]" lang="en">
-      <body>
+      <body className={`${poppins.className}`}>
         <ChakraProvider>
           <QueryProvider>
             <DarkModeProvider>

@@ -28,7 +28,6 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   // If authenticated, render the protected content
 
   // debugging purposes
-  if (!authenticated) return children;
 
   if (authenticated) return children;
 

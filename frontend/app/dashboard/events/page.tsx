@@ -2,18 +2,12 @@ import Filter from "@/app/_components/Filter";
 import Sort from "@/app/_components/Sort";
 import { Box } from "@chakra-ui/react";
 import Events from "@/app/_components/Events";
-import { Suspense } from "react";
-import Loading from "../loading";
 
 export const metadata = {
   title: "Bookings",
 };
 
-function Page({
-  searchParams,
-}: {
-  searchParams: { status: string; page: string; sortBy: string };
-}) {
+function Page() {
   return (
     <Box className="flex flex-col gap-[3.2rem]">
       <Box className="flex flex-col justify-between xl:flex-row gap-8 pt-1 pr-1 whitespace-nowrap">
@@ -55,12 +49,7 @@ function Page({
         </Box>
       </Box>
 
-      <Suspense
-        fallback={<Loading />}
-        key={`${searchParams.status}-${searchParams.page}-${searchParams.sortBy}`}
-      >
-        <Events searchParams={searchParams} />
-      </Suspense>
+      <Events />
     </Box>
   );
 }

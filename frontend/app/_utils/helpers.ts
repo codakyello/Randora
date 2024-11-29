@@ -41,9 +41,10 @@ export const generateGridTemplateColumns = (columns: string[]) => {
 
 export function getTagName(status: string): string {
   const statusToTagName = {
-    unconfirmed: "blue",
-    "checked-in": "green",
-    "checked-out": "silver",
+    completed: "blue",
+    cancelled: "red-50",
+    active: "green",
+    inactive: "silver",
   };
 
   type Status = keyof typeof statusToTagName;

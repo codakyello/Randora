@@ -31,6 +31,15 @@ const participantSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  prize: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Prize",
+  },
+});
+
+participantSchema.pre(/^find/, function (next) {
+  this.populate("prize");
+  next();
 });
 
 participantSchema.index({ ticketNumber: 1, eventId: 1 });

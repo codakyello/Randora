@@ -31,7 +31,7 @@ export default function NavList({ closeNav }: { closeNav?: () => void }) {
             <Link
               href={item.link}
               onClick={() => closeNav?.()}
-              className={`flex gap-5 text-[var(--color-grey-600)] p-[1.7rem] md:py-[1rem] md:px-[1.5rem] font-medium text-[1.6rem] transition-all duration-300 rounded-3xl group hover:bg-[var(--color-grey-100)] ${
+              className={`flex gap-10 md:gap-5 items-center text-[var(--color-grey-600)] p-[1.7rem] md:py-[1rem] md:px-[1.5rem] font-medium text-[1.6rem] transition-all duration-300 rounded-3xl group hover:bg-[var(--color-grey-100)] ${
                 pathName === item.link ? "bg-[var(--color-grey-100)]" : ""
               }`}
             >

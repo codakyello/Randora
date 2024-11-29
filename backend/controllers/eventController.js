@@ -32,6 +32,16 @@ module.exports.getEvent = catchAsync(async (req, res) => {
 
 //create event
 module.exports.createEvent = catchAsync(async (req, res) => {
+  const { name } = req.body;
+
+  // Check if an event with the same name already exists for the user
+  const existingEvent = await Event.findOne({ name, userId: req.user.id });
+
+  if (existingEvent) {
+    throw new AppError("An event with this name already exists.", 400);
+  }
+
+  // Create the new event
   const newEvent = await Event.create({ ...req.body, userId: req.user.id });
 
   sendSuccessResponseData(res, "event", newEvent);

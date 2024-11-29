@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Participant = require("./ParticipantsModel");
+const Prize = require("./PrizesModel");
 const { Schema } = mongoose;
 
 const eventSchema = new Schema({
@@ -9,7 +10,7 @@ const eventSchema = new Schema({
   },
   type: {
     type: String,
-    enum: ["raffle", "spin-the-wheel", "trivia", "giveaway"],
+    enum: ["Raffle", "Spin", "Trivia"],
     required: true,
   },
   startDate: {
@@ -43,11 +44,33 @@ const eventSchema = new Schema({
     default: false,
   },
   participantCount: { type: Number, default: 0 },
+  prizeCount: { type: Number, default: 0 },
+  remainingPrize: { type: Number, default: 0, min: 0 },
 });
 
 eventSchema.statics.updateParticipantsCount = async function (eventId) {
+  console.log("update participant Count");
   const count = await Participant.countDocuments({ eventId });
-  await this.findByIdAndUpdate(eventId, { participantsCount: count });
+  console.log(count);
+  await this.findByIdAndUpdate(eventId, { participantCount: count });
+};
+
+eventSchema.statics.updatePrizeCount = async function (eventId) {
+  let count = 0;
+  const prizes = await Prize.find({ eventId });
+
+  prizes.forEach((prize) => (count += prize.quantity));
+
+  await this.findByIdAndUpdate(eventId, { prizeCount: count });
+};
+
+eventSchema.statics.updateRemainingPrizeCount = async function (eventId) {
+  let count = 0;
+  const prizes = await Prize.find({ eventId });
+
+  prizes.forEach((prize) => (count += prize.quantity));
+
+  await this.findByIdAndUpdate(eventId, { remainingPrize: count });
 };
 
 // Create the model

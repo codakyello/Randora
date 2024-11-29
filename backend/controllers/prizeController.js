@@ -1,4 +1,5 @@
 const Event = require("../models/EventModel");
+const Participant = require("../models/ParticipantsModel");
 const Prize = require("../models/PrizesModel");
 const APIFEATURES = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
@@ -28,10 +29,56 @@ module.exports.getPrize = catchAsync(async (req, res) => {
   sendSuccessResponseData(res, "prize", prize);
 });
 
+// Drawn handler
+module.exports.assignPrize = catchAsync(async (req, res) => {
+  const { prizeId, participantId } = req.body;
+
+  // Find the prize
+  const prize = await Prize.findById(prizeId);
+  if (!prize) {
+    throw new AppError("Prize not found", 400); // Throw an error if the prize doesn't exist
+  }
+
+  const eventId = prize.eventId;
+
+  const event = await Event.findById(eventId);
+
+  if (!event) throw new AppError("Event not found", 400);
+
+  // Check if the prize is still available
+  if (prize.quantity <= 0) {
+    throw new AppError("Prize is out of stock", 400); // Ensure there are available prizes
+  }
+
+  prize.quantity -= 1;
+
+  await prize.save();
+
+  if (event.remainingPrize <= 0) {
+    throw new AppError("No prizes remaining", 400); // Prevent updating if no remaining prizes
+  }
+
+  await Event.findByIdAndUpdate(eventId, {
+    $inc: { remainingPrize: -1 },
+    status: "active",
+  });
+
+  const participant = await Participant.findByIdAndUpdate(
+    participantId,
+    { prizeId },
+    { new: true }
+  );
+
+  if (!participant) {
+    throw new AppError("Participant not found", 404);
+  }
+
+  sendSuccessResponseData(res, "Participant updated successfully", participant);
+});
+
 module.exports.createPrize = catchAsync(async (req, res) => {
   const { eventId } = req.body;
 
-  // if they try to create a price with a name that already exist.
   const existingPrize = await Prize.findOne({ name: req.body.name, eventId });
   if (existingPrize) {
     throw new AppError(
@@ -45,12 +92,22 @@ module.exports.createPrize = catchAsync(async (req, res) => {
     throw new AppError("Event does not exist.", 404);
   }
 
+  if (event.status !== "inactive")
+    throw new AppError("Prizes can only be created when an event is inactive");
+
   const newPrize = await Prize.create(req.body);
+
+  await Promise.all([
+    Event.updatePrizeCount(eventId),
+    Event.updateRemainingPrizeCount(eventId),
+  ]);
 
   sendSuccessResponseData(res, "prize", newPrize);
 });
 
 module.exports.updatePrize = catchAsync(async (req, res) => {
+  const { quantity } = req.body;
+
   const prize = await Prize.findById(req.params.id);
 
   if (!prize) {
@@ -59,17 +116,36 @@ module.exports.updatePrize = catchAsync(async (req, res) => {
 
   const event = await Event.findById(prize.eventId);
 
-  // Only allow updates when the event status is inactive or ongoing
-  if (event.status === "inactive" || event.status === "ongoing") {
+  const existingPrize = await Prize.findOne({
+    name: req.body.name,
+    eventId: prize.eventId,
+  });
+
+  console.log(prize);
+
+  console.log(existingPrize);
+
+  if (existingPrize && !existingPrize._id.equals(prize._id)) {
+    throw new AppError("A Prize with this name already exists", 400);
+  }
+
+  if (event.status === "inactive") {
     for (const key in req.body) {
       prize[key] = req.body[key];
     }
     await prize.save();
 
+    if (quantity) {
+      await Promise.all([
+        Event.updatePrizeCount(prize.eventId),
+        Event.updateRemainingPrizeCount(prize.eventId),
+      ]);
+    }
+
     sendSuccessResponseData(res, "prize", prize);
   } else {
     throw new AppError(
-      "Prizes can only be updated when the event is inactive or ongoing.",
+      "Prizes can only be updated when the event is inactive.",
       400
     );
   }
@@ -95,6 +171,11 @@ module.exports.deletePrize = catchAsync(async (req, res) => {
       400
     );
   }
+
+  await Promise.all([
+    Event.updatePrizeCount(prize.eventId),
+    Event.updateRemainingPrizeCount(prize.eventId),
+  ]);
 
   sendSuccessResponseData(res, "prize");
 });

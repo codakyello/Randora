@@ -14,6 +14,8 @@ export interface Event {
   startDate: string;
   endDate: string;
   participantCount: number;
+  prizeCount: number;
+  remainingPrize: number;
 }
 
 export interface EventForm {

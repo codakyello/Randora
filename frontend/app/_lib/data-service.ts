@@ -393,11 +393,12 @@ export async function getMyEvents(searchParams: {
 
   const page = searchParams.page || 1;
   const status = searchParams.status;
-  const sort = searchParams.sortBy || "startDate-desc";
+  const sort = searchParams.sortBy;
 
   // Page
-  query += `?page=${page}&limit=${RESULTS_PER_PAGE}`;
+  query += `?page=${page}&limit=${RESULTS_PER_PAGE}&sort=-createdAt`;
 
+  console.log(query);
   // Filter
   if (status && status !== "all") query += `&status=${status}`;
 
@@ -414,7 +415,12 @@ export async function getMyEvents(searchParams: {
       break;
     case "participant-asc":
       query += "&sort=participantCount";
+      break;
+    default:
+      query += "&sort=-createdAt";
   }
+
+  console.log(query);
 
   try {
     const res = await fetch(`${URL}/users/me/events${query}`, {
@@ -782,19 +788,17 @@ export async function getBookingAfterDate(
 //   }
 // }
 
-export async function deleteBooking({
-  bookingId,
-  token,
+export async function deleteEvent({
+  eventId,
 }: {
-  bookingId: string;
+  eventId: string;
   token: string | null;
 }) {
   try {
+    const token = await getToken();
     if (!token) return;
 
-    console.log("booking id");
-    // const token = getToken
-    const res = await fetch(`${URL}/bookings/${bookingId}`, {
+    const res = await fetch(`${URL}/events/${eventId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

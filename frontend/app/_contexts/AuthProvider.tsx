@@ -11,11 +11,9 @@ import { authorize } from "@/app/_lib/data-service";
 import Cookies from "js-cookie";
 
 type User = {
-  token: string;
-  isRoot: boolean;
   _id: string;
   email: string;
-  name: string;
+  userName: string;
   image: string;
 };
 const AuthContext = createContext<
@@ -108,12 +106,27 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = localStorage.getItem("user");
     const token = localStorage.getItem("token");
 
+    const user = {
+      _id: "67463d9423b38a5a24419222",
+      userName: "OctaFx",
+      email: "olaoluwaolorede8@gmail.com",
+      image:
+        "https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/avatars/public/tems.jpg-1732834631035",
+    };
+
+    dispatch({ type: "user", payload: user });
+
+    dispatch({
+      type: "token",
+      payload:
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NDYzZDk0MjNiMzhhNWEyNDQxOTIyMiIsImlhdCI6MTczMjg4MDczMSwiZXhwIjoxNzM1NDcyNzMxfQ.3S9EbEobmMGdXpc7R7K8Jhtoz50JHR9OJxq5VuSeeh0",
+    });
+    Cookies.set(
+      "token",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NDYzZDk0MjNiMzhhNWEyNDQxOTIyMiIsImlhdCI6MTczMjg4MDczMSwiZXhwIjoxNzM1NDcyNzMxfQ.3S9EbEobmMGdXpc7R7K8Jhtoz50JHR9OJxq5VuSeeh0"
+    );
+
     if (storedUser && token) {
-      dispatch({ type: "user", payload: JSON.parse(storedUser) });
-
-      dispatch({ type: "token", payload: JSON.parse(token) });
-
-      Cookies.set("token", JSON.parse(token));
     } else {
       // setIsAuthenticating(false);
       dispatch({ type: "authenticating/finished" });

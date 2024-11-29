@@ -30,7 +30,7 @@ export default function Sort({
     <select
       value={activeSort}
       onChange={handleChange}
-      className={` text-[1.4rem] py-[.8rem] px-[1.2rem] border- border-[var(--color-grey-100)] rounded-[5px] bg-[var(--color-grey-0)] font-medium shadow-sm ${className}`}
+      className={` text-[1.4rem] h-[4.5rem]  px-[1.2rem] border- border-[var(--color-grey-100)] rounded-[5px] bg-[var(--color-grey-0)] font-medium shadow-sm ${className}`}
     >
       {options.map((option) => (
         <option key={option.value} value={option.value}>
