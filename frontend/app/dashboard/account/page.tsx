@@ -1,7 +1,7 @@
 import UpdateUserForm from "@/app/_components/UpdateUserForm";
 import UpdatePasswordForm from "@/app/_components/UpdatePasswordForm";
 import { Box } from "@chakra-ui/react";
-import { getAdmin } from "@/app/_lib/data-service";
+import { getUser } from "@/app/_lib/data-service";
 import { getToken } from "@/app/_utils/serverUtils";
 
 export const metadata = {
@@ -9,11 +9,10 @@ export const metadata = {
 };
 
 async function Page() {
-  const token = await getToken();
-  const user = await getAdmin(token);
+  const user = await getUser();
   return (
     <Box className="flex flex-col gap-[2rem] md:gap-[3.2rem]">
-      <h1>Update your account</h1>
+      <h1>Account</h1>
 
       <h2>Update user data</h2>
       <UpdateUserForm user={user} />

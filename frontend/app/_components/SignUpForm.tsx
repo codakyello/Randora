@@ -10,6 +10,7 @@ import {
   useHandleUnAuthorisedResponse,
   showToastMessage,
 } from "@/app/_utils/utils";
+import Link from "next/link";
 
 function SignUpForm() {
   const { getToken, user } = useAuth();
@@ -30,66 +31,62 @@ function SignUpForm() {
     setLoading(false);
   }
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col py-[2.4rem] px-[4rem] bg-[var(--color-grey-0)] border border-[var(--color-grey-100)] text-[1.4rem] rounded-[var(--border-radius-md)]"
-    >
-      <FormRow orientation="horizontal" label="Full name" htmlFor="my-fullName">
-        <Input required={true} type="text" name="fullName" id="my-fullName" />
-      </FormRow>
-
-      <FormRow
-        orientation="horizontal"
-        label="Email address"
-        htmlFor="my-email"
+    <Box className="flex flex-col p-5 bg-[var(--color-grey-50)] h-screen items-center justify-center">
+      <h1 className="mb-10">Randora</h1>
+      <form
+        onSubmit={handleSubmit}
+        className="flex justify-stretch flex-col py-[2.4rem] px-[4rem] bg-[var(--color-grey-0)] border border-[var(--color-grey-100)] rounded-[var(--border-radius-md)] text-[1.4rem] w-full max-w-[48rem]"
       >
-        <Input required={true} type="email" name="email" id="my-email" />
-      </FormRow>
+        <h2 className="mb-[1.8rem]">Create your account</h2>
 
-      <FormRow
-        orientation="horizontal"
-        label="Password (min 8 characters)"
-        htmlFor="my-password"
-      >
-        <Input
-          required={true}
-          type="password"
-          name="password"
-          id="my-password"
-        />
-      </FormRow>
+        <FormRow label="Username" htmlFor="my-username">
+          <Input required={true} type="text" name="username" id="my-fullName" />
+        </FormRow>
 
-      <FormRow
-        orientation="horizontal"
-        label="Repeat password"
-        htmlFor="confirm-password"
-      >
-        <Input
-          required={true}
-          type="password"
-          name="confirmPassword"
-          id="confirm-password"
-        />
-      </FormRow>
+        <FormRow label="Email address" htmlFor="my-email">
+          <Input required={true} type="email" name="email" id="my-email" />
+        </FormRow>
 
-      {user?.isRoot ? (
-        <Box className="flex items-center gap-4 py-[1.5rem]">
-          <Input name="isRoot" id="isRoot" type="checkbox" />
-          <label htmlFor="isRoot" className="font-medium">
-            Make root admin?
-          </label>
-        </Box>
-      ) : (
-        ""
-      )}
+        <FormRow label="Password (min 8 characters)" htmlFor="my-password">
+          <Input
+            required={true}
+            type="password"
+            name="password"
+            id="my-password"
+          />
+        </FormRow>
 
-      <div className=" flex gap-5 mt-5 justify-end">
-        <Button type="cancel">Cancel</Button>
-        <Button action="submit" loading={loading} type="primary">
-          Create new user
-        </Button>
-      </div>
-    </form>
+        <FormRow label="Repeat password" htmlFor="confirm-password">
+          <Input
+            required={true}
+            type="password"
+            name="confirmPassword"
+            id="confirm-password"
+          />
+        </FormRow>
+
+        <div className=" flex gap-5 mt-[2rem]">
+          <Button
+            action="submit"
+            className="w-full h-[5.2rem]"
+            loading={loading}
+            type="primary"
+          >
+            <p className="text-[1.6rem]">Get Started</p>
+          </Button>
+        </div>
+
+        <p className="mt-[1rem] text-center">
+          Have an account?{" "}
+          <Link
+            href={"/login"}
+            className="font-semibold text-[var(--color-brand-600)]"
+          >
+            Login
+          </Link>
+        </p>
+      </form>
+    </Box>
   );
 }
 

@@ -58,7 +58,7 @@ export function ModalWindow({
   const ref = useOutsideClick<HTMLDivElement>(close);
 
   return isOpen === name ? (
-    <Box className="fixed p-5 top-0 left-0 z-[90] flex items-center justify-center h-full w-screen backdrop-blur-sm">
+    <Box className="fixed bg-[#33333379] p-5 top-0 left-0 z-[90] flex items-center justify-center h-full w-screen backdrop-blur-sm">
       <Box
         className="max-w-[80rem] flex w-screen items-center justify-center relative"
         ref={ref}

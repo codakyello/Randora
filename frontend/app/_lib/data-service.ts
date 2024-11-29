@@ -8,6 +8,7 @@ import { RESULTS_PER_PAGE } from "../_utils/constants";
 import { notFound } from "next/navigation";
 import { BookingData, CabinData } from "../_utils/types";
 import AppError from "../_utils/AppError";
+import { getToken } from "../_utils/serverUtils";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
 // const DEV_URL = "http://localhost:5000/api/v1";
@@ -151,6 +152,58 @@ export async function signUp(formData: FormData, token: string) {
   }
 }
 
+export async function forgotPassword(email: string) {
+  try {
+    const res = await fetch(`${URL}/users/forgot-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    return data;
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
+  }
+}
+
+export async function resetPassword({
+  password,
+  confirmPassword,
+  token,
+}: {
+  password: string;
+  confirmPassword: string;
+  token: string;
+}) {
+  try {
+    const res = await fetch(`${URL}/users/reset-password?token=${token}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ password, confirmPassword }),
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    return data;
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    }
+  }
+}
+
 export async function authorize(token: string) {
   try {
     if (!token) return false;
@@ -170,39 +223,56 @@ export async function authorize(token: string) {
 }
 
 export async function verifyOtp(email: string, otp: string) {
-  const res = await fetch(`${URL}/users/verify-otp`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, otp }),
-  });
-  const data = await res.json();
+  try {
+    const res = await fetch(`${URL}/users/verify-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, otp }),
+    });
+    const data = await res.json();
 
-  if (!res.ok) throw new Error(data.message);
+    if (!res.ok) throw new Error(data.message);
 
-  return data;
+    return data;
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    }
+  }
 }
 
 export async function resendOtp(email: string) {
-  const res = await fetch(`${URL}/users/resend-otp`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email }),
-  });
-  const data = await res.json();
+  try {
+    const res = await fetch(`${URL}/users/resend-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
 
-  if (!res.ok) throw new Error(data.message);
+    if (!res.ok) throw new Error(data.message);
 
-  return data;
+    return data;
+  } catch (err: unknown) {
+    // Improved error handling
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
+  }
 }
 
-export async function getAdmin(token: string | undefined) {
+export async function getUser() {
+  const token = await getToken();
+  console.log(token);
   let statusCode;
   try {
-    const res = await fetch(`${URL}/admins/me`, {
+    const res = await fetch(`${URL}/users/me`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -215,10 +285,11 @@ export async function getAdmin(token: string | undefined) {
     if (!res.ok) throw new Error(data.message);
 
     const {
-      data: { admin },
+      data: { user },
     } = data;
-    return admin;
+    return user;
   } catch (err: unknown) {
+    console.log(err);
     // Improved error handling
     if (err instanceof Error) {
       return { status: "error", statusCode, message: err.message };
@@ -228,18 +299,16 @@ export async function getAdmin(token: string | undefined) {
   }
 }
 
-export async function updateAdmin(
-  token: string,
-  formData: {
-    email: FormDataEntryValue;
-    name: FormDataEntryValue;
-    image?: string | undefined;
-  }
-) {
+export async function updateUser(formData: {
+  email: FormDataEntryValue;
+  userName: FormDataEntryValue;
+  image?: string | undefined;
+}) {
   let statusCode;
-  // console.log(token);
+
+  const token = await getToken();
   try {
-    const res = await fetch(`${URL}/admins/updateMe`, {
+    const res = await fetch(`${URL}/users/me`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -256,11 +325,11 @@ export async function updateAdmin(
 
     // Destructure token and user from response
     const {
-      data: { admin },
+      data: { user },
     } = data;
 
     revalidatePath("/dashboard/account");
-    return admin;
+    return user;
   } catch (err: unknown) {
     console.log(err);
     // Improved error handling

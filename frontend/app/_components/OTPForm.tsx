@@ -20,7 +20,7 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
   const router = useRouter();
   const { login, setToken } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [time, setTimer] = useState(0);
+  const [time, setTimer] = useState(OTP_EXPIRES);
   const [otp, setOtp] = useState("");
 
   const min = `${Math.floor(time / 60)}`.padStart(2, "0");
@@ -28,7 +28,6 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
 
   // Set OTP expiration countdown
   useEffect(() => {
-    setOtp("");
     const timer = setInterval(() => {
       setTimer((time) => {
         if (time > 0) {
@@ -47,42 +46,40 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
     e.preventDefault();
     if (time < 1) return toast.error("OTP has expired");
     setLoading(true);
-    try {
-      const data = await verifyOtp(email, otp);
-      login(data.user);
-      setToken(data.token);
+
+    const res = await verifyOtp(email, otp);
+
+    if (res.status !== "error") {
+      login(res.user);
+      setToken(res.token);
       router.push("/dashboard");
-    } catch (err) {
-      if (err instanceof Error) {
-        console.error(err.message);
-        toast.error(err.message);
-      }
-    } finally {
-      setLoading(false);
+    } else {
+      toast.error(res.message);
     }
+
+    setLoading(false);
   }
 
   async function handleResend() {
     if (time > 1) return;
 
     // resend OTp
-    try {
-      setLoading(true);
-      await resendOtp(email);
+
+    setOtp("");
+    setLoading(true);
+    const res = await resendOtp(email);
+    if (res.status !== "error") {
       setTimer(OTP_EXPIRES);
-    } catch (err) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      }
-    } finally {
-      setLoading(false);
+    } else {
+      toast.error(res.message);
     }
+    setLoading(false);
   }
   return (
     <Box className="flex p-5 bg-[var(--color-grey-50)] gap-[3.2rem] flex-col h-screen items-center justify-center">
       <form
         onSubmit={handleSubmit}
-        className="flex justify-stretch flex-col py-[2.4rem] px-[4rem] bg-[var(--color-grey-0)] border border-[var(--color-grey-100)] rounded-[var(--border-radius-md)] text-[1.4rem] w-full max-w-[48rem]"
+        className="flex justify-stretch flex-col py-[2.4rem] px-[4rem] bg-[var(--color-grey-0)] border border-[var(--color-grey-100)] rounded-[var(--border-radius-md)] text-[1.4rem] w-full max-w-[45rem]"
       >
         <Box className="mb-[1.5rem] flex items-center justify-center gap-[1.2rem]">
           <i
@@ -93,10 +90,11 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
             }}
           >
             <svg
-              width="40"
-              height="40"
+              width="35"
+              height="35"
               viewBox="0 0 45 44"
               fill="none"
+              color="red"
               xmlns="http://www.w3.org/2000/svg"
             >
               <path
@@ -168,12 +166,15 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
         >
           Authentication code
         </Text>
-        <OTPInput
-          name="otp"
-          id="otp"
-          value={otp}
-          onChange={(value: string) => setOtp(value)}
-        />
+        <Box className="text-black w-full">
+          <OTPInput
+            name="otp"
+            id="otp"
+            value={otp}
+            onChange={(value: string) => setOtp(value)}
+          />
+        </Box>
+
         <Box
           display={"flex"}
           fontSize={"1.4rem"}
@@ -186,7 +187,11 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
               {min}:{sec}
             </span>
           </Text>
-          <button disabled={loading} type="button" onClick={handleResend}>
+          <button
+            disabled={loading || time > 0}
+            type="button"
+            onClick={handleResend}
+          >
             <Text fontSize="1.4rem" fontWeight={"bold"} textDecor={"underline"}>
               Resend
             </Text>

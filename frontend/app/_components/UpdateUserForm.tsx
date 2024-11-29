@@ -7,7 +7,7 @@ import FileInput from "./FileInput";
 import { Box } from "@chakra-ui/react";
 import supabase from "@/app/supabase";
 import toast from "react-hot-toast";
-import { updateAdmin } from "../_lib/data-service";
+import { updateUser } from "../_lib/data-service";
 import { useAuth } from "../_contexts/AuthProvider";
 import {
   useHandleUnAuthorisedResponse,
@@ -17,12 +17,12 @@ import {
 export default function UpdateUserForm({
   user,
 }: {
-  user: { email: string; name: string };
+  user: { email: string; userName: string };
 }) {
   const { getToken, login } = useAuth();
   const [loading, setLoading] = useState(false);
   const handleUnAuthorisedResponse = useHandleUnAuthorisedResponse();
-  const { name, email } = user;
+  const { userName, email } = user;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -30,15 +30,15 @@ export default function UpdateUserForm({
     const formData = new FormData(event.currentTarget);
     const avatarFile = formData.get("image");
     const email = formData.get("email");
-    const name = formData.get("name");
+    const userName = formData.get("userName");
 
     const formInputs: {
       email: FormDataEntryValue;
-      name: FormDataEntryValue;
+      userName: FormDataEntryValue;
       image?: string;
     } = {
       email: email || "",
-      name: name || "",
+      userName: userName || "",
     };
 
     const token = getToken();
@@ -66,7 +66,7 @@ export default function UpdateUserForm({
     }
 
     // Update Admin
-    const res = await updateAdmin(token, formInputs);
+    const res = await updateUser(formInputs);
     if (res?.status !== "error") {
       login(res);
     }
@@ -97,13 +97,13 @@ export default function UpdateUserForm({
         />
       </FormRow>
 
-      <FormRow orientation="horizontal" label="Full name" htmlFor="my-fullName">
+      <FormRow orientation="horizontal" label="Username" htmlFor="my-username">
         <Input
           required={true}
           type="text"
-          name="name"
-          id="my-fullName"
-          defaultValue={name}
+          name="userName"
+          id="my-username"
+          defaultValue={userName}
         />
       </FormRow>
 

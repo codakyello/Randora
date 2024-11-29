@@ -21,20 +21,20 @@ const OTPInput: React.FC<OTPInputProps> = ({
   fontSize = "1.6rem",
 }) => {
   return (
-    <HStack>
+    <HStack className="grid grid-cols-6">
       <ChakraPinInput value={value} onChange={onChange} placeholder="" id={id}>
         {Array(6)
           .fill(0)
           .map((_, index) => (
             <PinInputField
               key={index}
-              name={`${name}[${index}]`} // Assign name to each field
+              name={`${name}[${index}]`}
               fontSize={fontSize}
               fontWeight={"medium"}
-              bg={"white"}
               height="50px"
-              width="50px"
-              border="1px solid rgba(0, 0, 0, 0.15)"
+              bg={"white"}
+              width="100%"
+              border="2px solid rgba(0, 0, 0, 0.15)"
               borderRadius={"10px"}
             />
           ))}

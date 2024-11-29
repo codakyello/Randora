@@ -26,6 +26,10 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
   if (isAuthenticating) return <SpinnerFull />;
 
   // If authenticated, render the protected content
+
+  // debugging purposes
+  if (!authenticated) return children;
+
   if (authenticated) return children;
 
   return null;

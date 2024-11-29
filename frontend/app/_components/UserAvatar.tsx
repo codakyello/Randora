@@ -1,12 +1,9 @@
 import { Box } from "@chakra-ui/react";
 import Image from "next/image";
-import { cookies } from "next/headers";
-import { getAdmin } from "../_lib/data-service";
+import { getUser } from "../_lib/data-service";
 
 export default async function UserAvatar() {
-  const cookie = await cookies();
-  const token = cookie.get("token")?.value;
-  const user = await getAdmin(token);
+  const user = await getUser();
 
   if (!user) return;
 
