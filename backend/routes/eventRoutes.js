@@ -15,7 +15,7 @@ router
   .delete(
     authenticate,
     authorize("user", "admin"),
-    eventController.updateEvent
+    eventController.deleteEvent
   );
 
 // get all event participants

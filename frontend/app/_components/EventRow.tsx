@@ -16,7 +16,6 @@ import ConfirmDelete from "./ConfirmDelete";
 import { Box } from "@chakra-ui/react";
 import { isToday, format } from "date-fns";
 import { useRouter } from "next/navigation";
-import useDeleteBookings from "../_hooks/useDeleteBooking";
 import useCheckOut from "../_hooks/useCheckOut";
 import useDeleteEvent from "../_hooks/useDeleteBooking";
 
@@ -75,7 +74,7 @@ export default function EventRow({ event }: { event: Event }) {
             onClick={() => {}}
             disabled={isCheckingOut || isDeleting}
           >
-            <Link href={`/dashboard/bookings/${eventId}`}>See details</Link>
+            <Link href={`/dashboard/events/${eventId}`}>See details</Link>
           </Menus.Button>
 
           {status !== "checked-out" ? (
@@ -104,7 +103,7 @@ export default function EventRow({ event }: { event: Event }) {
             ""
           )}
 
-          <ModalOpen name="delete-booking">
+          <ModalOpen name="delete-event">
             <Menus.Button
               onClick={() => {}}
               icon={
@@ -112,13 +111,13 @@ export default function EventRow({ event }: { event: Event }) {
               }
               disabled={isCheckingOut || isDeleting}
             >
-              Delete booking
+              Delete event
             </Menus.Button>
           </ModalOpen>
 
-          <ModalWindow name="delete-booking">
+          <ModalWindow name="delete-event">
             <ConfirmDelete
-              resourceName="Booking"
+              resourceName="Event"
               isDeleting={isDeleting}
               onConfirm={() => {
                 deleteEvent(eventId);

@@ -788,15 +788,15 @@ export async function getBookingAfterDate(
 //   }
 // }
 
-export async function deleteEvent({
-  eventId,
-}: {
-  eventId: string;
-  token: string | null;
-}) {
+export async function deleteEvent({ eventId }: { eventId: string }) {
   try {
     const token = await getToken();
     if (!token) return;
+
+    console.log("token is here");
+    console.log(eventId);
+
+    console.log(token);
 
     const res = await fetch(`${URL}/events/${eventId}`, {
       method: "DELETE",
@@ -807,12 +807,10 @@ export async function deleteEvent({
     });
 
     // Check if the response was successful
+    const data = await res.json();
     if (!res.ok) {
-      const data = await res.json();
       throw new AppError(data.message, res.status);
     }
-
-    // Destructure token and user from response
 
     return { status: "success" };
   } catch (err: unknown) {
