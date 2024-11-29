@@ -44,7 +44,7 @@ module.exports.updateEvent = catchAsync(async (req, res) => {
     throw new AppError("No event found with that ID.", 404);
   }
 
-  if (event.status === "ongoing" || event.status === "completed") {
+  if (event.status === "active" || event.status === "completed") {
     throw new AppError(`Cannot update an ${event.status} event.`, 400);
   }
 
@@ -64,7 +64,7 @@ module.exports.deleteEvent = catchAsync(async (req, res) => {
     throw new AppError("No event found with that ID.", 404);
   }
 
-  if (event.status === "ongoing") {
+  if (event.status === "active") {
     throw new AppError("You cannot delete an ongoing event.", 400);
   }
 

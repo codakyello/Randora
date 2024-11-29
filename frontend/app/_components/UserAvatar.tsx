@@ -13,7 +13,7 @@ export default async function UserAvatar() {
         <Image fill alt="My Avatar" src={user.image || "/"} />
       </Box>
       <span className="text-[1.4rem] font-medium">
-        {user.name?.split(" ")[0]}
+        {user.userName?.split(" ")[0]}
       </span>
     </Box>
   );

@@ -3,7 +3,7 @@ import { Box } from "@chakra-ui/react";
 import { IoCloseOutline } from "react-icons/io5";
 import Button from "./Button";
 import Input from "./Input";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import SpinnerMini from "./SpinnerMini";
 import { forgotPassword } from "../_lib/data-service";
 import { showToastMessage } from "../_utils/utils";
@@ -36,8 +36,8 @@ export default function ForgotPassword({ onClose }: { onClose?: () => void }) {
       </Box>
 
       <p className="mb-[1.2rem] ">
-        Enter your email address below and we'll send you a link to reset your
-        password.
+        Enter your email address below and we&apos;ll send you a link to reset
+        your password.
       </p>
 
       <form>

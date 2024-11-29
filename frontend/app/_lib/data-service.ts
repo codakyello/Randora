@@ -609,7 +609,7 @@ export async function deleteCabin(id: string, token: string) {
   }
 }
 
-export async function getAllBookings(
+export async function getEvents(
   token: string | null,
   searchParams: {
     page: string | null;
@@ -649,9 +649,8 @@ export async function getAllBookings(
       query += "&sort=totalPrice";
   }
 
-  console.log("query is", query);
   try {
-    const res = await fetch(`${URL}/bookings/${query}`, {
+    const res = await fetch(`${URL}/events/${query}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -672,12 +671,11 @@ export async function getAllBookings(
 
     return { bookings, totalCount, results };
   } catch (err) {
-    throw err;
-    // if (err instanceof Error) {
-    //   return { status: "error", statusCode, message: err.message };
-    // } else {
-    //   return { status: "error", message: "An unknown error occurred" };
-    // }
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
   }
 }
 

@@ -34,7 +34,7 @@ const eventSchema = new Schema({
   },
   status: {
     type: String,
-    enum: ["ongoing", "inactive", "completed", "cancelled"],
+    enum: ["active", "inactive", "completed", "cancelled"],
     default: "inactive",
   },
   emailSent: {

@@ -23,17 +23,8 @@ import { useRouter } from "next/navigation";
 import useDeleteBookings from "../_hooks/useDeleteBooking";
 import useCheckOut from "../_hooks/useCheckOut";
 
-export function BookingRow({ booking }: { booking: Booking }) {
-  const {
-    bookingId,
-    startDate,
-    endDate,
-    numNights,
-    totalPrice,
-    status,
-    guest: { fullName, email },
-    cabin: { name: cabinName },
-  } = booking;
+export function EventRow({ event }: { booking: Event }) {
+  const { name, type, startDate, endDate, status } = event;
 
   const { close: closeMenu } = useMenu();
 

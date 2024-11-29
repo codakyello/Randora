@@ -2,7 +2,6 @@ import UpdateUserForm from "@/app/_components/UpdateUserForm";
 import UpdatePasswordForm from "@/app/_components/UpdatePasswordForm";
 import { Box } from "@chakra-ui/react";
 import { getUser } from "@/app/_lib/data-service";
-import { getToken } from "@/app/_utils/serverUtils";
 
 export const metadata = {
   title: "Account",

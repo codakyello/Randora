@@ -13,7 +13,7 @@ import {
 import Link from "next/link";
 
 function SignUpForm() {
-  const { getToken, user } = useAuth();
+  const { getToken } = useAuth();
   const [loading, setLoading] = useState(false);
   const handleUnAuthorisedResponse = useHandleUnAuthorisedResponse();
 

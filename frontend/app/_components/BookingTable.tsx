@@ -8,28 +8,21 @@ import { RESULTS_PER_PAGE } from "../_utils/constants";
 import Modal from "./Modal";
 import Menus from "./Menu";
 
-export default function BookingTable({
-  bookings,
+export default function EventTable({
+  events,
   count,
 }: {
-  bookings: Booking[];
+  events: Events[];
   count: number;
 }) {
   return (
     <Modal>
       <Table columns={["8rem, 26rem, 33rem, 14rem, 13.5rem, 3rem"]}>
-        <Header headers={["Cabin", "Guest", "Dates", "Status", "Amount"]} />
+        <Header headers={["Name", "Guest", "Dates", "Status", "Amount"]} />
         <Menus>
-          <Body
-          // data={bookings}
-          // render={(booking) => (
-          //   <Menus>
-          //     <BookingRow booking={booking} key={booking._id} />
-          //   </Menus>
-          // )}
-          >
-            {bookings.map((booking) => (
-              <BookingRow booking={booking} key={booking._id} />
+          <Body>
+            {events.map((event) => (
+              <EventRow event={event} key={event._id} />
             ))}
           </Body>
         </Menus>

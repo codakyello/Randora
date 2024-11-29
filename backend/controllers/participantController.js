@@ -93,7 +93,10 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
       const rowNumber = index + 2;
 
       if (!ticketNumber) {
-        throw new AppError(`Ticket Number at row ${rowNumber} is missing`, 400);
+        throw new AppError(
+          `Ticket Number ${ticketNumber} at row ${rowNumber} is missing`,
+          400
+        );
       }
 
       if (hasEmail && !email) {
@@ -224,7 +227,7 @@ module.exports.updateParticipant = catchAsync(async (req, res) => {
 
   // Handle `isWinner` updates
   if (isWinner) {
-    if (event.status !== "ongoing") {
+    if (event.status !== "active") {
       throw new AppError(
         "Winner status can only be updated when the event is ongoing.",
         400
