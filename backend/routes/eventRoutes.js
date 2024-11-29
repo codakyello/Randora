@@ -6,7 +6,7 @@ const router = express.Router();
 router
   .route("/")
   .get(authenticate, authorize("admin"), eventController.getAllEvents)
-  .post(authenticate, authorize("user", "admin"), eventController.createEvent);
+  .post(authenticate, authorize("user"), eventController.createEvent);
 
 router
   .route("/:id")

@@ -160,8 +160,11 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
 
     try {
       await Participant.insertMany(processedParticipants);
+
       event.csvUploaded = true;
       await event.save();
+      await Event.updateParticipantsCount(eventId);
+
       sendSuccessResponseData(res, "participants", processedParticipants);
     } catch (err) {
       await Participant.deleteMany({ eventId });
@@ -205,6 +208,7 @@ module.exports.createParticipant = catchAsync(async (req, res) => {
 
   // Create a new participant
   const newParticipant = await Participant.create(req.body);
+  await Event.updateParticipantsCount(eventId);
 
   sendSuccessResponseData(res, "participant", newParticipant);
 });
@@ -327,6 +331,8 @@ module.exports.deleteParticipant = catchAsync(async (req, res) => {
   await participant.deleteOne();
 
   const participants = await Participant.find({ eventId });
+
+  await Event.updateParticipantsCount(eventId);
 
   if (!participants.length) {
     event.csvUploaded = false;

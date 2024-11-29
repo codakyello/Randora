@@ -32,7 +32,7 @@ module.exports.getEvent = catchAsync(async (req, res) => {
 
 //create event
 module.exports.createEvent = catchAsync(async (req, res) => {
-  const newEvent = await Event.create(req.body);
+  const newEvent = await Event.create({ ...req.body, userId: req.user.id });
 
   sendSuccessResponseData(res, "event", newEvent);
 });
@@ -88,7 +88,9 @@ module.exports.getEventParticipants = catchAsync(async (req, res) => {
     .paginate()
     .limitFields();
 
-  const totalCount = await Event.countDocuments();
+  const totalCount = await Participant.find({
+    eventId: req.params.id,
+  }).countDocuments();
 
   const participants = await apiFeatures.query;
 

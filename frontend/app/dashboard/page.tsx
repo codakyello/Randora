@@ -1,15 +1,15 @@
 import { Box } from "@chakra-ui/react";
 import Filter from "@/app/_components/Filter";
 import DashboardLayout from "@/app/_components/DashboardLayout";
-import { getAllCabins } from "@/app/_lib/data-service";
+// import { getAllCabins } from "@/app/_lib/data-service";
 
 export const metadata = {
   title: "Dashboard",
 };
 
 async function Page() {
-  const data = await getAllCabins();
-  const cabinCount = data.totalCount;
+  // const data = await getAllCabins();
+  // const cabinCount = data.totalCount;
 
   return (
     <Box className="flex flex-col gap-[3.2rem]">
@@ -27,7 +27,7 @@ async function Page() {
         />
       </Box>
 
-      <DashboardLayout cabinCount={cabinCount} />
+      <DashboardLayout />
     </Box>
   );
 }

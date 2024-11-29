@@ -1,7 +1,7 @@
 import React, { useState, FormEvent } from "react";
 
 interface CsvUploaderProps {
-  onUpload?: (data: string[][]) => void; // Callback function for uploaded CSV data
+  onUpload?: (data: string[]) => void;
 }
 
 const CsvUploader: React.FC<CsvUploaderProps> = () => {
@@ -18,7 +18,7 @@ const CsvUploader: React.FC<CsvUploaderProps> = () => {
 
     console.log(file);
 
-    formData.append("eventId", "67463f43be4f7aa15c3a0510");
+    formData.append("eventId", "67499b72ebc9f44740f4f087");
     if (!file) return;
 
     // if (!file.name.endsWith(".csv")) {

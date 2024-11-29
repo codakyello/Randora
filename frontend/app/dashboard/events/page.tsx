@@ -1,17 +1,19 @@
 import Filter from "@/app/_components/Filter";
 import Sort from "@/app/_components/Sort";
 import { Box } from "@chakra-ui/react";
-
-import Bookings from "@/app/_components/Events";
 import Events from "@/app/_components/Events";
 import { Suspense } from "react";
-import Spinner from "@/app/_components/Spinner";
+import Loading from "../loading";
 
 export const metadata = {
   title: "Bookings",
 };
 
-function Page() {
+function Page({
+  searchParams,
+}: {
+  searchParams: { status: string; page: string; sortBy: string };
+}) {
   return (
     <Box className="flex flex-col gap-[3.2rem]">
       <Box className="flex flex-col justify-between xl:flex-row gap-8 pt-1 pr-1 whitespace-nowrap">
@@ -32,10 +34,22 @@ function Page() {
             className=" max-w-[39rem]"
             defaultValue="startDate-desc"
             options={[
-              { name: "Sort by date (recent first)", value: "startDate-desc" },
-              { name: "Sort by date (earlier first)", value: "startDate-asc" },
-              { name: "Sort by amount (high first)", value: "totalPrice-desc" },
-              { name: "Sort by amount (low first)", value: "totalPrice-asc" },
+              {
+                name: "Sort by start date (recent first)",
+                value: "startDate-desc",
+              },
+              {
+                name: "Sort by start date (earlier first)",
+                value: "startDate-asc",
+              },
+              {
+                name: "Sort by participants (high first)",
+                value: "totalPrice-desc",
+              },
+              {
+                name: "Sort by participants (low first)",
+                value: "totalPrice-asc",
+              },
             ]}
           />
         </Box>
@@ -43,7 +57,7 @@ function Page() {
 
       <Suspense
         fallback={<Loading />}
-        key={`${searchParams.discount}-${searchParams.page}-${searchParams.sortBy}`}
+        key={`${searchParams.status}-${searchParams.page}-${searchParams.sortBy}`}
       >
         <Events searchParams={searchParams} />
       </Suspense>

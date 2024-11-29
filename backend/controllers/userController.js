@@ -68,7 +68,19 @@ module.exports.Me = catchAsync(async function (req, res) {
 });
 
 module.exports.getMyEvents = catchAsync(async (req, res) => {
-  const events = await Event.find({ userId: req.user.id });
+  const apiFeatures = new APIFEATURES(
+    Event.find({ userId: req.user.id }),
+    req.query
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .limitFields();
 
-  sendSuccessResponseData(res, "events", events);
+  const totalCount = await Event.find({ userId: req.user.id }).countDocuments();
+
+  console.log("totalCount", totalCount);
+  const events = await apiFeatures.query;
+
+  sendSuccessResponseData(res, "events", events, totalCount);
 });

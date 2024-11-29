@@ -14,7 +14,6 @@ const participantSchema = new mongoose.Schema({
       "Please enter a valid email address",
     ],
   },
-
   ticketNumber: {
     type: String,
     required: true,

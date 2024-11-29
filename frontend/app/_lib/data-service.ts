@@ -5,8 +5,8 @@
 import { revalidatePath } from "next/cache";
 import { Setting } from "../_components/UpdateSettingsForm";
 import { RESULTS_PER_PAGE } from "../_utils/constants";
-import { notFound } from "next/navigation";
-import { BookingData, CabinData } from "../_utils/types";
+// import { notFound } from "next/navigation";
+// import { EventForm, ParticipantForm } from "../_utils/types";
 import AppError from "../_utils/AppError";
 import { getToken } from "../_utils/serverUtils";
 
@@ -380,248 +380,15 @@ export async function updatePassword(
   }
 }
 
-export async function getAllCabins(searchParams?: {
-  page: string;
-  discount: string;
-  sortBy: string;
+export async function getMyEvents(searchParams: {
+  page: string | null;
+  status: string | null;
+  sortBy: string | null;
 }) {
-  let statusCode;
-  let query = "";
-
-  if (searchParams) {
-    const page = searchParams.page || 1;
-    const discount = searchParams.discount;
-    const sort = searchParams.sortBy || "startDate-desc";
-
-    // Page
-    query += `?page=${page}&limit=${RESULTS_PER_PAGE}`;
-
-    // Filter
-    switch (discount) {
-      case "no-discount":
-        console.log("no discount");
-        query += "&discount=0";
-        break;
-
-      case "with-discount":
-        query += "&discount[gt]=0";
-    }
-
-    // Sort
-    switch (sort) {
-      case "name-asc":
-        query += "&sort=name";
-        break;
-      case "name-desc":
-        query += "&sort=-name";
-        break;
-      case "regularPrice-asc":
-        query += "&sort=regularPrice";
-        break;
-      case "regularPrice-desc":
-        query += "&sort=-regularPrice";
-
-      case "maxCapacity-asc":
-        query += "&sort=maxCapacity";
-
-      case "maxCapacity-desc":
-        query += "&sort=-maxCapacity";
-    }
-  }
-
-  try {
-    const res = await fetch(`${URL}/cabins/${query}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      next: { revalidate: 60 },
-    });
-
-    const data = await res.json();
-
-    statusCode = res.status;
-
-    if (!res.ok) {
-      throw new Error(data.message);
-    }
-
-    console.log(data);
-    const {
-      totalCount,
-      results,
-      data: { cabins },
-    } = data;
-
-    return { cabins, totalCount, results };
-  } catch (err) {
-    if (err instanceof Error) {
-      return { status: "error", statusCode, message: err.message };
-    } else {
-      return { status: "error", message: "An unknown error occurred" };
-    }
-  }
-}
-
-export async function getCabin(id: string) {
-  console.log("getting cabin");
-  try {
-    const res = await fetch(
-      `${URL}/cabins/${id}`,
-
-      {
-        next: {
-          revalidate: 60,
-        },
-      }
-    );
-
-    const data = await res.json();
-    // data.error || data.data
-
-    if (!res.ok) {
-      throw new Error(data.error);
-    }
-
-    const {
-      data: { cabin },
-    } = data;
-
-    console.log(cabin);
-
-    return cabin;
-  } catch {
-    notFound();
-  }
-}
-
-export async function createCabin(token: string, cabinData: CabinData) {
-  console.log("creating cabins 2");
-
-  let res;
-  try {
-    // const token = getToken
-    res = await fetch(`${URL}/cabins`, {
-      method: "POST",
-      body: JSON.stringify(cabinData),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await res.json();
-
-    // Check if the response was successful
-    if (!res.ok) throw new Error(data.message);
-
-    // Destructure token and user from response
-    const {
-      data: { cabin },
-    } = data;
-
-    revalidatePath("/dashboard/cabins");
-    return cabin;
-  } catch (err: unknown) {
-    console.log(err);
-    // Improved error handling
-    if (err instanceof Error) {
-      return { status: "error", statusCode: res?.status, message: err.message };
-    } else {
-      return { status: "error", message: "An unknown error occurred" };
-    }
-  }
-}
-
-export async function updateCabin(
-  token: string,
-  id: string | undefined,
-  cabinData: CabinData
-) {
-  console.log("editing cabins 2");
-
-  let res;
-  try {
-    // const token = getToken
-    res = await fetch(`${URL}/cabins/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify(cabinData),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await res.json();
-
-    // Check if the response was successful
-    if (!res.ok) throw new Error(data.message);
-
-    // Destructure token and user from response
-    const {
-      data: { cabin },
-    } = data;
-
-    revalidatePath("/dashboard/cabins");
-    return cabin;
-  } catch (err: unknown) {
-    console.log(err);
-    // Improved error handling
-    if (err instanceof Error) {
-      return { status: "error", statusCode: res?.status, message: err.message };
-    } else {
-      return { status: "error", message: "An unknown error occurred" };
-    }
-  }
-}
-
-export async function deleteCabin(id: string, token: string) {
+  console.log("in here");
+  const token = await getToken();
   if (!token) return;
 
-  let res;
-  try {
-    // const token = getToken
-    res = await fetch(`${URL}/cabins/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    // Check if the response was successful
-    if (!res.ok) {
-      const data = await res.json();
-      throw new Error(data.message);
-    }
-
-    // Destructure token and user from response
-
-    revalidatePath("/dashboard/cabins");
-    return { status: "success" };
-  } catch (err: unknown) {
-    console.log(err);
-    // Improved error handling
-    if (err instanceof Error) {
-      return { status: "error", statusCode: res?.status, message: err.message };
-    } else {
-      return { status: "error", message: "An unknown error occurred" };
-    }
-  }
-}
-
-export async function getEvents(
-  token: string | null,
-  searchParams: {
-    page: string | null;
-    status: string | null;
-    sortBy: string | null;
-  }
-) {
-  if (!token) return;
-
-  // await new Promise((res) => {
-  //   setTimeout(res, 5000);
-  // });
   let query = "";
 
   const page = searchParams.page || 1;
@@ -634,23 +401,23 @@ export async function getEvents(
   // Filter
   if (status && status !== "all") query += `&status=${status}`;
 
-  // Sort
+  // Sort, highest participant,
   switch (sort) {
     case "startDate-desc":
-      query += "&sort=-created_at";
+      query += "&sort=-startDate";
       break;
     case "startDate-asc":
-      query += "&sort=created_at";
+      query += "&sort=startDate";
       break;
-    case "totalPrice-desc":
-      query += "&sort=-totalPrice";
+    case "participant-desc":
+      query += "&sort=-participantCount";
       break;
-    case "totalPrice-asc":
-      query += "&sort=totalPrice";
+    case "participant-asc":
+      query += "&sort=participantCount";
   }
 
   try {
-    const res = await fetch(`${URL}/events/${query}`, {
+    const res = await fetch(`${URL}/users/me/events${query}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -663,13 +430,15 @@ export async function getEvents(
       throw new Error(data.message);
     }
 
+    console.log(data);
+
     const {
       totalCount,
       results,
-      data: { bookings },
+      data: { events },
     } = data;
 
-    return { bookings, totalCount, results };
+    return { events, totalCount, results };
   } catch (err) {
     if (err instanceof Error) {
       return { status: "error", message: err.message };
@@ -678,6 +447,235 @@ export async function getEvents(
     }
   }
 }
+
+// export async function getAllCabins(searchParams?: {
+//   page: string;
+//   discount: string;
+//   sortBy: string;
+// }) {
+//   let statusCode;
+//   let query = "";
+
+//   if (searchParams) {
+//     const page = searchParams.page || 1;
+//     const discount = searchParams.discount;
+//     const sort = searchParams.sortBy || "startDate-desc";
+
+//     // Page
+//     query += `?page=${page}&limit=${RESULTS_PER_PAGE}`;
+
+//     // Filter
+//     switch (discount) {
+//       case "no-discount":
+//         console.log("no discount");
+//         query += "&discount=0";
+//         break;
+
+//       case "with-discount":
+//         query += "&discount[gt]=0";
+//     }
+
+//     // Sort
+//     switch (sort) {
+//       case "name-asc":
+//         query += "&sort=name";
+//         break;
+//       case "name-desc":
+//         query += "&sort=-name";
+//         break;
+//       case "regularPrice-asc":
+//         query += "&sort=regularPrice";
+//         break;
+//       case "regularPrice-desc":
+//         query += "&sort=-regularPrice";
+
+//       case "maxCapacity-asc":
+//         query += "&sort=maxCapacity";
+
+//       case "maxCapacity-desc":
+//         query += "&sort=-maxCapacity";
+//     }
+//   }
+
+//   try {
+//     const res = await fetch(`${URL}/cabins/${query}`, {
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       next: { revalidate: 60 },
+//     });
+
+//     const data = await res.json();
+
+//     statusCode = res.status;
+
+//     if (!res.ok) {
+//       throw new Error(data.message);
+//     }
+
+//     console.log(data);
+//     const {
+//       totalCount,
+//       results,
+//       data: { cabins },
+//     } = data;
+
+//     return { cabins, totalCount, results };
+//   } catch (err) {
+//     if (err instanceof Error) {
+//       return { status: "error", statusCode, message: err.message };
+//     } else {
+//       return { status: "error", message: "An unknown error occurred" };
+//     }
+//   }
+// }
+
+// export async function getCabin(id: string) {
+//   console.log("getting cabin");
+//   try {
+//     const res = await fetch(
+//       `${URL}/cabins/${id}`,
+
+//       {
+//         next: {
+//           revalidate: 60,
+//         },
+//       }
+//     );
+
+//     const data = await res.json();
+//     // data.error || data.data
+
+//     if (!res.ok) {
+//       throw new Error(data.error);
+//     }
+
+//     const {
+//       data: { cabin },
+//     } = data;
+
+//     console.log(cabin);
+
+//     return cabin;
+//   } catch {
+//     notFound();
+//   }
+// }
+
+// export async function createCabin(token: string, cabinData: CabinData) {
+//   console.log("creating cabins 2");
+
+//   let res;
+//   try {
+//     // const token = getToken
+//     res = await fetch(`${URL}/cabins`, {
+//       method: "POST",
+//       body: JSON.stringify(cabinData),
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+
+//     const data = await res.json();
+
+//     // Check if the response was successful
+//     if (!res.ok) throw new Error(data.message);
+
+//     // Destructure token and user from response
+//     const {
+//       data: { cabin },
+//     } = data;
+
+//     revalidatePath("/dashboard/cabins");
+//     return cabin;
+//   } catch (err: unknown) {
+//     console.log(err);
+//     // Improved error handling
+//     if (err instanceof Error) {
+//       return { status: "error", statusCode: res?.status, message: err.message };
+//     } else {
+//       return { status: "error", message: "An unknown error occurred" };
+//     }
+//   }
+// }
+
+// export async function updateCabin(
+//   token: string,
+//   id: string | undefined,
+//   cabinData: CabinData
+// ) {
+//   console.log("editing cabins 2");
+
+//   let res;
+//   try {
+//     // const token = getToken
+//     res = await fetch(`${URL}/cabins/${id}`, {
+//       method: "PATCH",
+//       body: JSON.stringify(cabinData),
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+
+//     const data = await res.json();
+
+//     // Check if the response was successful
+//     if (!res.ok) throw new Error(data.message);
+
+//     // Destructure token and user from response
+//     const {
+//       data: { cabin },
+//     } = data;
+
+//     revalidatePath("/dashboard/cabins");
+//     return cabin;
+//   } catch (err: unknown) {
+//     console.log(err);
+//     // Improved error handling
+//     if (err instanceof Error) {
+//       return { status: "error", statusCode: res?.status, message: err.message };
+//     } else {
+//       return { status: "error", message: "An unknown error occurred" };
+//     }
+//   }
+// }
+
+// export async function deleteCabin(id: string, token: string) {
+//   if (!token) return;
+
+//   let res;
+//   try {
+//     // const token = getToken
+//     res = await fetch(`${URL}/cabins/${id}`, {
+//       method: "DELETE",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
+
+//     // Check if the response was successful
+//     if (!res.ok) {
+//       const data = await res.json();
+//       throw new Error(data.message);
+//     }
+
+//     // Destructure token and user from response
+
+//     revalidatePath("/dashboard/cabins");
+//     return { status: "success" };
+//   } catch (err: unknown) {
+//     console.log(err);
+//     // Improved error handling
+//     if (err instanceof Error) {
+//       return { status: "error", statusCode: res?.status, message: err.message };
+//     } else {
+//       return { status: "error", message: "An unknown error occurred" };
+//     }
+//   }
+// }
 
 export async function getBooking(id: string, token: string | null) {
   if (!token) return;
@@ -746,43 +744,43 @@ export async function getBookingAfterDate(
   }
 }
 
-export async function updateBooking({
-  token,
-  bookingId,
-  obj,
-}: {
-  token: string | null;
-  bookingId: string;
-  obj: BookingData;
-}) {
-  if (!token) return;
+// export async function updateBooking({
+//   token,
+//   bookingId,
+//   obj,
+// }: {
+//   token: string | null;
+//   bookingId: string;
+//   obj: BookingData;
+// }) {
+//   if (!token) return;
 
-  try {
-    // const token = getToken
-    const res = await fetch(`${URL}/bookings/${bookingId}`, {
-      method: "PATCH",
-      body: JSON.stringify(obj),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+//   try {
+//     // const token = getToken
+//     const res = await fetch(`${URL}/bookings/${bookingId}`, {
+//       method: "PATCH",
+//       body: JSON.stringify(obj),
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//     });
 
-    const data = await res.json();
+//     const data = await res.json();
 
-    // Check if the response was successful
-    if (!res.ok) throw new AppError(data.message, res.status);
+//     // Check if the response was successful
+//     if (!res.ok) throw new AppError(data.message, res.status);
 
-    // Destructure token and user from response
-    const {
-      data: { booking },
-    } = data;
+//     // Destructure token and user from response
+//     const {
+//       data: { booking },
+//     } = data;
 
-    return booking;
-  } catch (err: unknown) {
-    throw err;
-  }
-}
+//     return booking;
+//   } catch (err: unknown) {
+//     throw err;
+//   }
+// }
 
 export async function deleteBooking({
   bookingId,

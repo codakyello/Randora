@@ -32,6 +32,9 @@ exports.authenticate = catchAsync(async (req, _res, next) => {
   if (!freshUser)
     throw new AppError("The user belonging to this token does not exist.", 401);
 
+  console.log(decoded.iat);
+  console.log(new Date(decoded.iat));
+  console.log(freshUser.passwordChangedAt);
   if (freshUser.changePasswordAfter(decoded.iat))
     throw new AppError(
       "User recently changed password! Please log in again",

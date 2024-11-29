@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Participant = require("./ParticipantsModel");
 const { Schema } = mongoose;
 
 const eventSchema = new Schema({
@@ -6,7 +7,7 @@ const eventSchema = new Schema({
     type: String,
     required: true,
   },
-  eventType: {
+  type: {
     type: String,
     enum: ["raffle", "spin-the-wheel", "trivia", "giveaway"],
     required: true,
@@ -41,7 +42,13 @@ const eventSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  participantCount: { type: Number, default: 0 },
 });
+
+eventSchema.statics.updateParticipantsCount = async function (eventId) {
+  const count = await Participant.countDocuments({ eventId });
+  await this.findByIdAndUpdate(eventId, { participantsCount: count });
+};
 
 // Create the model
 const Event = mongoose.model("Event", eventSchema);
