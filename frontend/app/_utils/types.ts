@@ -21,8 +21,6 @@ export interface Event {
 export interface EventForm {
   name: string;
   type: string;
-  status: string;
-  emailSent: boolean;
   startDate: string;
 }
 
@@ -39,6 +37,19 @@ export interface ParticipantForm {
   email: string | undefined;
   ticketNumber: string;
   eventId: string;
+}
+
+export interface PrizeForm {
+  name: string | undefined;
+  image: string;
+  quantity: number;
+}
+
+export interface Prize {
+  _id: string;
+  name: string;
+  image: string;
+  quantity: number;
 }
 
 export interface BookingParams {

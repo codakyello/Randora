@@ -32,7 +32,7 @@ export function useTable() {
   return context;
 }
 
-export function Header({ headers }: { headers: string[] }) {
+export function Header({ headers }: { headers: string[] | ReactNode[] }) {
   const { columns } = useTable();
 
   return (
@@ -44,9 +44,7 @@ export function Header({ headers }: { headers: string[] }) {
       className=" gap-[2.4rem] py-[1.6rem] px-[2.4rem] bg-[var(--color-grey-50)] border-b-[var(--color-grey-100)]"
     >
       {headers.map((header) => (
-        <div key={header} className="uppercase font-semibold">
-          {header}
-        </div>
+        <div className="uppercase font-semibold">{header}</div>
       ))}
     </header>
   );

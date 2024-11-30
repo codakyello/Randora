@@ -9,6 +9,7 @@ import { RESULTS_PER_PAGE } from "../_utils/constants";
 // import { EventForm, ParticipantForm } from "../_utils/types";
 import AppError from "../_utils/AppError";
 import { getToken } from "../_utils/serverUtils";
+import { EventForm, ParticipantForm, PrizeForm } from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
 // const DEV_URL = "http://localhost:5000/api/v1";
@@ -454,6 +455,334 @@ export async function getMyEvents(searchParams: {
   }
 }
 
+export async function createEvents(eventData: EventForm) {
+  try {
+    const token = await getToken();
+
+    if (!token) return;
+
+    const res = await fetch(`${URL}/events`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(eventData),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    const {
+      data: { event },
+    } = data;
+
+    return event;
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    }
+  }
+}
+
+export async function updateEvents(eventId: string, EventData: EventForm) {
+  try {
+    const token = await getToken();
+    if (!token) return;
+
+    const res = await fetch(`${URL}/participants/${eventId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(EventData),
+    });
+
+    // Check if the response was successful
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    return { status: "success" };
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
+  }
+}
+
+export async function deleteEvent(eventId: string) {
+  try {
+    const token = await getToken();
+    if (!token) return;
+
+    console.log("token is here");
+    console.log(eventId);
+
+    console.log(token);
+
+    const res = await fetch(`${URL}/events/${eventId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Check if the response was successful
+    const data = await res.json();
+    if (!res.ok) {
+      throw new AppError(data.message, res.status);
+    }
+
+    return { status: "success" };
+  } catch (err: unknown) {
+    throw err;
+  }
+}
+
+export async function getEventParticipants(eventId: string) {
+  const token = await getToken();
+
+  try {
+    const res = await fetch(`${URL}/events/${eventId}/participants`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    const {
+      totalCount,
+      results,
+      data: { participants },
+    } = data;
+
+    return { participants, totalCount, results };
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
+  }
+}
+
+export async function createParticipants() {
+  try {
+    const token = await getToken();
+
+    if (!token) return;
+
+    const res = await fetch(`${URL}/participants`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    const {
+      data: { participant },
+    } = data;
+
+    return participant;
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    }
+  }
+}
+
+export async function updateParticipant(
+  participantId: string,
+  participantData: ParticipantForm
+) {
+  try {
+    const token = await getToken();
+    if (!token) return;
+
+    const res = await fetch(`${URL}/participants/${participantId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(participantData),
+    });
+
+    // Check if the response was successful
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    return { status: "success" };
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
+  }
+}
+
+export async function deleteParticipant(participantId: string) {
+  try {
+    const token = await getToken();
+    if (!token) return;
+
+    const res = await fetch(`${URL}/participants/${participantId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Check if the response was successful
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    return { status: "success" };
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
+  }
+}
+
+export async function getEventPrizes(eventId: string) {
+  const token = await getToken();
+
+  try {
+    const res = await fetch(`${URL}/events/${eventId}/prizes`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    const {
+      totalCount,
+      results,
+      data: { prizes },
+    } = data;
+
+    return { prizes, totalCount, results };
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
+  }
+}
+
+export async function createPrizes() {
+  try {
+    const token = await getToken();
+
+    if (!token) return;
+
+    const res = await fetch(`${URL}/api/v1/prizes`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    const {
+      data: { prize },
+    } = data;
+
+    return prize;
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    }
+  }
+}
+
+export async function updatePrize(prizeId: string, prizeData: PrizeForm) {
+  try {
+    const token = await getToken();
+    if (!token) return;
+
+    const res = await fetch(`${URL}/participants/${prizeId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(prizeData),
+    });
+
+    // Check if the response was successful
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    return { status: "success" };
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
+  }
+}
+
+export async function deletePrize(prizeId: string) {
+  try {
+    const token = await getToken();
+    if (!token) return;
+
+    console.log(token);
+
+    const res = await fetch(`${URL}/prizes/${prizeId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    // Check if the response was successful
+    const data = await res.json();
+    if (!res.ok) {
+      throw new AppError(data.message, res.status);
+    }
+
+    return { status: "success" };
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
+  }
+}
+
 // export async function getAllCabins(searchParams?: {
 //   page: string;
 //   discount: string;
@@ -788,35 +1117,6 @@ export async function getBookingAfterDate(
 //   }
 // }
 
-export async function deleteEvent({ eventId }: { eventId: string }) {
-  try {
-    const token = await getToken();
-    if (!token) return;
-
-    console.log("token is here");
-    console.log(eventId);
-
-    console.log(token);
-
-    const res = await fetch(`${URL}/events/${eventId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    // Check if the response was successful
-    const data = await res.json();
-    if (!res.ok) {
-      throw new AppError(data.message, res.status);
-    }
-
-    return { status: "success" };
-  } catch (err: unknown) {
-    throw err;
-  }
-}
 // export async function login(email, password) {
 //   const res = await fetch(`${URL}/guests/login`, {
 //     method: "POST",

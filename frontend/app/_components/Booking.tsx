@@ -8,7 +8,7 @@ import { Settings } from "../_utils/types";
 import BookingDataBox from "./BookingDataBox";
 import useBooking from "../_hooks/useBooking";
 import SpinnerFull from "./SpinnerFull";
-import useDeleteBookings from "../_hooks/useDeleteBooking";
+import useDeleteBookings from "../_hooks/useDeleteEvent";
 import { useEffect } from "react";
 
 export default function Booking({

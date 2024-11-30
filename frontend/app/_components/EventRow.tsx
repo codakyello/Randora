@@ -4,20 +4,16 @@ import { formatDistanceFromNow, getTagName } from "../_utils/helpers";
 import Tag from "./Tag";
 import Row from "./Row";
 import Menus, { useMenu } from "./Menu";
-import {
-  HiArrowDownOnSquare,
-  HiArrowUpOnSquare,
-  HiEye,
-  HiTrash,
-} from "react-icons/hi2";
+import { HiEye, HiTrash, HiMiniUsers } from "react-icons/hi2";
+
 import { ModalOpen, ModalWindow } from "./Modal";
 import Link from "next/link";
 import ConfirmDelete from "./ConfirmDelete";
 import { Box } from "@chakra-ui/react";
 import { isToday, format } from "date-fns";
 import { useRouter } from "next/navigation";
-import useCheckOut from "../_hooks/useCheckOut";
-import useDeleteEvent from "../_hooks/useDeleteBooking";
+import useDeleteEvent from "../_hooks/useDeleteEvent";
+import { IoGift } from "react-icons/io5";
 
 export default function EventRow({ event }: { event: Event }) {
   const {
@@ -32,11 +28,7 @@ export default function EventRow({ event }: { event: Event }) {
     remainingPrize,
   } = event;
 
-  const { close: closeMenu } = useMenu();
-
   const router = useRouter();
-
-  const { mutate: checkOut, isPending: isCheckingOut } = useCheckOut();
 
   const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
 
@@ -72,36 +64,34 @@ export default function EventRow({ event }: { event: Event }) {
               <HiEye className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
             }
             onClick={() => {}}
-            disabled={isCheckingOut || isDeleting}
+            disabled={isDeleting}
           >
             <Link href={`/dashboard/events/${eventId}`}>See details</Link>
           </Menus.Button>
 
-          {status !== "checked-out" ? (
-            <Menus.Button
-              icon={
-                status === "unconfirmed" ? (
-                  <HiArrowDownOnSquare className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
-                ) : (
-                  <HiArrowUpOnSquare className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
-                )
-              }
-              onClick={() => {
-                if (status === "unconfirmed") {
-                  router.push(`/dashboard/checkin/${eventId}`);
-                } else {
-                  checkOut(eventId, {
-                    onSuccess: closeMenu,
-                  });
-                }
-              }}
-              disabled={isCheckingOut || isDeleting}
-            >
-              {status === "unconfirmed" ? "Check in" : "Check out"}
-            </Menus.Button>
-          ) : (
-            ""
-          )}
+          <Menus.Button
+            icon={
+              <HiMiniUsers className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+            }
+            onClick={() => {
+              router.push(`/dashboard/events/${eventId}/participants`);
+            }}
+            disabled={isDeleting}
+          >
+            Participants
+          </Menus.Button>
+
+          <Menus.Button
+            icon={
+              <IoGift className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+            }
+            onClick={() => {
+              router.push(`/dashboard/events/${eventId}/prizes`);
+            }}
+            disabled={isDeleting}
+          >
+            Prizes
+          </Menus.Button>
 
           <ModalOpen name="delete-event">
             <Menus.Button
@@ -109,7 +99,7 @@ export default function EventRow({ event }: { event: Event }) {
               icon={
                 <HiTrash className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
               }
-              disabled={isCheckingOut || isDeleting}
+              disabled={isDeleting}
             >
               Delete event
             </Menus.Button>

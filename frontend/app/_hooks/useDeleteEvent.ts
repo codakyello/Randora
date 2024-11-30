@@ -26,7 +26,7 @@ export default function useDeleteEvent<
 
   const { mutate, isPending } = useMutation<TData, AppError, TVariables>({
     mutationFn: async (eventId) => {
-      return deleteEvent({ eventId }) as Promise<TData>;
+      return deleteEvent(eventId) as Promise<TData>;
     },
     onSuccess: () => {
       queryClient.invalidateQueries();
@@ -36,6 +36,7 @@ export default function useDeleteEvent<
 
     onError: (err: AppError) => {
       toast.error(err.message);
+      close();
       handleUnAuthorisedResponse(err.statusCode);
     },
   });
