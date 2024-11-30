@@ -645,7 +645,7 @@ export async function createParticipants() {
 
 export async function uploadParticipants(formData: FormData) {
   try {
-    const res = await fetch(`${DEV_URL}/participants/upload`, {
+    const res = await fetch(`${URL}/participants/upload`, {
       method: "POST",
       body: formData,
     });
