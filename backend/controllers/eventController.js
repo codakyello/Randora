@@ -152,6 +152,7 @@ module.exports.deleteEventParticipants = catchAsync(async (req, res) => {
 
   // Delete the participants
   await Participant.deleteMany({ eventId });
+  await Event.updateParticipantsCount(eventId);
 
   // Set the csv to free
   event.csvUploaded = false;

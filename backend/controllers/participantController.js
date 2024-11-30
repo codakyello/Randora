@@ -89,7 +89,7 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
     const processedParticipants = participants.map((participant, index) => {
       const email = participant.email;
       const name = participant.name;
-      const ticketNumber = participant.ticketNumber;
+      const ticketNumber = Number(participant.ticketNumber);
       const rowNumber = index + 2;
 
       if (!ticketNumber) {
@@ -107,15 +107,17 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
         throw new AppError(`Name at row ${rowNumber} is missing`, 400);
       }
 
+      console.log("the participant", participant);
+
       existingParticipants.forEach((participant) => {
         if (participant.ticketNumber === ticketNumber) {
           throw new AppError(
-            `The ticket number at row number ${rowNumber} already exists for this event`,
+            `The ticket number: ${ticketNumber} at row number ${rowNumber} already exists for this event`,
             400
           );
         }
 
-        if (participant.email.toLowerCase() === email) {
+        if (participant.email?.toLowerCase() === email) {
           throw new AppError(
             `The participant with email ${email} at row number ${rowNumber} already exists for this event`,
             400
@@ -140,9 +142,12 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
           );
         }
 
-        if (hasTicketNumber && participants[i].ticketNumber === ticketNumber) {
+        if (
+          hasTicketNumber &&
+          Number(participants[i].ticketNumber) === ticketNumber
+        ) {
           throw new AppError(
-            `Duplicate ticket number: Ticket Number ${ticketNumber} at row ${rowNumber} and at row ${
+            `Duplicate ticket number: Ticket Number: ${ticketNumber}, at row ${rowNumber} and at row ${
               i + 2
             }.`,
             400
@@ -194,14 +199,26 @@ module.exports.createParticipant = catchAsync(async (req, res) => {
   }
 
   // Check for duplicate ticket number
-  const existingParticipant = await Participant.findOne({
+  const existingTicket = await Participant.findOne({
     eventId,
     ticketNumber,
   });
 
-  if (existingParticipant) {
+  if (existingTicket) {
     throw new AppError(
-      `The ticket number "${ticketNumber}" already exists for this event.`,
+      `A participant with this ticketNumber "${ticketNumber}" already exists for this event.`,
+      400
+    );
+  }
+
+  const existingEmail = await Participant.findOne({
+    eventId,
+    email: req.body.email,
+  });
+
+  if (existingEmail) {
+    throw new AppError(
+      `A participant with this email "${req.body.email}" already exists for this event.`,
       400
     );
   }

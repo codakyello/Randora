@@ -27,12 +27,11 @@ export default function CreateEditEventForm({
   const isEditSession = Boolean(editId);
   const { getToken } = useAuth();
   const handleUnAuthorisedResponse = useHandleUnAuthorisedResponse();
+  const eventTypes = [{ value: "Raffle", name: "Raffle" }];
 
   const [date, setDate] = useState<Date | null>(
     eventToEdit ? new Date(editValues.startDate) : new Date()
   );
-
-  console.log(date);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -70,7 +69,7 @@ export default function CreateEditEventForm({
     );
 
     setLoading(false);
-    close();
+    if (res.status !== "error") close();
   };
 
   return (
@@ -96,16 +95,20 @@ export default function CreateEditEventForm({
       </FormRow>
 
       <FormRow htmlFor="event_type" label="Event type" orientation="horizontal">
-        <Input
-          defaultValue={editValues?.type}
+        <select
           name="type"
-          required={true}
-          id="event_type"
-          type="text"
-        />
+          onChange={() => {}}
+          className={`h-[4.5rem]  px-[1.2rem] border border-[var(--color-grey-300)] rounded-[5px] bg-[var(--color-grey-0)] shadow-sm`}
+        >
+          {eventTypes.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.name}
+            </option>
+          ))}
+        </select>
       </FormRow>
 
-      <FormRow htmlFor="date" label="Date" orientation="horizontal">
+      <FormRow htmlFor="date" label="Start Date" orientation="horizontal">
         <DatePicker
           value={date}
           onChange={(value) => {
@@ -128,7 +131,7 @@ export default function CreateEditEventForm({
           Cancel
         </Button>
         <Button
-          className="w-[17rem]"
+          className="w-[17rem] h-[4.8rem]"
           loading={loading}
           type="primary"
           action="submit"

@@ -17,14 +17,12 @@ export default function EventTable({
 }) {
   return (
     <Modal>
-      <Table
-        columns={["15rem, 10rem, 25rem, 15rem, 10rem, 12rem, 10rem, 3rem"]}
-      >
+      <Table columns={["15rem, 10rem, 18rem, 15rem, 10rem, 12rem, 10rem, 1fr"]}>
         <Header
           headers={[
             "Name",
             "Type",
-            "DATES",
+            "Date",
             "Status",
             "Participants",
             "Prize Remaining",

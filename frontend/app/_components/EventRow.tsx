@@ -4,9 +4,9 @@ import { formatDistanceFromNow, getTagName } from "../_utils/helpers";
 import Tag from "./Tag";
 import Row from "./Row";
 import Menus, { useMenu } from "./Menu";
-import { HiEye, HiTrash, HiMiniUsers } from "react-icons/hi2";
+import { HiEye, HiTrash, HiMiniUsers, HiPencil } from "react-icons/hi2";
 
-import { ModalOpen, ModalWindow } from "./Modal";
+import Modal, { ModalOpen, ModalWindow } from "./Modal";
 import Link from "next/link";
 import ConfirmDelete from "./ConfirmDelete";
 import { Box } from "@chakra-ui/react";
@@ -14,6 +14,8 @@ import { isToday, format } from "date-fns";
 import { useRouter } from "next/navigation";
 import useDeleteEvent from "../_hooks/useDeleteEvent";
 import { IoGift } from "react-icons/io5";
+import CreateEditCabinForm from "./CreateEditCabinForm";
+import CreateEditEventForm from "./CreateEditEventForm";
 
 export default function EventRow({ event }: { event: Event }) {
   const {
@@ -42,10 +44,7 @@ export default function EventRow({ event }: { event: Event }) {
             ? "Today"
             : formatDistanceFromNow(startDate)}
         </span>
-        <span>
-          {format(new Date(startDate), "MMM dd yyyy")} &mdash;{" "}
-          {format(new Date(endDate), "MMM dd yyyy")}
-        </span>
+        <span>{format(new Date(startDate), "MMM dd yyyy")} </span>
       </Box>
       <Tag type={getTagName(status)}>{status.replace("-", " ")}</Tag>
       <Box className="flex items-center justify-center">{participantCount}</Box>
@@ -68,6 +67,24 @@ export default function EventRow({ event }: { event: Event }) {
           >
             <Link href={`/dashboard/events/${eventId}`}>See details</Link>
           </Menus.Button>
+
+          <ModalOpen name="edit-event">
+            <Menus.Button
+              icon={
+                <HiPencil className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+              }
+              onClick={() => {
+                router.push(`/dashboard/events/${eventId}/participants`);
+              }}
+              disabled={isDeleting}
+            >
+              Edit
+            </Menus.Button>
+          </ModalOpen>
+
+          <ModalWindow name="edit-event">
+            <CreateEditEventForm eventToEdit={event} />
+          </ModalWindow>
 
           <Menus.Button
             icon={

@@ -1,16 +1,21 @@
+"use client";
 import { Box } from "@chakra-ui/react";
-import { getEventParticipants } from "../_lib/data-service";
 import Modal, { ModalOpen, ModalWindow } from "./Modal";
 import ParticipantTable from "./ParticipantTable";
 import Button from "./Button";
 import CreateEditCabinForm from "./CreateEditCabinForm";
+import CsvUploader from "./CsvUploader";
+import SpinnerFull from "./SpinnerFull";
+import useEventParticipants from "../_hooks/useEventParticipants";
 
-export default async function Participants({ eventId }: { eventId: string }) {
-  const data = await getEventParticipants(eventId);
+export default function Participants({ eventId }: { eventId: string }) {
+  const { data, isLoading } = useEventParticipants(eventId);
 
   const participants = data?.participants;
 
   const count = data?.totalCount;
+
+  if (isLoading) return <SpinnerFull />;
 
   return (
     <Modal>
@@ -20,15 +25,27 @@ export default async function Participants({ eventId }: { eventId: string }) {
         <h2 className="mt-5">No Participants Found</h2>
       )}
 
-      <ModalOpen name="add-cabin">
-        <Box>
-          <Button type="primary">Add Participant</Button>
-        </Box>
-      </ModalOpen>
+      <Box className="flex justify-between">
+        <ModalOpen name="upload-csv">
+          <Box>
+            <Button type="primary">Upload Participant</Button>
+          </Box>
+        </ModalOpen>
 
-      <ModalWindow name="add-cabin">
-        <CreateEditCabinForm />
-      </ModalWindow>
+        <ModalWindow name="upload-csv">
+          <CsvUploader />
+        </ModalWindow>
+
+        <ModalOpen name="add-participant">
+          <Box>
+            <Button type="cancel">Add Participant</Button>
+          </Box>
+        </ModalOpen>
+
+        <ModalWindow name="add-participant">
+          <CreateEditCabinForm />
+        </ModalWindow>
+      </Box>
     </Modal>
   );
 }

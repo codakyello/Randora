@@ -22,14 +22,14 @@ import { ClassNames } from "@emotion/react";
 const CustomInput = forwardRef<any, any>((props, ref) => {
   return (
     <InputGroup>
-      <Input fontSize={"1.6rem"} height={"5.5rem"} {...props} ref={ref} />
+      <Input fontSize={"1.6rem"} height={"5rem"} {...props} ref={ref} />
 
       <InputRightElement
         alignItems={"center"}
         userSelect="none"
         pointerEvents="none"
         children={
-          <CalendarIcon className="absolute top-8 right-10 text-[1.6rem]" />
+          <CalendarIcon className="absolute top-7 right-10 text-[1.6rem]" />
         }
       />
     </InputGroup>
@@ -145,6 +145,7 @@ export const DatePicker = ({
     <ClassNames>
       {({ css }) => (
         <ReactDatePicker
+          className="absolute"
           dateFormat="dd MMMM, yyyy"
           showPopperArrow={false}
           popperClassName={css({ marginTop: "4px!important" })}

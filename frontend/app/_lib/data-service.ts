@@ -12,7 +12,7 @@ import { getToken } from "../_utils/serverUtils";
 import { EventForm, ParticipantForm, PrizeForm } from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
-// const DEV_URL = "http://localhost:5000/api/v1";
+const DEV_URL = "http://localhost:5000/api/v1";
 
 // /////////////
 // // AUTH
@@ -478,6 +478,8 @@ export async function createEvents(eventData: EventForm) {
       data: { event },
     } = data;
 
+    revalidatePath("/");
+
     return event;
   } catch (err) {
     if (err instanceof Error) {
@@ -491,7 +493,7 @@ export async function updateEvents(eventId: string, EventData: EventForm) {
     const token = await getToken();
     if (!token) return;
 
-    const res = await fetch(`${URL}/participants/${eventId}`, {
+    const res = await fetch(`${URL}/events/${eventId}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -503,6 +505,8 @@ export async function updateEvents(eventId: string, EventData: EventForm) {
     // Check if the response was successful
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
+
+    revalidatePath("/");
 
     return { status: "success" };
   } catch (err: unknown) {
@@ -519,7 +523,6 @@ export async function deleteEvent(eventId: string) {
     const token = await getToken();
     if (!token) return;
 
-    console.log("token is here");
     console.log(eventId);
 
     console.log(token);
@@ -544,11 +547,46 @@ export async function deleteEvent(eventId: string) {
   }
 }
 
-export async function getEventParticipants(eventId: string) {
+export async function getEventParticipants(
+  eventId: string,
+  searchParams: {
+    page: string | null;
+    status: string | null;
+    sortBy: string | null;
+  }
+) {
+  let query = "";
+
+  const page = searchParams.page || 1;
+  const status = searchParams.status;
+  const sort = searchParams.sortBy;
+
+  // Page
+  query += `?page=${page}&limit=${RESULTS_PER_PAGE}`;
+
+  // Filter
+  if (status && status !== "all") query += `&status=${status}`;
+
+  // Sort, highest participant,
+  switch (sort) {
+    case "createdDate-desc":
+      query += "&sort=-createdAt";
+      break;
+    case "startDate-asc":
+      query += "&sort=createdAt";
+      break;
+    case "ticketNumber-desc":
+      query += "&sort=-ticketNumber";
+      break;
+    case "ticketNumber-asc":
+      query += "&sort=ticketNumber";
+      break;
+  }
+
   const token = await getToken();
 
   try {
-    const res = await fetch(`${URL}/events/${eventId}/participants`, {
+    const res = await fetch(`${URL}/events/${eventId}/participants${query}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -598,6 +636,27 @@ export async function createParticipants() {
     } = data;
 
     return participant;
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    }
+  }
+}
+
+export async function uploadParticipants(formData: FormData) {
+  try {
+    const res = await fetch(`${DEV_URL}/participants/upload`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    revalidatePath("/");
+
+    return { status: "success", message: "" };
   } catch (err) {
     if (err instanceof Error) {
       return { status: "error", message: err.message };
