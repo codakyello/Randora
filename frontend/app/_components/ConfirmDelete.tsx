@@ -3,23 +3,23 @@ import { Box } from "@chakra-ui/react";
 import Button from "./Button";
 import SpinnerMini from "./SpinnerMini";
 import { IoCloseOutline } from "react-icons/io5";
-import { useModal } from "./Modal";
 
 export default function ConfirmDelete({
   resourceName,
   onConfirm,
   isDeleting,
+  onClose,
 }: {
   resourceName: string;
   isDeleting: boolean;
   onConfirm: () => void;
+  onClose?: () => void;
 }) {
-  const { close } = useModal();
   return (
     <Box className="max-w-[45rem] flex flex-col gap-[1.2rem] px-[3rem] py-[3rem] rounded-[var(--border-radius-lg)] shadow-lg z-50 bg-[var(--color-grey-0)]">
       <Box className="flex justify-between">
         <h3>Delete {resourceName}</h3>
-        <button onClick={close}>
+        <button onClick={onClose}>
           <IoCloseOutline size="2.5rem" />
         </button>
       </Box>

@@ -78,6 +78,8 @@
     --color-grey-700: #374151;
     --color-grey-800: #1f2937;
     --color-grey-900: #111827;
+    --color-primary: #000;
+
     --color-blue-100: #e0f2fe;
     --color-blue-700: #0369a1;
     --color-green-100: #dcfce7;
@@ -121,6 +123,7 @@
     --color-grey-700: #e5e7eb;
     --color-grey-800: #f3f4f6;
     --color-grey-900: #f9fafb;
+    --color-primary: #bab9ff;
 
     --color-blue-100: #075985;
     --color-blue-700: #e0f2fe;
@@ -301,7 +304,7 @@ h6 {
 }
 
 h1 {
-  font-size: 3rem;
+  font-size: 2.5rem;
 }
 
 h2 {
@@ -343,20 +346,20 @@ img {
 }
 
 .btn {
-  padding: 1.2rem 1.6rem;
+  padding: 1rem 1.6rem;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 500;
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--border-radius-md);
   border: none;
 }
 
 .btn--primary {
   transition: 0.3s;
   box-shadow: var(--shadow-sm);
-  color: white;
-  background-color: var(--color-brand-600);
+  color: var(--color-grey-50);
+  background-color: var(--color-primary);
 }
 
 .btn--cancel {
@@ -416,11 +419,11 @@ img {
     border-radius: 50%;
     background: radial-gradient(
           farthest-side,
-          var(--color-brand-600) 94%,
+          var(--color-primary) 94%,
           transparent
         )
         top/10px 10px no-repeat,
-      conic-gradient(transparent 30%, var(--color-brand-600));
+      conic-gradient(transparent 30%, var(--color-primary));
     -webkit-mask: radial-gradient(
       farthest-side,
       transparent calc(100% - 10px),

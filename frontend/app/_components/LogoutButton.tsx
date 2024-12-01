@@ -7,7 +7,7 @@ function LogoutButton() {
   const { logout } = useAuth();
 
   return (
-    <Box className="flex gap-4 mt-auto items-center">
+    <Box className="flex gap-4  items-center">
       <button
         onClick={() => logout()}
         className=" hover:bg-[var(--color-grey-50)] rounded-3xl text-[var(--color-red-500)] hover:bg-primary-900 hover:text-primary-100 transition-colors flex items-center gap-4 font-semibold text-primary-200 p-[1.7rem] md:py-[1rem] md:px-[1.5rem] w-full"

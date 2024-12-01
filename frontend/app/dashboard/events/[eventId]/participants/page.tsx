@@ -3,14 +3,11 @@ import Sort from "@/app/_components/Sort";
 import Filter from "@/app/_components/Filter";
 import { Box } from "@chakra-ui/react";
 
-export default function Page({
-  params,
-  searchParams,
-}: {
-  params: { eventId: string };
-  searchParams: { filter: string; sort: string; page: number };
-}) {
-  console.log(params.eventId);
+export const metadata = {
+  title: "Participants",
+};
+
+export default function Page({ params }: { params: { eventId: string } }) {
   return (
     <Box className="flex flex-col gap-[3.2rem]">
       <Box className="flex flex-col justify-between xl:flex-row gap-8 pt-1 pr-1 whitespace-nowrap">

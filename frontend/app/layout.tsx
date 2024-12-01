@@ -24,7 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html className="lg:text-[62.5%] md:text-[56.25%] text-[50%]" lang="en">
+    <html className="lg:text-[58%] md:text-[56.25%] text-[50%]" lang="en">
       <body className={`${poppins.className}`}>
         <ChakraProvider>
           <QueryProvider>

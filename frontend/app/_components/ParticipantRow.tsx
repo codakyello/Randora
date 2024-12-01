@@ -1,61 +1,56 @@
 "use client";
 import { Participant } from "../_utils/types";
-import Tag from "./Tag";
 import Row from "./Row";
-import Menus, { useMenu } from "./Menu";
+import Menus from "./Menu";
 import { HiPencil, HiTrash } from "react-icons/hi2";
-
 import { ModalOpen, ModalWindow } from "./Modal";
 import ConfirmDelete from "./ConfirmDelete";
 import { Box } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
-import useCheckOut from "../_hooks/useCheckOut";
-import useDeleteEvent from "../_hooks/useDeleteEvent";
-import CreateEditCabinForm from "./CreateEditCabinForm";
-import { useState } from "react";
-import { deleteParticipant } from "../_lib/data-service";
+import { deleteParticipant as deleteParticipantApi } from "../_lib/data-service";
 import toast from "react-hot-toast";
-import { showToastMessage } from "../_utils/utils";
+import useCustomMutation from "../_hooks/useCustomMutation";
+import CreateEditParticipantForm from "./CreateEditParticipantForm";
+import Image from "next/image";
 
 export default function ParticipantRow({
   participant,
 }: {
   participant: Participant;
 }) {
-  const { _id: participantId, name, email, ticketNumber } = participant;
+  const { _id: participantId, name, email, ticketNumber, prize } = participant;
 
-  const { mutate: checkOut, isPending: isCheckingOut } = useCheckOut();
+  const prizeName = participant.prize?.name;
+  const prizeImage = participant.prize?.image;
 
-  //   const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
+  const { mutate: deleteParticipant, isPending: isDeleting } =
+    useCustomMutation(deleteParticipantApi);
 
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const [isEditing, setIsEditing] = useState(false);
-
-  const handleDelete = async () => {
-    setIsDeleting(true);
-
-    const res = await deleteParticipant(participantId);
-
-    if (res?.status !== "error")
-      toast.success("Participant deleted successfully");
-    else {
-      toast.error(new Error(res.message!).message);
-    }
-
-    setIsDeleting(false);
+  const handleDelete = () => {
+    deleteParticipant(participantId, {
+      onSuccess: () => toast.success("Participant deleted successfully"),
+    });
   };
 
   return (
     <Row>
-      <Box>{name || <div className="ml-4">&mdash;</div>}</Box>
-      <Box>{email || <div className="ml-4">&mdash;</div>}</Box>
+      <Box>{name || <span className="ml-4">&mdash;</span>}</Box>
+      <Box>{email || <span className="ml-4">&mdash;</span>}</Box>
       <Box className="flex font-semibold items-center justify-center">
         {ticketNumber}
       </Box>
       <Box className="flex justify-center items-center flex-col gap-[.2rem]">
-        Iphone
+        {prizeName || <span>&mdash;</span>}
       </Box>
+
+      {prize ? (
+        <Box className="relative mx-auto w-[5rem] aspect-[3/2]">
+          <Image className="" fill src={prizeImage} alt="prize-img" />
+        </Box>
+      ) : (
+        <Box className="flex justify-center items-center flex-col gap-[.2rem]">
+          &mdash;
+        </Box>
+      )}
 
       <Box className="relative">
         <Menus.Toogle id={participantId} />
@@ -74,7 +69,7 @@ export default function ParticipantRow({
           </ModalOpen>
 
           <ModalWindow name="edit-participant">
-            <CreateEditCabinForm cabinToEdit={""} />
+            <CreateEditParticipantForm participantToEdit={participant} />
           </ModalWindow>
 
           <ModalOpen name="delete-participant">

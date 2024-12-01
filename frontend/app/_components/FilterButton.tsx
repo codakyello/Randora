@@ -16,12 +16,14 @@ export default function FilterButton({
       }}
       className={`${
         activeFilter === filter.value
-          ? "bg-[var(--color-brand-600)] text-[var(--color-grey-50)]"
+          ? "bg-[var(--color-primary)] text-[var(--color-grey-50)]"
           : ""
-      } hover:bg-[var(--color-brand-600)] py-[0.4rem] px-[0.8rem] hover:text-[var(--color-grey-50)] cursor-pointer text-[1.4rem] font-medium  rounded-[5px] flex items-center justify-center transition-all duration-[.1s]`}
+      } hover:bg-[var(--color-primary)] py-[0.4rem] px-[0.8rem] hover:text-[var(--color-grey-50)] cursor-pointer text-[1.4rem] font-medium  rounded-[5px] flex items-center justify-center transition-all duration-[.1s]`}
       key={filter.value}
     >
       {filter.name}
     </li>
   );
 }
+
+// So black will be black in light mode and color brand-200 in dark mode

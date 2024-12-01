@@ -1,12 +1,13 @@
 "use client";
-
-import CsvUploader from "@/app/_components/CsvUploader";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  return (
-    <>
-      <h1>Landing Page is in progress</h1>
-      <CsvUploader />
-    </>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/dashboard");
+  }, [router]);
+
+  return null;
 }

@@ -1,25 +1,25 @@
 "use client";
 import { RESULTS_PER_PAGE } from "../_utils/constants";
-import { Cabin } from "../_utils/types";
-import CabinRow from "./CabinRow";
+import { Prize } from "../_utils/types";
 import Menus from "./Menu";
 import Pagination from "./Pagination";
+import PrizeRow from "./PrizeRow";
 import Table, { Body, Footer, Header } from "./Table";
 
-export default function CabinTable({
-  cabins,
+export default function PrizeTable({
+  prizes,
   count,
 }: {
-  cabins: Cabin[] | null;
+  prizes: Prize[] | null;
   count: number | null;
 }) {
   return (
-    <Table columns={["10rem", "25rem", "30rem", "13.5rem", "13.5rem", "3rem"]}>
-      <Header headers={["", "cabin", "capacity", "price", "discount"]} />
+    <Table columns={["10rem", "45rem", "45rem", "1fr"]}>
+      <Header headers={["", "prize", "quantity"]} />
       <Menus>
         <Body
-          data={cabins}
-          render={(cabin) => <CabinRow key={cabin._id} cabin={cabin} />}
+          data={prizes}
+          render={(prize) => <PrizeRow key={prize._id} prize={prize} />}
         />
       </Menus>
 

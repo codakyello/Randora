@@ -4,29 +4,34 @@ import FormRow from "./FormRow";
 import Input from "./Input";
 import Button from "./Button";
 import { FormEvent, useState } from "react";
-import { createEvents, updateEvents } from "../_lib/data-service";
-import { useAuth } from "../_contexts/AuthProvider";
 import {
-  showToastMessage,
-  useHandleUnAuthorisedResponse,
-} from "../_utils/utils";
+  createEvent as createEventApi,
+  updateEvent as updateEventApi,
+} from "../_lib/data-service";
+import { useAuth } from "../_contexts/AuthProvider";
+
 import { Event, EventForm } from "../_utils/types";
 import { IoCloseOutline } from "react-icons/io5";
-import { useModal } from "./Modal";
 import { DatePicker } from "./DatePicker";
+import useCustomMutation from "../_hooks/useCustomMutation";
+import toast from "react-hot-toast";
 
 export default function CreateEditEventForm({
   eventToEdit,
+  onClose,
 }: {
   eventToEdit?: Event;
+  onClose?: () => void;
 }) {
-  const [loading, setLoading] = useState(false);
+  const { mutate: updateEvent, isPending: isUpdating } =
+    useCustomMutation(updateEventApi);
 
-  const { close } = useModal();
+  const { mutate: createEvent, isPending: isCreating } =
+    useCustomMutation(createEventApi);
+
   const { _id: editId, ...editValues } = eventToEdit ?? ({} as Event);
   const isEditSession = Boolean(editId);
   const { getToken } = useAuth();
-  const handleUnAuthorisedResponse = useHandleUnAuthorisedResponse();
   const eventTypes = [{ value: "Raffle", name: "Raffle" }];
 
   const [date, setDate] = useState<Date | null>(
@@ -49,27 +54,32 @@ export default function CreateEditEventForm({
     const token = getToken();
     if (!token) return;
 
-    setLoading(true);
-
-    let res;
     if (isEditSession) {
-      res = await updateEvents(editId, eventData);
+      updateEvent(
+        { eventId: editId, eventData },
+        {
+          onSuccess: () => {
+            toast.success("Event updated successfully");
+            onClose?.();
+          },
+
+          onError: (err: Error) => {
+            toast.error(err.message);
+          },
+        }
+      );
     } else {
-      res = await createEvents(eventData);
+      createEvent(eventData, {
+        onSuccess: () => {
+          toast.success("Event created successfully");
+          onClose?.();
+        },
+
+        onError: (err: Error) => {
+          toast.error(err.message);
+        },
+      });
     }
-
-    handleUnAuthorisedResponse(res?.statusCode);
-
-    showToastMessage(
-      res?.status,
-      res?.message,
-      isEditSession
-        ? "Event updated successfully"
-        : "Event successfully created"
-    );
-
-    setLoading(false);
-    if (res.status !== "error") close();
   };
 
   return (
@@ -79,7 +89,7 @@ export default function CreateEditEventForm({
     >
       <Box className="flex justify-between">
         <h2 className="mb-[2rem]">{isEditSession ? "Edit" : "Create"} Event</h2>
-        <button onClick={close}>
+        <button type="button" onClick={onClose}>
           <IoCloseOutline size="2.5rem" />
         </button>
       </Box>
@@ -126,13 +136,13 @@ export default function CreateEditEventForm({
         value={date?.toISOString()}
       />
 
-      <Box className="flex justify-end gap-5 items-center">
-        <Button type="cancel" onClick={close}>
+      <Box className="flex mt-5 justify-end gap-5 items-center">
+        <Button type="cancel" onClick={onClose}>
           Cancel
         </Button>
         <Button
-          className="w-[17rem] h-[4.8rem]"
-          loading={loading}
+          className="w-[17rem]  h-[4.8rem]"
+          loading={isCreating || isUpdating}
           type="primary"
           action="submit"
         >

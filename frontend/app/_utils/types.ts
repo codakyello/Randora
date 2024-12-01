@@ -30,19 +30,21 @@ export interface Participant {
   email: string;
   ticketNumber: string;
   isWinner: boolean;
+  prize: { name: string; image: string };
 }
 
 export interface ParticipantForm {
-  name: string | undefined;
-  email: string | undefined;
-  ticketNumber: string;
+  name?: string | undefined;
+  email?: string | undefined;
+  ticketNumber: number;
   eventId: string;
 }
 
 export interface PrizeForm {
-  name: string | undefined;
-  image: string;
+  name: string;
+  image?: string;
   quantity: number;
+  eventId: string;
 }
 
 export interface Prize {

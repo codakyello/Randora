@@ -11,8 +11,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NavItems = [
-  { name: "Home", icon: <HomeIcon />, link: "/dashboard" },
-  { name: "Events", icon: <CalendarDaysIcon />, link: "/dashboard/events" },
+  { name: "Dashboard", icon: <HomeIcon />, link: "/dashboard" },
+  { name: "Giveaways", icon: <CalendarDaysIcon />, link: "/dashboard/events" },
   { name: "Settings", icon: <Cog6ToothIcon />, link: "/dashboard/settings" },
   {
     name: "Tools",
@@ -31,24 +31,22 @@ export default function NavList({ closeNav }: { closeNav?: () => void }) {
             <Link
               href={item.link}
               onClick={() => closeNav?.()}
-              className={`flex gap-10 md:gap-5 items-center text-[var(--color-grey-600)] p-[1.7rem] md:py-[1rem] md:px-[1.5rem] font-medium text-[1.6rem] transition-all duration-300 rounded-3xl group hover:bg-[var(--color-grey-100)] ${
-                pathName === item.link ? "bg-[var(--color-grey-100)]" : ""
+              className={`flex gap-10 md:gap-5 items-center text-[var(--color-grey-600)] p-[1.7rem] md:py-[1.5rem] md:px-[2rem] font-medium text-[1.6rem] transition-all duration-300 rounded-2xl group ${
+                pathName !== item.link && "hover:bg-[var(--color-grey-100)]"
+              }  ${
+                pathName === item.link ? "bg-[var(--color-brand-200)]" : ""
               }`}
             >
               <span
-                className={`h-10 w-10 text-[2.2rem] transition-all duration-300  ${
-                  pathName === item.link
-                    ? "text-[var(--color-brand-600)]"
-                    : "text-gray-400"
-                } `}
+                className={`h-8 w-8 ${
+                  pathName === item.link ? "text-black" : ""
+                } text-[2rem] transition-all duration-300   `}
               >
                 {item.icon}
               </span>
               <span
-                className={` ${
-                  pathName === item.link
-                    ? "text-[var(--color-brand-600)]"
-                    : "text-[var(--color-grey-700)]"
+                className={`text-[1.4rem] ${
+                  pathName === item.link ? "text-black" : ""
                 } `}
               >
                 {item.name}

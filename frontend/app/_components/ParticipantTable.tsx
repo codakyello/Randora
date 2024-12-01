@@ -5,7 +5,7 @@ import Pagination from "./Pagination";
 import { RESULTS_PER_PAGE } from "../_utils/constants";
 import Modal from "./Modal";
 import Menus from "./Menu";
-import { Event, Participant } from "../_utils/types";
+import { Participant } from "../_utils/types";
 import ParticipantRow from "./ParticipantRow";
 
 export default function ParticipantTable({
@@ -17,13 +17,18 @@ export default function ParticipantTable({
 }) {
   return (
     <Modal>
-      <Table columns={["20rem, 25rem, 20rem, 20rem, 1fr"]}>
+      <Table columns={["20rem, 25rem, 20rem, 20rem, 10rem, 1fr"]}>
         <Header
           headers={[
             "Name",
             "Email",
-            <div className="text-center">Ticket Number</div>,
-            <div className="text-center">Prize</div>,
+            <div key={"Ticket Number"} className="text-center">
+              Ticket Number
+            </div>,
+            <div key={"Prize"} className="text-center">
+              Prize
+            </div>,
+            "Prize Image",
           ]}
         />
         <Menus>

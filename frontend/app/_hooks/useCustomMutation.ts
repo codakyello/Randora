@@ -1,35 +1,17 @@
-import {
-  useMutation,
-  useQueryClient,
-  UseMutateFunction,
-} from "@tanstack/react-query";
-import toast from "react-hot-toast";
-import { useHandleUnAuthorisedResponse } from "../_utils/utils";
-import AppError from "../_utils/AppError";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 type MutationFunction<TData, TVariables> = (
   variables: TVariables
 ) => Promise<TData>;
 
-interface UseCustomMutationReturn<TData, TVariables> {
-  mutate: UseMutateFunction<TData, AppError, TVariables, unknown>;
-  isPending: boolean;
-}
-
 export default function useCustomMutation<TData = unknown, TVariables = void>(
   mutateFn: MutationFunction<TData, TVariables>
-): UseCustomMutationReturn<TData, TVariables> {
+) {
   const queryClient = useQueryClient();
-  const handleUnAuthorisedResponse = useHandleUnAuthorisedResponse();
   const { mutate, isPending } = useMutation({
     mutationFn: mutateFn,
     onSuccess: () => {
       queryClient.invalidateQueries();
-    },
-    onError: (err: AppError) => {
-      toast.error(err.message);
-
-      handleUnAuthorisedResponse(err.statusCode);
     },
   });
 

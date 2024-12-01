@@ -1,9 +1,9 @@
 "use client";
-import { getEventParticipants } from "../_lib/data-service";
+import { getEventPrizes } from "../_lib/data-service";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
-export default function useEventParticipants(eventId: string) {
+export default function useEventPrizes(eventId: string) {
   const searchParams = useSearchParams();
 
   const queryParams = {
@@ -13,12 +13,12 @@ export default function useEventParticipants(eventId: string) {
   };
 
   const {
-    data = { participants: [], totalCount: 0 },
+    data = { prizes: [], totalCount: 0 },
     error,
     isLoading,
   } = useQuery({
-    queryKey: [`events/${eventId}/participants`, queryParams],
-    queryFn: () => getEventParticipants(eventId, queryParams),
+    queryKey: [`events/${eventId}/prizes`, queryParams],
+    queryFn: () => getEventPrizes(eventId, queryParams),
   });
 
   return { data, error, isLoading };

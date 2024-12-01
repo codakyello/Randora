@@ -5,25 +5,30 @@ import React, { useState, FormEvent, ChangeEvent } from "react";
 import { IoCloseOutline } from "react-icons/io5";
 import Button from "./Button";
 import { useParams } from "next/navigation";
-import { uploadParticipants } from "../_lib/data-service";
+import { uploadParticipants as uploadParticipantsApi } from "../_lib/data-service";
 import toast from "react-hot-toast";
 import SpinnerMini from "./SpinnerMini";
+import useCustomMutation from "../_hooks/useCustomMutation";
 
 export default function CsvUploader({ onClose }: { onClose?: () => void }) {
   const [fileName, setFileName] = useState<string | null>(null); // State for file name
-  const [isUploading, setUploading] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
+
   const params = useParams();
 
   const eventId = params.eventId as string;
 
+  const { isPending: isUploading, mutate: uploadParticipants } =
+    useCustomMutation(uploadParticipantsApi);
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const file = event.target.files?.[0];
     if (file) {
-      setFileName(file.name); // Set file name
-      setError(null); // Clear any previous errors
+      setFileName(file.name);
+      setError(null);
     } else {
-      setFileName(null); // Reset file name
+      setFileName(null);
     }
   };
 
@@ -39,18 +44,22 @@ export default function CsvUploader({ onClose }: { onClose?: () => void }) {
       return;
     }
 
-    setUploading(true);
+    uploadParticipants(formData, {
+      onSuccess: () => {
+        toast.success("Participants uploaded successfully");
+        onClose?.();
+      },
+      onError: (error) => {
+        setError(error.message);
+      },
+    });
 
-    const res = await uploadParticipants(formData);
-
-    if (res?.status !== "error") {
-      onClose?.();
-      toast.success("Participants imported Successfully");
-    } else {
-      setError(res?.message);
-    }
-
-    setUploading(false);
+    // if (res?.status !== "error") {
+    //   onClose?.();
+    //   toast.success("Participants imported Successfully");
+    // } else {
+    //   setError(res?.message);
+    // }
   };
 
   return (

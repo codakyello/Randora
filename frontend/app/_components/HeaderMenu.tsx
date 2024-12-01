@@ -9,7 +9,7 @@ function HeaderMenu() {
         className="hover:bg-[var(--color-grey-100)] rounded-md p-2"
         href="/dashboard/account"
       >
-        <UserIcon className="w-9 text-[5rem] font-bold text-[var(--color-brand-600)] aspect-square" />
+        <UserIcon className="w-9 text-[5rem] font-bold text-[var(--color-primary)] aspect-square" />
       </Link>
       <DarkModeToggle />
     </div>

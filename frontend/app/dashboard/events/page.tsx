@@ -4,14 +4,14 @@ import { Box } from "@chakra-ui/react";
 import Events from "@/app/_components/Events";
 
 export const metadata = {
-  title: "Bookings",
+  title: "Events",
 };
 
 function Page() {
   return (
     <Box className="flex flex-col gap-[3.2rem]">
       <Box className="flex flex-col justify-between xl:flex-row gap-8 pt-1 pr-1 whitespace-nowrap">
-        <h1 className="">All Events</h1>
+        <h1 className="">All events</h1>
         <Box className="flex flex-col md:flex-row flex-wrap gap-6">
           <Filter
             defaultValue="all"
@@ -19,8 +19,9 @@ function Page() {
             filters={[
               { name: "All", value: "all" },
               { name: "Active", value: "active" },
-              { name: "Cancelled", value: "cancelled" },
               { name: "Inactive", value: "inactive" },
+              { name: "Completed", value: "completed" },
+              { name: "Cancelled", value: "cancelled" },
             ]}
           />
 
@@ -38,11 +39,11 @@ function Page() {
               },
               {
                 name: "Sort by participants (high first)",
-                value: "totalPrice-desc",
+                value: "participants-desc",
               },
               {
                 name: "Sort by participants (low first)",
-                value: "totalPrice-asc",
+                value: "participants-asc",
               },
             ]}
           />

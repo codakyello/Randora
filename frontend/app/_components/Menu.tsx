@@ -103,7 +103,6 @@ Menus.Button = Button;
 export function useMenu() {
   const context = useContext(MenuContext);
 
-  if (!context)
-    throw new Error("Cannot use table context outside its provider");
+  if (!context) throw new Error("Cannot use menu context outside its provider");
   return context;
 }

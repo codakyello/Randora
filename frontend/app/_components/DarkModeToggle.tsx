@@ -11,9 +11,9 @@ export default function DarkModeToggle() {
       onClick={toggleDarkMode}
     >
       {isDarkMode ? (
-        <SunIcon className="h-9 aspect-square text-[var(--color-brand-600)]" />
+        <SunIcon className="h-9 aspect-square text-[var(--color-primary)]" />
       ) : (
-        <MoonIcon className="h-9 aspect-square text-[var(--color-brand-600)]" />
+        <MoonIcon className="h-9 aspect-square text-[var(--color-primary)]" />
       )}
     </button>
   );

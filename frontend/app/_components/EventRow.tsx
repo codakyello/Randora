@@ -6,7 +6,7 @@ import Row from "./Row";
 import Menus, { useMenu } from "./Menu";
 import { HiEye, HiTrash, HiMiniUsers, HiPencil } from "react-icons/hi2";
 
-import Modal, { ModalOpen, ModalWindow } from "./Modal";
+import { ModalOpen, ModalWindow } from "./Modal";
 import Link from "next/link";
 import ConfirmDelete from "./ConfirmDelete";
 import { Box } from "@chakra-ui/react";
@@ -14,7 +14,6 @@ import { isToday, format } from "date-fns";
 import { useRouter } from "next/navigation";
 import useDeleteEvent from "../_hooks/useDeleteEvent";
 import { IoGift } from "react-icons/io5";
-import CreateEditCabinForm from "./CreateEditCabinForm";
 import CreateEditEventForm from "./CreateEditEventForm";
 
 export default function EventRow({ event }: { event: Event }) {
@@ -23,7 +22,6 @@ export default function EventRow({ event }: { event: Event }) {
     name,
     type,
     startDate,
-    endDate,
     status,
     participantCount,
     prizeCount,

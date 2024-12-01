@@ -17,21 +17,22 @@ export default function Events() {
 
   return (
     <Modal>
-      {events?.length ? (
-        <EventTable events={events} count={count} />
-      ) : (
-        <h2 className="mt-5">No Events Found</h2>
-      )}
-
-      <ModalOpen name="add-event">
+      <Box className="gap-10 min-h-[65vh] md:min-h-[63.5vh] xl:min-h-[72vh] flex flex-col justify-between">
+        {events?.length ? (
+          <EventTable events={events} count={count} />
+        ) : (
+          <h2 className="mt-5">No Events Found</h2>
+        )}
         <Box>
-          <Button type="primary">Add Event</Button>
+          <ModalOpen name="add-event">
+            <Button type="primary">Add Event</Button>
+          </ModalOpen>
         </Box>
-      </ModalOpen>
 
-      <ModalWindow name="add-event">
-        <CreateEditEventForm />
-      </ModalWindow>
+        <ModalWindow name="add-event">
+          <CreateEditEventForm />
+        </ModalWindow>
+      </Box>
     </Modal>
   );
 }

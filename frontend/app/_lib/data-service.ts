@@ -12,7 +12,7 @@ import { getToken } from "../_utils/serverUtils";
 import { EventForm, ParticipantForm, PrizeForm } from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
-const DEV_URL = "http://localhost:5000/api/v1";
+// const DEV_URL = "http://localhost:5000/api/v1";
 
 // /////////////
 // // AUTH
@@ -411,10 +411,10 @@ export async function getMyEvents(searchParams: {
     case "startDate-asc":
       query += "&sort=startDate";
       break;
-    case "participant-desc":
+    case "participants-desc":
       query += "&sort=-participantCount";
       break;
-    case "participant-asc":
+    case "participants-asc":
       query += "&sort=participantCount";
       break;
     default:
@@ -455,67 +455,53 @@ export async function getMyEvents(searchParams: {
   }
 }
 
-export async function createEvents(eventData: EventForm) {
-  try {
-    const token = await getToken();
+export async function createEvent(eventData: EventForm) {
+  const token = await getToken();
 
-    if (!token) return;
+  if (!token) return;
 
-    const res = await fetch(`${URL}/events`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(eventData),
-    });
+  const res = await fetch(`${URL}/events`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(eventData),
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (!res.ok) throw new Error(data.message);
+  if (!res.ok) throw new Error(data.message);
 
-    const {
-      data: { event },
-    } = data;
+  const {
+    data: { event },
+  } = data;
 
-    revalidatePath("/");
-
-    return event;
-  } catch (err) {
-    if (err instanceof Error) {
-      return { status: "error", message: err.message };
-    }
-  }
+  return event;
 }
 
-export async function updateEvents(eventId: string, EventData: EventForm) {
-  try {
-    const token = await getToken();
-    if (!token) return;
+export async function updateEvent({
+  eventId,
+  eventData,
+}: {
+  eventId: string;
+  eventData: EventForm;
+}) {
+  const token = await getToken();
+  if (!token) return;
 
-    const res = await fetch(`${URL}/events/${eventId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(EventData),
-    });
+  const res = await fetch(`${URL}/events/${eventId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(eventData),
+  });
 
-    // Check if the response was successful
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message);
-
-    revalidatePath("/");
-
-    return { status: "success" };
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      return { status: "error", message: err.message };
-    } else {
-      return { status: "error", message: "An unknown error occurred" };
-    }
-  }
+  // Check if the response was successful
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
 }
 
 export async function deleteEvent(eventId: string) {
@@ -565,14 +551,14 @@ export async function getEventParticipants(
   query += `?page=${page}&limit=${RESULTS_PER_PAGE}`;
 
   // Filter
-  if (status && status !== "all") query += `&status=${status}`;
+  if (status && status === "winners") query += `&isWinner=true`;
 
   // Sort, highest participant,
   switch (sort) {
     case "createdDate-desc":
       query += "&sort=-createdAt";
       break;
-    case "startDate-asc":
+    case "createdDate-asc":
       query += "&sort=createdAt";
       break;
     case "ticketNumber-desc":
@@ -613,86 +599,75 @@ export async function getEventParticipants(
   }
 }
 
-export async function createParticipants() {
-  try {
-    const token = await getToken();
+export async function createParticipant(participantForm: ParticipantForm) {
+  const token = await getToken();
 
-    if (!token) return;
+  if (!token) return;
 
-    const res = await fetch(`${URL}/participants`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  console.log(participantForm);
+  const res = await fetch(`${URL}/participants`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(participantForm),
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (!res.ok) throw new Error(data.message);
+  if (!res.ok) throw new Error(data.message);
 
-    const {
-      data: { participant },
-    } = data;
+  const {
+    totalCount,
+    results,
+    data: { participants },
+  } = data;
 
-    return participant;
-  } catch (err) {
-    if (err instanceof Error) {
-      return { status: "error", message: err.message };
-    }
-  }
+  return { participants, totalCount, results };
 }
 
 export async function uploadParticipants(formData: FormData) {
-  try {
-    const res = await fetch(`${URL}/participants/upload`, {
-      method: "POST",
-      body: formData,
-    });
+  const res = await fetch(`${URL}/participants/upload`, {
+    method: "POST",
+    body: formData,
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (!res.ok) throw new Error(data.message);
+  if (!res.ok) throw new Error(data.message);
 
-    revalidatePath("/");
+  const {
+    data: { participants },
+  } = data;
 
-    return { status: "success", message: "" };
-  } catch (err) {
-    if (err instanceof Error) {
-      return { status: "error", message: err.message };
-    }
-  }
+  return participants;
 }
 
-export async function updateParticipant(
-  participantId: string,
-  participantData: ParticipantForm
-) {
-  try {
-    const token = await getToken();
-    if (!token) return;
+export async function updateParticipant({
+  participantId,
+  participantForm,
+}: {
+  participantId: string;
+  participantForm: ParticipantForm;
+}) {
+  const token = await getToken();
+  if (!token) return;
 
-    const res = await fetch(`${URL}/participants/${participantId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(participantData),
-    });
+  const res = await fetch(`${URL}/participants/${participantId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(participantForm),
+  });
 
-    // Check if the response was successful
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message);
+  // Check if the response was successful
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
 
-    return { status: "success" };
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      return { status: "error", message: err.message };
-    } else {
-      return { status: "error", message: "An unknown error occurred" };
-    }
-  }
+  return { status: "success" };
 }
 
 export async function deleteParticipant(participantId: string) {
@@ -722,11 +697,50 @@ export async function deleteParticipant(participantId: string) {
   }
 }
 
-export async function getEventPrizes(eventId: string) {
+export async function getEventPrizes(
+  eventId: string,
+  searchParams: {
+    page: string | null;
+    status: string | null;
+    sortBy: string | null;
+  }
+) {
   const token = await getToken();
+  if (!token) return;
+
+  let query = "";
+
+  const page = searchParams.page || 1;
+  const status = searchParams.status;
+  const sort = searchParams.sortBy;
+
+  // Page
+  query += `?page=${page}&limit=${RESULTS_PER_PAGE}`;
+
+  // Filter
+
+  if (status && status !== "all") query += `&status=${status}`;
+
+  // Sort, highest participant,
+  switch (sort) {
+    case "createdDate-desc":
+      query += "&sort=-createdAt";
+      break;
+    case "createdDate-asc":
+      query += "&sort=createdAt";
+      break;
+    case "quantity-desc":
+      query += "&sort=-quantity";
+      break;
+    case "quantity-asc":
+      query += "&sort=quantity";
+      break;
+  }
+
+  console.log(query);
 
   try {
-    const res = await fetch(`${URL}/events/${eventId}/prizes`, {
+    const res = await fetch(`${URL}/events/${eventId}/prizes${query}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -753,62 +767,59 @@ export async function getEventPrizes(eventId: string) {
   }
 }
 
-export async function createPrizes() {
-  try {
-    const token = await getToken();
+export async function createPrize(prizeForm: PrizeForm) {
+  const token = await getToken();
 
-    if (!token) return;
+  if (!token) return;
 
-    const res = await fetch(`${URL}/api/v1/prizes`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const res = await fetch(`${URL}/prizes`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(prizeForm),
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (!res.ok) throw new Error(data.message);
+  if (!res.ok) throw new Error(data.message);
 
-    const {
-      data: { prize },
-    } = data;
+  const {
+    data: { prize },
+  } = data;
 
-    return prize;
-  } catch (err) {
-    if (err instanceof Error) {
-      return { status: "error", message: err.message };
-    }
-  }
+  return prize;
 }
 
-export async function updatePrize(prizeId: string, prizeData: PrizeForm) {
-  try {
-    const token = await getToken();
-    if (!token) return;
+export async function updatePrize({
+  prizeId,
+  prizeForm,
+}: {
+  prizeId: string;
+  prizeForm: PrizeForm;
+}) {
+  const token = await getToken();
+  if (!token) return;
 
-    const res = await fetch(`${URL}/participants/${prizeId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(prizeData),
-    });
+  const res = await fetch(`${URL}/prizes/${prizeId}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(prizeForm),
+  });
 
-    // Check if the response was successful
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message);
+  // Check if the response was successful
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
 
-    return { status: "success" };
-  } catch (err: unknown) {
-    if (err instanceof Error) {
-      return { status: "error", message: err.message };
-    } else {
-      return { status: "error", message: "An unknown error occurred" };
-    }
-  }
+  const {
+    data: { prize },
+  } = data;
+
+  return prize;
 }
 
 export async function deletePrize(prizeId: string) {
