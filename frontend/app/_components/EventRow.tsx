@@ -3,18 +3,21 @@ import { Event } from "../_utils/types";
 import { formatDistanceFromNow, getTagName } from "../_utils/helpers";
 import Tag from "./Tag";
 import Row from "./Row";
-import Menus from "./Menu";
+import Menus, { useMenu } from "./Menu";
 import { HiEye, HiTrash, HiMiniUsers, HiPencil } from "react-icons/hi2";
 
-import { ModalOpen, ModalWindow } from "./Modal";
+import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import Link from "next/link";
 import ConfirmDelete from "./ConfirmDelete";
 import { Box } from "@chakra-ui/react";
 import { isToday, format } from "date-fns";
 import { useRouter } from "next/navigation";
-import useDeleteEvent from "../_hooks/useDeleteEvent";
+import { deleteEvent as deleteEventApi } from "../_lib/actions";
 import { IoGift } from "react-icons/io5";
 import CreateEditEventForm from "./CreateEditEventForm";
+import useCustomMutation from "../_hooks/useCustomMutation";
+import toast from "react-hot-toast";
+import { useAuth } from "../_contexts/AuthProvider";
 
 export default function EventRow({ event }: { event: Event }) {
   const {
@@ -28,10 +31,36 @@ export default function EventRow({ event }: { event: Event }) {
     remainingPrize,
   } = event;
 
+  const { getToken } = useAuth();
+
+  const token = getToken();
+
   const router = useRouter();
 
-  const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
+  const { close: closeModal } = useModal();
 
+  const { close: closeMenu } = useMenu();
+
+  // const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
+
+  const { mutate: deleteEvent, isPending: isDeleting } =
+    useCustomMutation(deleteEventApi);
+
+  const handleDelete = function () {
+    deleteEvent(
+      { eventId, token },
+      {
+        onSuccess: () => {
+          toast.success("Event deleted successfully");
+          closeModal();
+          closeMenu();
+        },
+        onError: (err) => {
+          toast.error(err.message);
+        },
+      }
+    );
+  };
   return (
     <Row>
       <Box className="font-semibold">{name}</Box>
@@ -124,9 +153,7 @@ export default function EventRow({ event }: { event: Event }) {
             <ConfirmDelete
               resourceName="Event"
               isDeleting={isDeleting}
-              onConfirm={() => {
-                deleteEvent(eventId);
-              }}
+              onConfirm={handleDelete}
             />
           </ModalWindow>
         </Menus.Menu>

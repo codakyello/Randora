@@ -1,39 +1,50 @@
 "use client";
 import { Participant } from "../_utils/types";
 import Row from "./Row";
-import Menus from "./Menu";
+import Menus, { useMenu } from "./Menu";
 import { HiPencil, HiTrash } from "react-icons/hi2";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import ConfirmDelete from "./ConfirmDelete";
 import { Box } from "@chakra-ui/react";
-import { deleteParticipant as deleteParticipantApi } from "../_lib/data-service";
+import { deleteParticipant as deleteParticipantApi } from "../_lib/actions";
 import toast from "react-hot-toast";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import CreateEditParticipantForm from "./CreateEditParticipantForm";
 import Image from "next/image";
+import { useAuth } from "../_contexts/AuthProvider";
 
 export default function ParticipantRow({
   participant,
 }: {
   participant: Participant;
 }) {
-  const { close } = useModal();
+  const { close: closeModal } = useModal();
+
+  const { close: closeMenu } = useMenu();
 
   const { _id: participantId, name, email, ticketNumber, prize } = participant;
 
   const prizeName = participant.prize?.name;
   const prizeImage = participant.prize?.image;
 
+  const { getToken } = useAuth();
+
+  const token = getToken();
+
   const { mutate: deleteParticipant, isPending: isDeleting } =
     useCustomMutation(deleteParticipantApi);
 
   const handleDelete = () => {
-    deleteParticipant(participantId, {
-      onSuccess: () => {
-        toast.success("Participant deleted successfully");
-        close();
-      },
-    });
+    deleteParticipant(
+      { participantId, token },
+      {
+        onSuccess: () => {
+          toast.success("Participant deleted successfully");
+          closeModal();
+          closeMenu();
+        },
+      }
+    );
   };
 
   return (

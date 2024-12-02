@@ -6,6 +6,7 @@ import SpinnerFull from "./SpinnerFull";
 import CreateEditPrizeForm from "./CreateEditPrizeForm";
 import PrizeTable from "./PrizeTable";
 import useEventPrizes from "../_hooks/useEventPrizes";
+import Menus from "./Menu";
 
 export default function Prizes({ eventId }: { eventId: string }) {
   const { data, isLoading } = useEventPrizes(eventId);
@@ -18,25 +19,27 @@ export default function Prizes({ eventId }: { eventId: string }) {
 
   return (
     <Modal>
-      <Box className="gap-10 min-h-[65vh] md:min-h-[63.5vh] xl:min-h-[72vh] flex flex-col justify-between">
-        {prizes.length ? (
-          <PrizeTable prizes={prizes} count={count} />
-        ) : (
-          <h2 className="mt-5">No Prizes Found</h2>
-        )}
+      <Menus>
+        <Box className="gap-10 min-h-[65vh] md:min-h-[63.5vh] xl:min-h-[72vh] flex flex-col justify-between">
+          {prizes.length ? (
+            <PrizeTable prizes={prizes} count={count} />
+          ) : (
+            <h2 className="mt-5">No Prizes Found</h2>
+          )}
 
-        <Box className="flex justify-between">
-          <ModalOpen name="add-prize">
-            <Box>
-              <Button type="primary">Add Prize</Button>
-            </Box>
-          </ModalOpen>
+          <Box className="flex justify-between">
+            <ModalOpen name="add-prize">
+              <Box>
+                <Button type="primary">Add Prize</Button>
+              </Box>
+            </ModalOpen>
 
-          <ModalWindow name="add-prize">
-            <CreateEditPrizeForm />
-          </ModalWindow>
+            <ModalWindow name="add-prize">
+              <CreateEditPrizeForm />
+            </ModalWindow>
+          </Box>
         </Box>
-      </Box>
+      </Menus>
     </Modal>
   );
 }

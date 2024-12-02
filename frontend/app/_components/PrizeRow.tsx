@@ -3,33 +3,44 @@ import { Box } from "@chakra-ui/react";
 import Row from "./Row";
 import Image from "next/image";
 import { Prize } from "../_utils/types";
-import Menus from "./Menu";
+import Menus, { useMenu } from "./Menu";
 import { HiPencil, HiTrash } from "react-icons/hi2";
-import { deletePrize as deletePrizeApi } from "../_lib/data-service";
+import { deletePrize as deletePrizeApi } from "../_lib/actions";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import ConfirmDelete from "./ConfirmDelete";
 import CreateEditPrizeForm from "./CreateEditPrizeForm";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import toast from "react-hot-toast";
+import { useAuth } from "../_contexts/AuthProvider";
 
 export default function PrizeRow({ prize }: { prize: Prize }) {
-  const { name, image, quantity, _id: id } = prize;
+  const { name, image, quantity, _id: prizeId } = prize;
+
+  const { getToken } = useAuth();
+
+  const token = getToken();
 
   const { close: closeModal } = useModal();
+
+  const { close: closeMenu } = useMenu();
 
   const { mutate: deletePrize, isPending: isDeleting } =
     useCustomMutation(deletePrizeApi);
 
   const handleDelete = function () {
-    deletePrize(id, {
-      onSuccess: () => {
-        toast.success("Prize deleted successfully");
-        closeModal();
-      },
-      onError: (err) => {
-        toast.error(err.message);
-      },
-    });
+    deletePrize(
+      { prizeId, token },
+      {
+        onSuccess: () => {
+          toast.success("Prize deleted successfully");
+          closeModal();
+          closeMenu();
+        },
+        onError: (err) => {
+          toast.error(err.message);
+        },
+      }
+    );
   };
 
   return (
@@ -45,9 +56,9 @@ export default function PrizeRow({ prize }: { prize: Prize }) {
       <p className="font-semibold">{name}</p>
       <p className="font-semibold">{quantity}</p>
       <div className="relative grid items-end justify-end">
-        <Menus.Toogle id={id} />
+        <Menus.Toogle id={prizeId} />
 
-        <Menus.Menu id={id}>
+        <Menus.Menu id={prizeId}>
           <ModalOpen name="edit-prize">
             <Menus.Button
               disabled={isDeleting}

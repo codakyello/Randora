@@ -5,7 +5,6 @@ import EventRow from "./EventRow";
 import Pagination from "./Pagination";
 import { RESULTS_PER_PAGE } from "../_utils/constants";
 import Modal from "./Modal";
-import Menus from "./Menu";
 import { Event } from "../_utils/types";
 
 export default function EventTable({
@@ -29,13 +28,12 @@ export default function EventTable({
             "Total Prizes",
           ]}
         />
-        <Menus>
-          <Body>
-            {events.map((event) => (
-              <EventRow event={event} key={event._id} />
-            ))}
-          </Body>
-        </Menus>
+
+        <Body>
+          {events.map((event) => (
+            <EventRow event={event} key={event._id} />
+          ))}
+        </Body>
         <Footer>
           {Number(count) > RESULTS_PER_PAGE ? <Pagination count={count} /> : ""}
         </Footer>

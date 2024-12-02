@@ -10,7 +10,7 @@ async function Page() {
   // const cabinCount = data.totalCount;
 
   return (
-    <Box className="flex flex-col gap-[3.2rem]">
+    <Box className="flex px-[2rem] flex-col gap-[3.2rem]">
       <Box className="flex flex-col md:flex-row justify-between">
         <h1 className="mb-8 md:mb-0">Overview</h1>
       </Box>

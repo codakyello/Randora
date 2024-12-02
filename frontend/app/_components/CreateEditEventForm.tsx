@@ -7,7 +7,7 @@ import { FormEvent, useState } from "react";
 import {
   createEvent as createEventApi,
   updateEvent as updateEventApi,
-} from "../_lib/data-service";
+} from "../_lib/actions";
 import { useAuth } from "../_contexts/AuthProvider";
 
 import { Event, EventForm } from "../_utils/types";
@@ -15,6 +15,7 @@ import { IoCloseOutline } from "react-icons/io5";
 import { DatePicker } from "./DatePicker";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import toast from "react-hot-toast";
+import { useMenu } from "./Menu";
 
 export default function CreateEditEventForm({
   eventToEdit,
@@ -23,6 +24,7 @@ export default function CreateEditEventForm({
   eventToEdit?: Event;
   onClose?: () => void;
 }) {
+  const { close: closeMenu } = useMenu();
   const { mutate: updateEvent, isPending: isUpdating } =
     useCustomMutation(updateEventApi);
 
@@ -56,11 +58,12 @@ export default function CreateEditEventForm({
 
     if (isEditSession) {
       updateEvent(
-        { eventId: editId, eventData },
+        { eventId: editId, eventData, token },
         {
           onSuccess: () => {
             toast.success("Event updated successfully");
             onClose?.();
+            closeMenu();
           },
 
           onError: (err: Error) => {
@@ -69,16 +72,19 @@ export default function CreateEditEventForm({
         }
       );
     } else {
-      createEvent(eventData, {
-        onSuccess: () => {
-          toast.success("Event created successfully");
-          onClose?.();
-        },
+      createEvent(
+        { eventData, token },
+        {
+          onSuccess: () => {
+            toast.success("Event created successfully");
+            onClose?.();
+          },
 
-        onError: (err: Error) => {
-          toast.error(err.message);
-        },
-      });
+          onError: (err: Error) => {
+            toast.error(err.message);
+          },
+        }
+      );
     }
   };
 

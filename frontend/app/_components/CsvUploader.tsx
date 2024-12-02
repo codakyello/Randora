@@ -5,13 +5,18 @@ import React, { useState, FormEvent, ChangeEvent } from "react";
 import { IoCloseOutline } from "react-icons/io5";
 import Button from "./Button";
 import { useParams } from "next/navigation";
-import { uploadParticipants as uploadParticipantsApi } from "../_lib/data-service";
+import { uploadParticipants as uploadParticipantsApi } from "../_lib/actions";
 import toast from "react-hot-toast";
 import SpinnerMini from "./SpinnerMini";
 import useCustomMutation from "../_hooks/useCustomMutation";
+import { useAuth } from "../_contexts/AuthProvider";
 
 export default function CsvUploader({ onClose }: { onClose?: () => void }) {
   const [fileName, setFileName] = useState<string | null>(null); // State for file name
+
+  const { getToken } = useAuth();
+
+  const token = getToken();
 
   const [error, setError] = useState<string | null>(null);
 
@@ -44,15 +49,18 @@ export default function CsvUploader({ onClose }: { onClose?: () => void }) {
       return;
     }
 
-    uploadParticipants(formData, {
-      onSuccess: () => {
-        toast.success("Participants uploaded successfully");
-        onClose?.();
-      },
-      onError: (error) => {
-        setError(error.message);
-      },
-    });
+    uploadParticipants(
+      { formData, token },
+      {
+        onSuccess: () => {
+          toast.success("Participants uploaded successfully");
+          onClose?.();
+        },
+        onError: (error) => {
+          setError(error.message);
+        },
+      }
+    );
 
     // if (res?.status !== "error") {
     //   onClose?.();

@@ -10,7 +10,7 @@ export const metadata = {
 async function Page() {
   const user = await getUser();
   return (
-    <Box className="flex flex-col gap-[2rem] md:gap-[3.2rem]">
+    <Box className="flex flex-col gap-[2rem] px-[2rem] md:gap-[3.2rem]">
       <h1>Account</h1>
 
       <h2>Update user data</h2>

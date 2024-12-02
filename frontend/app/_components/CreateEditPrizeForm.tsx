@@ -8,7 +8,7 @@ import { FormEvent, useState } from "react";
 import {
   createPrize as createPrizeApi,
   updatePrize as updatePrizeApi,
-} from "../_lib/data-service";
+} from "../_lib/actions";
 import { useAuth } from "../_contexts/AuthProvider";
 import supabase from "../supabase";
 import { IoCloseOutline } from "react-icons/io5";
@@ -16,6 +16,7 @@ import { Prize, PrizeForm } from "../_utils/types";
 import toast from "react-hot-toast";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import { useParams } from "next/navigation";
+import { useMenu } from "./Menu";
 
 export default function CreateEditPrizeForm({
   prizeToEdit,
@@ -27,11 +28,12 @@ export default function CreateEditPrizeForm({
   const { _id: editId, ...editValues } = prizeToEdit ?? ({} as Prize);
   const isEditSession = Boolean(editId);
   const { getToken } = useAuth();
+  const token = getToken();
 
   const params = useParams();
 
   const eventId = params.eventId as string;
-
+  const { close: closeMenu } = useMenu();
   const [uploading, setUploading] = useState(false);
 
   const { mutate: createPrize, isPending: isCreating } =
@@ -52,9 +54,6 @@ export default function CreateEditPrizeForm({
       quantity,
       eventId,
     };
-
-    const token = getToken();
-    if (!token) return;
 
     if (prizeFile instanceof File) {
       const fileName = `${prizeFile.name}-${Date.now()}`;
@@ -81,11 +80,12 @@ export default function CreateEditPrizeForm({
 
     if (isEditSession) {
       updatePrize(
-        { prizeId: editId, prizeForm },
+        { prizeId: editId, prizeForm, token },
         {
           onSuccess: () => {
             toast.success("Prize updated successfully");
             onClose?.();
+            closeMenu();
           },
           onError: (err) => {
             toast.error(err.message);
@@ -93,15 +93,18 @@ export default function CreateEditPrizeForm({
         }
       );
     } else {
-      createPrize(prizeForm, {
-        onSuccess: () => {
-          toast.success("Prize created successfully");
-          onClose?.();
-        },
-        onError: (err) => {
-          toast.error(err.message);
-        },
-      });
+      createPrize(
+        { prizeForm, token },
+        {
+          onSuccess: () => {
+            toast.success("Prize created successfully");
+            onClose?.();
+          },
+          onError: (err) => {
+            toast.error(err.message);
+          },
+        }
+      );
     }
   };
 

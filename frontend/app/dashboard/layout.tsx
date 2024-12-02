@@ -13,7 +13,7 @@ function Page({ children }: { children: ReactNode }) {
           <SideBar />
           <Header />
         </NavProvider>
-        <main className=" no-scrollbar overflow-scroll h-[calc(100vh-7rem)] bg-[var(--color-grey-50)] py-[4rem] px-[2rem] md:px-[5rem]">
+        <main className=" no-scrollbar overflow-scroll h-[calc(100vh-7rem)] bg-[var(--color-grey-50)] py-[4rem]">
           <Box className="max-w-[120rem] mx-auto no-scrollbar">{children}</Box>
         </main>
       </Box>

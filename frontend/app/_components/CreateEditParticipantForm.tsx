@@ -7,7 +7,7 @@ import { FormEvent } from "react";
 import {
   updateParticipant as updateParticipantApi,
   createParticipant as createParticipantApi,
-} from "../_lib/data-service";
+} from "../_lib/actions";
 import { useAuth } from "../_contexts/AuthProvider";
 
 import { Participant, ParticipantForm } from "../_utils/types";
@@ -15,6 +15,7 @@ import { IoCloseOutline } from "react-icons/io5";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import toast from "react-hot-toast";
 import { useParams } from "next/navigation";
+import { useMenu } from "./Menu";
 
 export default function CreateEditParticipantForm({
   participantToEdit,
@@ -38,6 +39,8 @@ export default function CreateEditParticipantForm({
 
   const isEditSession = Boolean(editId);
   const { getToken } = useAuth();
+  const token = getToken();
+  const { close: closeMenu } = useMenu();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -54,16 +57,14 @@ export default function CreateEditParticipantForm({
     if (name) participantForm.name = name.trim(); // Only include if not empty
     if (email) participantForm.email = email.trim();
 
-    const token = getToken();
-    if (!token) return;
-
     if (isEditSession) {
       updateParticipant(
-        { participantId: editId, participantForm },
+        { participantId: editId, participantForm, token },
         {
           onSuccess: () => {
-            toast.success("Event updated successfully");
+            toast.success("Participant updated successfully");
             onClose?.();
+            closeMenu();
           },
           onError: (err: Error) => {
             toast.error(err.message);
@@ -71,16 +72,20 @@ export default function CreateEditParticipantForm({
         }
       );
     } else {
-      createParticipant(participantForm, {
-        onSuccess: () => {
-          toast.success("Event created successfully");
-          onClose?.();
-        },
+      createParticipant(
+        { participantForm, token },
+        {
+          onSuccess: () => {
+            toast.success("Participant created successfully");
+            onClose?.();
+            closeMenu();
+          },
 
-        onError: (err: Error) => {
-          toast.error(err.message);
-        },
-      });
+          onError: (err: Error) => {
+            toast.error(err.message);
+          },
+        }
+      );
     }
   };
 

@@ -21,6 +21,8 @@ function ParticipantChart({ events }: { events: Event[] }) {
     };
   });
 
+  console.log(data);
+
   const colors = isDarkMode
     ? {
         participants: { stroke: "#4f46e5", fill: "#bab9ff", text: "#333" },
@@ -34,11 +36,11 @@ function ParticipantChart({ events }: { events: Event[] }) {
       };
 
   return (
-    <Box className="bg-[var(--color-grey-0)] p-[1.6rem] rounded-2xl items-center">
+    <Box className="bg-[var(--color-grey-0)] flex flex-col gap-10 p-[1.6rem] rounded-2xl ">
       <h2>Total number of participants per event</h2>
-      <ResponsiveContainer height={350} width="100%">
+      <ResponsiveContainer className={"ml-[-2.5rem]"} height={350} width="100%">
         {events.length ? (
-          <AreaChart data={data}>
+          <AreaChart data={data.reverse()}>
             <XAxis
               dataKey="label"
               tick={{ fill: colors.text }}
