@@ -108,7 +108,13 @@ export default function UpdateUserForm({
       </FormRow>
 
       <FormRow orientation="horizontal" label="Avatar image" htmlFor="my-image">
-        <FileInput loading={loading} />
+        <FileInput
+          required={false}
+          accept="image/*"
+          name={"image"}
+          id="my-image"
+          loading={loading}
+        />
       </FormRow>
 
       <Box className=" flex gap-5 mt-5 justify-end">
