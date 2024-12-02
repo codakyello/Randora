@@ -119,7 +119,12 @@ export default function UpdateUserForm({
 
       <Box className=" flex gap-5 mt-5 justify-end">
         <Button type="cancel">Cancel</Button>
-        <Button action="submit" loading={loading} type="primary">
+        <Button
+          className="h-[4.6rem] w-[15.5rem]"
+          action="submit"
+          loading={loading}
+          type="primary"
+        >
           Update account
         </Button>
       </Box>

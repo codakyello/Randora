@@ -26,13 +26,9 @@ export default function UpdatePasswordForm() {
       confirmPassword: FormDataEntryValue;
     };
 
-    const token = getToken();
-
-    if (!token) return;
-
     setLoading(true);
 
-    const res = await updatePassword(formFields, token);
+    const res = await updatePassword(formFields);
     if (res.status !== "error") {
       // save token in localstorage
 
@@ -92,7 +88,12 @@ export default function UpdatePasswordForm() {
 
       <Box className=" flex gap-5 mt-5 justify-end">
         <Button type="cancel">Cancel</Button>
-        <Button action="submit" loading={loading} type="primary">
+        <Button
+          className="h-[4.6rem] w-[17rem]"
+          action="submit"
+          loading={loading}
+          type="primary"
+        >
           Update Password
         </Button>
       </Box>

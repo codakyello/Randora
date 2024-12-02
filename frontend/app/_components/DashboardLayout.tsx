@@ -15,9 +15,12 @@ export default function DashboardLayout() {
 
   // Reverse it because by default we are getting events by the time they are created At
   // Meaning the latest is at the top of the list, here we want the latest to be at the bottom
-  const confirmEvents = events.filter(
-    (event: Event) => event.status === "completed" || event.status === "active"
-  );
+  const confirmEvents = events
+    .filter(
+      (event: Event) =>
+        event.status === "completed" || event.status === "active"
+    )
+    .reverse();
 
   console.log(confirmEvents);
 

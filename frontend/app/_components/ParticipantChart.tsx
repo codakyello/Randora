@@ -40,7 +40,7 @@ function ParticipantChart({ events }: { events: Event[] }) {
       <h2>Total number of participants per event</h2>
       <ResponsiveContainer className={"ml-[-2.5rem]"} height={350} width="100%">
         {events.length ? (
-          <AreaChart data={data.reverse()}>
+          <AreaChart data={data}>
             <XAxis
               dataKey="label"
               tick={{ fill: colors.text }}

@@ -333,24 +333,22 @@ export async function updateUser(formData: {
   }
 }
 
-export async function updatePassword(
-  formFields: {
-    currPassword: FormDataEntryValue;
-    password: FormDataEntryValue;
-    confirmPassword: FormDataEntryValue;
-  },
-  token: string
-) {
+export async function updatePassword(passwordForm: {
+  currPassword: FormDataEntryValue;
+  password: FormDataEntryValue;
+  confirmPassword: FormDataEntryValue;
+}) {
   let statusCode;
+  const token = await getToken();
   try {
-    const res = await fetch(`${URL}/admins/updateMyPassword`, {
+    const res = await fetch(`${URL}/users/update-my-password`, {
       method: "PATCH",
 
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(formFields),
+      body: JSON.stringify(passwordForm),
     });
 
     const data = await res.json();
