@@ -1,61 +1,58 @@
-import { HiOutlineBriefcase, HiOutlineChartBar } from "react-icons/hi";
-import { HiOutlineBanknotes, HiOutlineCalendarDays } from "react-icons/hi2";
 import Stat from "./Stat";
-import { Booking } from "../_utils/types";
-import { formatCurrency } from "../_utils/helpers";
+import { Event } from "../_utils/types";
 
-export default function Stats({
-  bookings,
-  cabinCount,
-  numDays,
-}: {
-  bookings: Booking[];
-  cabinCount: number;
-  numDays: number;
-}) {
-  const numBookings = bookings.length;
-  const confirmedStays = bookings.filter(
-    (booking) =>
-      booking.status === "checked-in" || booking.status === "checked-out"
+export default function Stats({ confirmEvents }: { confirmEvents: Event[] }) {
+  const totalParticipants = confirmEvents.reduce(
+    (acc, event) => acc + event.participantCount,
+    0
   );
-  const totalSales = formatCurrency(
-    bookings
-      ?.filter(
-        (booking) =>
-          booking.status === "checked-in" || booking.status === "checked-out"
-      )
-      .reduce((acc, curr) => acc + curr.totalPrice, 0)
+
+  const totalPrizes = confirmEvents.reduce(
+    (acc, event) => acc + event.prizeCount,
+    0
   );
-  const occupancyRate =
-    Math.round(
-      (confirmedStays.reduce((acc, curr) => acc + curr.numNights, 0) /
-        (numDays * cabinCount)) *
-        100
-    ) || 0;
+
+  const remainingPrizes = confirmEvents.reduce(
+    (acc, event) => acc + event.remainingPrize,
+    0
+  );
+
+  const distributedPrize = totalPrizes - remainingPrizes;
+
+  const totalEvents = confirmEvents.length || 0;
+
   const stats = [
     {
-      icon: <HiOutlineBriefcase />,
-      title: "Bookings",
-      value: numBookings,
-      color: "blue",
+      title: "Participants",
+      backgroundColor: "stat",
+      statColor: "black",
+      titleColor: "black",
+      description: "Unique participants filtered by email.",
+      value: totalParticipants,
     },
     {
-      icon: <HiOutlineBanknotes />,
-      title: "Sales",
-      value: totalSales,
-      color: "green",
+      title: "Events",
+      backgroundColor: "grey",
+      statColor: "primary",
+      titleColor: "grey",
+      description: "Completed events count.",
+      value: totalEvents,
     },
     {
-      icon: <HiOutlineCalendarDays />,
-      title: "Check INS",
-      value: confirmedStays.length,
-      color: "indigo",
+      title: "Prizes",
+      value: totalPrizes,
+      backgroundColor: "grey",
+      statColor: "primary",
+      titleColor: "grey",
+      description: "Total prizes available.",
     },
     {
-      icon: <HiOutlineChartBar />,
-      title: "Occupancy Rate",
-      value: `${occupancyRate}%`,
-      color: "yellow",
+      title: "Prizes Won",
+      value: distributedPrize,
+      backgroundColor: "grey",
+      statColor: "primary",
+      titleColor: "grey",
+      description: "Total prizes drawn in event.",
     },
   ];
 
@@ -66,8 +63,10 @@ export default function Stats({
           key={stat.title}
           name={stat.title}
           stat={stat.value}
-          color={stat.color}
-          icon={stat.icon}
+          statColor={stat.statColor}
+          backgroundColor={stat.backgroundColor}
+          titleColor={stat.titleColor}
+          description={stat.description}
         />
       ))}
     </>

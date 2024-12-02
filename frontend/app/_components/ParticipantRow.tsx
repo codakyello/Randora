@@ -3,7 +3,7 @@ import { Participant } from "../_utils/types";
 import Row from "./Row";
 import Menus from "./Menu";
 import { HiPencil, HiTrash } from "react-icons/hi2";
-import { ModalOpen, ModalWindow } from "./Modal";
+import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import ConfirmDelete from "./ConfirmDelete";
 import { Box } from "@chakra-ui/react";
 import { deleteParticipant as deleteParticipantApi } from "../_lib/data-service";
@@ -17,6 +17,8 @@ export default function ParticipantRow({
 }: {
   participant: Participant;
 }) {
+  const { close } = useModal();
+
   const { _id: participantId, name, email, ticketNumber, prize } = participant;
 
   const prizeName = participant.prize?.name;
@@ -27,7 +29,10 @@ export default function ParticipantRow({
 
   const handleDelete = () => {
     deleteParticipant(participantId, {
-      onSuccess: () => toast.success("Participant deleted successfully"),
+      onSuccess: () => {
+        toast.success("Participant deleted successfully");
+        close();
+      },
     });
   };
 

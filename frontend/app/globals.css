@@ -68,6 +68,7 @@
     /* Grey */
     --color-grey-0: #fff;
     --color-grey-50: #f9fafb;
+    --color-grey-70: #f6f7f8;
     --color-grey-100: #f3f4f6;
     --color-grey-200: #e5e7eb;
     --color-grey-250: #eff6ff;
@@ -95,6 +96,9 @@
     --color-red-600: #e43f45;
     --color-red-700: #b91c1c;
     --color-red-800: #991b1b;
+
+    --color-black: #333;
+    --color-stat-0: #bab9ff;
 
     --backdrop-color: rgba(255, 255, 255, 0.1);
 
@@ -162,6 +166,10 @@
     --color-brand-700: #4338ca;
     --color-brand-800: #3730a3;
     --color-brand-900: #312e81;
+
+    --color-black: #333;
+    --color-black-700: #333;
+    --color-stat-0: #bab9ff;
   }
 }
 
@@ -255,6 +263,10 @@ select {
   color: inherit !important;
 }
 
+option {
+  color: var(--color-primary);
+}
+
 button {
   font-size: 1.6rem;
   cursor: pointer;
@@ -274,7 +286,7 @@ input:focus-visible,
 button:focus-visible,
 textarea:focus-visible,
 select:focus-visible {
-  outline: 2px solid var(--color-brand-600);
+  outline: 2px solid var(--color-primary);
   outline-offset: -1px;
 }
 

@@ -1,34 +1,49 @@
 import { Box } from "@chakra-ui/react";
-import { CSSProperties, ReactElement } from "react";
+import { CSSProperties } from "react";
+import { formatNumber } from "../_utils/helpers";
+import { BsInfoCircleFill } from "react-icons/bs";
 
 export default function Stat({
   name,
   stat,
-  icon,
-  color,
+  statColor,
+  backgroundColor,
+  titleColor,
+  description,
 }: {
   name: string;
-  stat: string | number;
-  color: string;
-  icon: ReactElement;
+  stat: number;
+  statColor: string;
+  backgroundColor: string;
+  titleColor: string;
+  description: string;
 }) {
   return (
     <Box
       style={
         {
-          "--icon-box-color": `var(--color-${color}-100)`,
-          "--icon-color": `var(--color-${color}-700)`,
+          "--stat-color": `var(--color-${statColor})`,
+          "--stat-bg-color": `var(--color-${backgroundColor}-0)`,
+          "--title-color": `var(--color-${titleColor}-700)`,
         } as CSSProperties & { [key: string]: string }
       }
-      className="bg-[var(--color-grey-0)] grid grid-cols-[6.4rem_1fr] grid-rows-2 p-[1.6rem] gap-y-[.4rem] gap-x-[1.6rem] rounded-[var(--border-radius-md)] items-center"
+      className="flex flex-col gap-5 bg-[var(--stat-bg-color)] p-[1.6rem] rounded-2xl"
     >
-      <Box className="icon-box text-[var(--icon-color)] row-span-full flex items-center justify-center rounded-[50%] bg-[var(--icon-box-color)] aspect-square">
-        {icon}
+      <Box className="flex items-center justify-between">
+        <h5 className="uppercase text-[var(--title-color)] text-[1.2rem] tracking-[.4px] font-medium">
+          {name}
+        </h5>
+        <Box className="relative group">
+          <BsInfoCircleFill className="cursor-pointer text-[var(--stat-color)] mr-2 text-[1.8rem]" />
+          <Box className="opacity-0 font-semibold group-hover:opacity-100 pointer-events-none text-[1rem] text-center left-[-10rem] w-[12rem] absolute text-[#333] bg-white shadow-lg p-2 rounded-md transition-opacity duration-200">
+            {description}
+          </Box>
+        </Box>
       </Box>
-      <h5 className="text-[var(--color-grey-500)] uppercase text-[1.2rem] tracking-[.4px] font-medium self-end">
-        {name}
-      </h5>
-      <p className="text-[2.4rem] font-medium leading-none">{stat}</p>
+
+      <p className="text-[2.4rem] text-[var(--stat-color)] font-medium leading-none">
+        {formatNumber(stat)}
+      </p>
     </Box>
   );
 }

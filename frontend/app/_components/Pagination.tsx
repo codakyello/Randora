@@ -40,12 +40,12 @@ export default function Pagination({ count }: { count: number | null }) {
       <Box className="ml-auto flex gap-[.6rem]">
         <Button
           onClick={handlePrevious}
-          className="pr-[1rem]"
+          className="pr-[1rem] "
           disabled={page < 2}
           type="pagination"
         >
-          <HiChevronLeft className="h-7 w-7" />
-          <span>Previous</span>
+          <HiChevronLeft className="h-7 w-7 text-[var(--color-grey-700)]" />
+          <span className="text-[var(--color-grey-700)]">Previous</span>
         </Button>
         <Button
           disabled={page === pageCount}
@@ -53,8 +53,8 @@ export default function Pagination({ count }: { count: number | null }) {
           className="pl-[1rem]"
           type="pagination"
         >
-          <span>Next</span>
-          <HiChevronRight className="h-7 w-7" />
+          <span className="text-[var(--color-grey-700)] ">Next</span>
+          <HiChevronRight className="h-7 w-7 text-[var(--color-grey-700)]" />
         </Button>
       </Box>
     </Box>

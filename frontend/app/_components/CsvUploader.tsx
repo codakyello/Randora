@@ -76,10 +76,10 @@ export default function CsvUploader({ onClose }: { onClose?: () => void }) {
 
       <p>Select a .csv file to import participants at once</p>
       <label
-        className="block my-10  w-full p-4 text-center border border-dashed rounded cursor-pointer bg-gray-100 hover:bg-gray-200"
+        className="block rounded-xl my-10 text-black w-full p-4 text-center border border-dashed cursor-pointer bg-gray-100 hover:bg-gray-200"
         htmlFor="csvFileInput"
       >
-        {"Click to upload a CSV file"}
+        Click to upload a CSV file
       </label>
       <input
         id="csvFileInput"

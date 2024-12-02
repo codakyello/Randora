@@ -423,36 +423,28 @@ export async function getMyEvents(searchParams: {
 
   console.log(query);
 
-  try {
-    const res = await fetch(`${URL}/users/me/events${query}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  const res = await fetch(`${URL}/users/me/events${query}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
 
-    const data = await res.json();
+  const data = await res.json();
 
-    if (!res.ok) {
-      throw new Error(data.message);
-    }
-
-    console.log(data);
-
-    const {
-      totalCount,
-      results,
-      data: { events },
-    } = data;
-
-    return { events, totalCount, results };
-  } catch (err) {
-    if (err instanceof Error) {
-      return { status: "error", message: err.message };
-    } else {
-      return { status: "error", message: "An unknown error occurred" };
-    }
+  if (!res.ok) {
+    throw new Error(data.message);
   }
+
+  console.log(data);
+
+  const {
+    totalCount,
+    results,
+    data: { events },
+  } = data;
+
+  return { events, totalCount, results };
 }
 
 export async function createEvent(eventData: EventForm) {

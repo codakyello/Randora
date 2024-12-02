@@ -89,19 +89,17 @@ export default function CreateEditPrizeForm({
           },
           onError: (err) => {
             toast.error(err.message);
-            onClose?.();
           },
         }
       );
     } else {
       createPrize(prizeForm, {
         onSuccess: () => {
-          toast.success("Prize updated successfully");
+          toast.success("Prize created successfully");
           onClose?.();
         },
         onError: (err) => {
           toast.error(err.message);
-          onClose?.();
         },
       });
     }
