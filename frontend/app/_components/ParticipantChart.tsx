@@ -10,7 +10,6 @@ import {
 import { Box } from "@chakra-ui/react";
 import { Event } from "../_utils/types";
 import { useDarkMode } from "../_contexts/DarkModeProvider";
-import { formatNumber } from "../_utils/helpers";
 
 function ParticipantChart({ events }: { events: Event[] }) {
   const { isDarkMode } = useDarkMode();
@@ -37,29 +36,32 @@ function ParticipantChart({ events }: { events: Event[] }) {
   return (
     <Box className="bg-[var(--color-grey-0)] p-[1.6rem] rounded-2xl items-center">
       <h2>Total number of participants per event</h2>
-
       <ResponsiveContainer height={350} width="100%">
-        <AreaChart data={data}>
-          <XAxis
-            dataKey="label"
-            tick={{ fill: colors.text }}
-            tickLine={{ stroke: colors.text }}
-          />
-          <YAxis
-            tick={{ fill: colors.text }}
-            tickLine={{ stroke: colors.text }}
-          />
-          <CartesianGrid strokeDasharray="4" />
-          <Tooltip contentStyle={{ backgroundColor: colors.background }} />
-          <Area
-            dataKey="participants"
-            type="monotone"
-            stroke={colors.participants.stroke}
-            fill={colors.participants.fill}
-            strokeWidth={2}
-            name="Total participants"
-          />
-        </AreaChart>
+        {events.length ? (
+          <AreaChart data={data}>
+            <XAxis
+              dataKey="label"
+              tick={{ fill: colors.text }}
+              tickLine={{ stroke: colors.text }}
+            />
+            <YAxis
+              tick={{ fill: colors.text }}
+              tickLine={{ stroke: colors.text }}
+            />
+            <CartesianGrid strokeDasharray="2" />
+            <Tooltip contentStyle={{ backgroundColor: colors.background }} />
+            <Area
+              dataKey="participants"
+              type="monotone"
+              stroke={colors.participants.stroke}
+              fill={colors.participants.fill}
+              strokeWidth={2}
+              name="Total participants"
+            />
+          </AreaChart>
+        ) : (
+          <></>
+        )}
       </ResponsiveContainer>
     </Box>
   );

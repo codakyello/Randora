@@ -14,8 +14,10 @@ export default function DashboardLayout() {
   const events = data?.events;
 
   const confirmEvents = events.filter(
-    (event: Event) => event.status === "inactive"
+    (event: Event) => event.status === "completed" || event.status === "active"
   );
+
+  console.log(confirmEvents);
 
   if (isLoading) return <SpinnerFull />;
 
@@ -28,7 +30,8 @@ export default function DashboardLayout() {
       </Box>
       <Box className="grid lg:grid-cols-2 grid-cols-1 gap-[2.4rem]">
         <UpcomingEvents />
-        <ParticipantChart events={confirmEvents} />
+
+        {<ParticipantChart events={confirmEvents} />}
       </Box>
     </>
   );
