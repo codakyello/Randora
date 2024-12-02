@@ -17,7 +17,7 @@ const NavItems = [
   {
     name: "Tools",
     icon: <LiaToolsSolid />,
-    link: "/dashboard/cabins",
+    link: "/dashboard/tools",
   },
 ];
 

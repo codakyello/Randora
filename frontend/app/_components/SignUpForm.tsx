@@ -78,10 +78,7 @@ function SignUpForm() {
 
         <p className="mt-[1rem] text-center">
           Have an account?{" "}
-          <Link
-            href={"/login"}
-            className="font-semibold text-[var(--color-brand-600)]"
-          >
+          <Link href={"/login"} className="font-semibold">
             Login
           </Link>
         </p>

@@ -43,8 +43,10 @@ export function Header({ headers }: { headers: string[] | ReactNode[] }) {
       }}
       className=" gap-[2.4rem] py-[1.6rem] px-[2.4rem] bg-[var(--color-grey-50)] border-b-[var(--color-grey-100)]"
     >
-      {headers.map((header) => (
-        <div className="uppercase font-semibold">{header}</div>
+      {headers.map((header, index) => (
+        <div key={index} className="uppercase font-semibold">
+          {header}
+        </div>
       ))}
     </header>
   );

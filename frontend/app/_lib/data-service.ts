@@ -270,7 +270,6 @@ export async function resendOtp(email: string) {
 
 export async function getUser() {
   const token = await getToken();
-  console.log(token);
   let statusCode;
   try {
     const res = await fetch(`${URL}/users/me`, {

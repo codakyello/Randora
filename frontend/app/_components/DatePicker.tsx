@@ -1,6 +1,8 @@
-import React, { FC, forwardRef, useCallback, useMemo, useState } from "react";
+import React, { forwardRef, useMemo } from "react";
 import "react-datepicker/dist/react-datepicker.css";
-import ReactDatePicker from "react-datepicker";
+import ReactDatePicker, {
+  ReactDatePickerCustomHeaderProps,
+} from "react-datepicker";
 import {
   IconButton,
   Input,
@@ -19,22 +21,25 @@ import {
 } from "@chakra-ui/icons";
 import { ClassNames } from "@emotion/react";
 
-const CustomInput = forwardRef<any, any>((props, ref) => {
+const CustomInput = forwardRef<
+  HTMLInputElement,
+  React.ComponentProps<typeof Input>
+>((props, ref) => {
   return (
     <InputGroup>
       <Input fontSize={"1.6rem"} height={"5rem"} {...props} ref={ref} />
-
       <InputRightElement
         alignItems={"center"}
         userSelect="none"
         pointerEvents="none"
-        children={
-          <CalendarIcon className="absolute top-7 right-10 text-[1.6rem]" />
-        }
-      />
+      >
+        <CalendarIcon className="absolute top-7 right-10 text-[1.6rem]" />
+      </InputRightElement>
     </InputGroup>
   );
 });
+
+CustomInput.displayName = "CustomInput";
 
 const CustomHeader = ({
   date,
@@ -42,7 +47,7 @@ const CustomHeader = ({
   increaseMonth,
   prevMonthButtonDisabled,
   nextMonthButtonDisabled,
-}: any) => {
+}: ReactDatePickerCustomHeaderProps) => {
   return (
     <Stack pb={1} isInline alignItems="center" textAlign="left" pl={4} pr={2}>
       <Text color="gray.700" flex={1} fontSize="1.6rem" fontWeight="medium">

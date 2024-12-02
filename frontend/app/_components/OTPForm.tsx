@@ -50,7 +50,7 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
     const res = await verifyOtp(email, otp);
 
     if (res.status !== "error") {
-      login(res.user);
+      login(res.data.user);
       setToken(res.token);
       router.push("/dashboard");
     } else {

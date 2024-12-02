@@ -62,8 +62,7 @@ function reducer(state: AuthState, action: ActionType) {
         ...state,
         user: null,
         token: null,
-        setAuthenticated: false,
-        setLogoutAction: true,
+        authenticated: false,
       };
 
     case "user":
@@ -78,6 +77,7 @@ function reducer(state: AuthState, action: ActionType) {
       return { ...state, authenticated: true };
     case "not-authenticated":
       return { ...state, authenticated: false };
+
     default:
       // in development
       // throw new Error(
@@ -106,27 +106,12 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const storedUser = localStorage.getItem("user");
     const token = localStorage.getItem("token");
 
-    const user = {
-      _id: "67463d9423b38a5a24419222",
-      userName: "OctaFx",
-      email: "olaoluwaolorede8@gmail.com",
-      image:
-        "https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/avatars/public/tems.jpg-1732834631035",
-    };
-
-    dispatch({ type: "user", payload: user });
-
-    dispatch({
-      type: "token",
-      payload:
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NDYzZDk0MjNiMzhhNWEyNDQxOTIyMiIsImlhdCI6MTczMjg4MDczMSwiZXhwIjoxNzM1NDcyNzMxfQ.3S9EbEobmMGdXpc7R7K8Jhtoz50JHR9OJxq5VuSeeh0",
-    });
-    Cookies.set(
-      "token",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NDYzZDk0MjNiMzhhNWEyNDQxOTIyMiIsImlhdCI6MTczMjg4MDczMSwiZXhwIjoxNzM1NDcyNzMxfQ.3S9EbEobmMGdXpc7R7K8Jhtoz50JHR9OJxq5VuSeeh0"
-    );
-
     if (storedUser && token) {
+      dispatch({ type: "user", payload: JSON.parse(storedUser) });
+
+      dispatch({ type: "token", payload: JSON.parse(token) });
+
+      Cookies.set("token", JSON.parse(token));
     } else {
       // setIsAuthenticating(false);
       dispatch({ type: "authenticating/finished" });

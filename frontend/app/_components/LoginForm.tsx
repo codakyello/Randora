@@ -3,13 +3,13 @@ import FormRow from "@/app/_components/FormRow";
 import Input from "./Input";
 import { FormEvent, useState } from "react";
 import { login as loginApi } from "../_lib/data-service";
-import SpinnerMini from "@/app/_components/SpinnerMini";
 import Link from "next/link";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { Box } from "@chakra-ui/react";
 import Modal, { ModalOpen, ModalWindow } from "./Modal";
 import ForgotPassword from "./ForgotPassword";
 import { showToastMessage } from "../_utils/utils";
+import Button from "./Button";
 
 function LoginForm({
   setEmail,
@@ -78,7 +78,7 @@ function LoginForm({
           <ModalOpen name="forgot-password">
             <button
               type="button"
-              className="text-[1.4rem] text-end font-semibold mb-2 text-[var(--color-brand-600)]"
+              className="text-[1.4rem] text-end font-semibold mb-2 "
             >
               Forgot Password?
             </button>
@@ -89,20 +89,19 @@ function LoginForm({
           </ModalWindow>
 
           <div className="flex flex-col gap-[.8rem] my-[1.2rem]">
-            <button
-              type="submit"
-              className="h-[5.2rem]  flex justify-center  items-center py-[1.2rem] px-[1.6rem] bg-[var(--color-brand-600)] rounded-md text-white"
+            <Button
+              action="submit"
+              className="w-full h-[5.2rem]"
+              loading={loading}
+              type="primary"
             >
-              {loading ? <SpinnerMini /> : "Login"}
-            </button>
+              <p className="text-[1.6rem]">Login</p>
+            </Button>
           </div>
 
           <p className="mt-[1rem] text-center">
             Don&apos;t have an account?{" "}
-            <Link
-              href={"/signup"}
-              className="font-semibold text-[var(--color-brand-600)]"
-            >
+            <Link href={"/signup"} className="font-semibold ">
               Signup
             </Link>
           </p>

@@ -3,7 +3,7 @@ import { Event } from "../_utils/types";
 import { formatDistanceFromNow, getTagName } from "../_utils/helpers";
 import Tag from "./Tag";
 import Row from "./Row";
-import Menus, { useMenu } from "./Menu";
+import Menus from "./Menu";
 import { HiEye, HiTrash, HiMiniUsers, HiPencil } from "react-icons/hi2";
 
 import { ModalOpen, ModalWindow } from "./Modal";
