@@ -5,29 +5,30 @@ import Input from "./Input";
 import { signUp } from "../_lib/data-service";
 import Button from "./Button";
 import { Box } from "@chakra-ui/react";
-import { useAuth } from "../_contexts/AuthProvider";
-import {
-  useHandleUnAuthorisedResponse,
-  showToastMessage,
-} from "@/app/_utils/utils";
-import Link from "next/link";
+import { showToastMessage } from "@/app/_utils/utils";
 
-function SignUpForm() {
-  const { getToken } = useAuth();
+function SignUpForm({
+  setEmail,
+  setStep,
+}: {
+  setEmail: (email: string) => void;
+  setStep: (step: number) => void;
+}) {
   const [loading, setLoading] = useState(false);
-  const handleUnAuthorisedResponse = useHandleUnAuthorisedResponse();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     const formData = new FormData(event.currentTarget);
 
-    const token = getToken();
-    if (!token) return;
-    const res = await signUp(formData, token);
+    const email = formData.get("email") as string;
+    const res = await signUp(formData);
 
-    handleUnAuthorisedResponse(res.statusCode);
     showToastMessage(res.status, res.message, "User created successfully");
+    if (res.status !== "error") {
+      setEmail(email);
+      setStep(2);
+    }
     setLoading(false);
   }
   return (
@@ -40,7 +41,7 @@ function SignUpForm() {
         <h2 className="mb-[1.8rem]">Create your account</h2>
 
         <FormRow label="Username" htmlFor="my-username">
-          <Input required={true} type="text" name="username" id="my-fullName" />
+          <Input required={true} type="text" name="userName" id="my-fullName" />
         </FormRow>
 
         <FormRow label="Email address" htmlFor="my-email">
@@ -76,12 +77,12 @@ function SignUpForm() {
           </Button>
         </div>
 
-        <p className="mt-[1rem] text-center">
+        {/* <p className="mt-[1rem] text-center">
           Have an account?{" "}
           <Link href={"/login"} className="font-semibold">
             Login
           </Link>
-        </p>
+        </p> */}
       </form>
     </Box>
   );

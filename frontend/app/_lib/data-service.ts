@@ -106,28 +106,25 @@ export async function login(formData: FormData) {
   }
 }
 
-export async function signUp(formData: FormData, token: string) {
+export async function signUp(formData: FormData) {
   const email = formData.get("email");
   const password = formData.get("password");
-  const name = formData.get("fullName");
+  const userName = formData.get("userName");
   const confirmPassword = formData.get("confirmPassword");
-  const isRoot = formData.get("isRoot") === "on" ? true : false;
 
   let res;
   try {
     // const token = getToken
-    res = await fetch(`${URL}/admins/signUp`, {
+    res = await fetch(`${URL}/users/signUp`, {
       method: "POST",
       body: JSON.stringify({
         email,
         password,
-        name,
+        userName,
         confirmPassword,
-        isRoot,
       }),
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -137,11 +134,7 @@ export async function signUp(formData: FormData, token: string) {
     if (!res.ok) throw new Error(data.message || "Signup failed");
 
     // Destructure token and user from response
-    const {
-      data: { user },
-    } = data;
-
-    return { token, user };
+    return data;
   } catch (err: unknown) {
     console.log(err);
     // Improved error handling
