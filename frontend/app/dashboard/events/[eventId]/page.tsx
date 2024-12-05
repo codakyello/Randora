@@ -1,6 +1,5 @@
 import { Box } from "@chakra-ui/react";
-import DashboardLayout from "@/app/_components/DashboardLayout";
-import Stat from "@/app/_components/Stat";
+
 import EventStats from "@/app/_components/EventStats";
 import { Event, Participant } from "@/app/_utils/types";
 import ParticipantTable from "@/app/_components/ParticipantTable";
@@ -13,9 +12,16 @@ export const metadata = {
 };
 
 const event: Event = {
+  _id: "64e9f3c8b5a730001f4d2234", // Example MongoDB ObjectId
+  name: "End of Year Boom",
+  type: "Competition",
+  status: "Active",
+  emailSent: true,
+  startDate: "2024-12-15T08:00:00.000Z",
+  endDate: "2024-12-25T18:00:00.000Z",
   participantCount: 500,
   prizeCount: 10,
-  name: "End of year boom",
+  remainingPrize: 4,
 };
 
 const participants: Participant[] = [
