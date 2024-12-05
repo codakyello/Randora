@@ -6,13 +6,16 @@ import { signUp } from "../_lib/data-service";
 import Button from "./Button";
 import { Box } from "@chakra-ui/react";
 import { showToastMessage } from "@/app/_utils/utils";
+import Link from "next/link";
 
 function SignUpForm({
   setEmail,
   setStep,
+  accountType,
 }: {
   setEmail: (email: string) => void;
   setStep: (step: number) => void;
+  accountType: string;
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -22,12 +25,12 @@ function SignUpForm({
     const formData = new FormData(event.currentTarget);
 
     const email = formData.get("email") as string;
-    const res = await signUp(formData);
+    const res = await signUp(formData, accountType);
 
     showToastMessage(res.status, res.message, "User created successfully");
     if (res.status !== "error") {
       setEmail(email);
-      setStep(2);
+      setStep(3);
     }
     setLoading(false);
   }
@@ -38,13 +41,30 @@ function SignUpForm({
         onSubmit={handleSubmit}
         className="flex justify-stretch flex-col py-[2.4rem] px-[4rem] bg-[var(--color-grey-0)] border border-[var(--color-grey-100)] rounded-[var(--border-radius-md)] text-[1.4rem] w-full max-w-[48rem]"
       >
-        <h2 className="mb-[1.8rem]">Create your account</h2>
+        <h2 className="mb-[1.8rem]">
+          Create your{" "}
+          {accountType === "individual" ? "individual " : "organisation "}
+          account
+        </h2>
 
-        <FormRow label="Username" htmlFor="my-username">
-          <Input required={true} type="text" name="userName" id="my-fullName" />
+        {accountType === "organisation" ? (
+          <FormRow
+            label="Organisation name (required)"
+            htmlFor="my-organisationName"
+          >
+            <Input
+              required={true}
+              type="text"
+              name="organisationName"
+              id="my-organisationName"
+            />
+          </FormRow>
+        ) : null}
+        <FormRow label="Username (required)" htmlFor="my-username">
+          <Input required={true} type="text" name="userName" id="my-username" />
         </FormRow>
 
-        <FormRow label="Email address" htmlFor="my-email">
+        <FormRow label="Email address (required)" htmlFor="my-email">
           <Input required={true} type="email" name="email" id="my-email" />
         </FormRow>
 
@@ -73,16 +93,23 @@ function SignUpForm({
             loading={loading}
             type="primary"
           >
-            <p className="text-[1.6rem]">Get Started</p>
+            <p className="text-[1.6rem]">
+              {accountType === "individual"
+                ? "Get Started"
+                : "Start your free trial"}
+            </p>
           </Button>
         </div>
 
-        {/* <p className="mt-[1rem] text-center">
+        <p className="mt-[1rem] text-center">
           Have an account?{" "}
-          <Link href={"/login"} className="font-semibold">
+          <Link
+            href={"/login"}
+            className="font-semibold text-[var(--color-primary)]"
+          >
             Login
           </Link>
-        </p> */}
+        </p>
       </form>
     </Box>
   );

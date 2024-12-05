@@ -5,11 +5,13 @@ function FormRow({
   children,
   htmlFor,
   orientation = "vertical",
+  className,
 }: {
   label: string;
   htmlFor: string;
   orientation?: string;
-  children: ReactNode;
+  children?: ReactNode;
+  className?: string;
 }) {
   return (
     <div
@@ -17,7 +19,7 @@ function FormRow({
         orientation === "vertical"
           ? "md:gap-[.8rem]"
           : "md:grid-cols-[18.7rem_1fr] lg:grid-cols-[24rem_.5fr] md:gap-[2.4rem] items-center  md:py-[1.2rem]"
-      }  border-b border-[var(--color-grey-100)]`}
+      }  border-b border-[var(--color-grey-100)] ${className}`}
     >
       <label className={`font-medium`} htmlFor={htmlFor}>
         {label}

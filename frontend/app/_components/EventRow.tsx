@@ -4,20 +4,22 @@ import { formatDistanceFromNow, getTagName } from "../_utils/helpers";
 import Tag from "./Tag";
 import Row from "./Row";
 import Menus, { useMenu } from "./Menu";
-import { HiEye, HiTrash, HiMiniUsers, HiPencil } from "react-icons/hi2";
-
+import { HiEye, HiTrash, HiPencil } from "react-icons/hi2";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import Link from "next/link";
 import ConfirmDelete from "./ConfirmDelete";
 import { Box } from "@chakra-ui/react";
 import { isToday, format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { deleteEvent as deleteEventApi } from "../_lib/actions";
-import { IoGift } from "react-icons/io5";
+import {
+  deleteEvent as deleteEventApi,
+  updateEvent as updateEventApi,
+} from "../_lib/actions";
 import CreateEditEventForm from "./CreateEditEventForm";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import toast from "react-hot-toast";
 import { useAuth } from "../_contexts/AuthProvider";
+import { IoCheckmarkDoneSharp } from "react-icons/io5";
 
 export default function EventRow({ event }: { event: Event }) {
   const {
@@ -41,7 +43,8 @@ export default function EventRow({ event }: { event: Event }) {
 
   const { close: closeMenu } = useMenu();
 
-  // const { mutate: deleteEvent, isPending: isDeleting } = useDeleteEvent();
+  const { mutate: updateEvent, isPending: isUpdating } =
+    useCustomMutation(updateEventApi);
 
   const { mutate: deleteEvent, isPending: isDeleting } =
     useCustomMutation(deleteEventApi);
@@ -90,52 +93,63 @@ export default function EventRow({ event }: { event: Event }) {
               <HiEye className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
             }
             onClick={() => {}}
-            disabled={isDeleting}
+            disabled={isDeleting || isUpdating}
           >
             <Link href={`/dashboard/events/${eventId}`}>See details</Link>
           </Menus.Button>
 
-          <ModalOpen name="edit-event">
+          {event.status === "active" ? (
             <Menus.Button
               icon={
-                <HiPencil className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+                <IoCheckmarkDoneSharp className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
               }
               onClick={() => {
-                router.push(`/dashboard/events/${eventId}/participants`);
+                updateEvent(
+                  {
+                    eventData: { status: "completed" },
+                    token,
+                    eventId,
+                  },
+                  {
+                    onSuccess: () => {
+                      toast.success("Event has been marked complete");
+                      closeMenu();
+                    },
+                    onError: (err) => {
+                      toast.error(err.message);
+                    },
+                  }
+                ); // change from active to complete
               }}
-              disabled={isDeleting}
+              disabled={isDeleting || isUpdating}
             >
-              Edit
+              Complete
             </Menus.Button>
-          </ModalOpen>
+          ) : (
+            ""
+          )}
+
+          {event.status !== "inactive" ? (
+            ""
+          ) : (
+            <ModalOpen name="edit-event">
+              <Menus.Button
+                icon={
+                  <HiPencil className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+                }
+                onClick={() => {
+                  router.push(`/dashboard/events/${eventId}/participants`);
+                }}
+                disabled={isDeleting || isUpdating}
+              >
+                Edit
+              </Menus.Button>
+            </ModalOpen>
+          )}
 
           <ModalWindow name="edit-event">
             <CreateEditEventForm eventToEdit={event} />
           </ModalWindow>
-
-          <Menus.Button
-            icon={
-              <HiMiniUsers className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
-            }
-            onClick={() => {
-              router.push(`/dashboard/events/${eventId}/participants`);
-            }}
-            disabled={isDeleting}
-          >
-            Participants
-          </Menus.Button>
-
-          <Menus.Button
-            icon={
-              <IoGift className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
-            }
-            onClick={() => {
-              router.push(`/dashboard/events/${eventId}/prizes`);
-            }}
-            disabled={isDeleting}
-          >
-            Prizes
-          </Menus.Button>
 
           <ModalOpen name="delete-event">
             <Menus.Button
@@ -143,9 +157,9 @@ export default function EventRow({ event }: { event: Event }) {
               icon={
                 <HiTrash className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
               }
-              disabled={isDeleting}
+              disabled={isDeleting || isUpdating}
             >
-              Delete event
+              Delete
             </Menus.Button>
           </ModalOpen>
 

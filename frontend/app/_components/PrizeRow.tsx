@@ -8,10 +8,10 @@ import { HiPencil, HiTrash } from "react-icons/hi2";
 import { deletePrize as deletePrizeApi } from "../_lib/actions";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import ConfirmDelete from "./ConfirmDelete";
-import CreateEditPrizeForm from "./CreateEditPrizeForm";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import toast from "react-hot-toast";
 import { useAuth } from "../_contexts/AuthProvider";
+import EditPrizeForm from "./EditPrizeForm";
 
 export default function PrizeRow({ prize }: { prize: Prize }) {
   const { name, image, quantity, _id: prizeId } = prize;
@@ -72,7 +72,7 @@ export default function PrizeRow({ prize }: { prize: Prize }) {
           </ModalOpen>
 
           <ModalWindow name="edit-prize">
-            <CreateEditPrizeForm prizeToEdit={prize} />
+            <EditPrizeForm prizeToEdit={prize} />
           </ModalWindow>
 
           <ModalOpen name="delete-prize">
@@ -89,7 +89,7 @@ export default function PrizeRow({ prize }: { prize: Prize }) {
 
           <ModalWindow name="delete-prize">
             <ConfirmDelete
-              resourceName="Event"
+              resourceName="Prize"
               isDeleting={isDeleting}
               onConfirm={handleDelete}
             />

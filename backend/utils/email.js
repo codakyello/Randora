@@ -17,7 +17,7 @@ class Email {
     this.user = user;
   }
 
-  async send({ file, subject, body = {} }) {
+  async send({ file, subject, receiverName, inviterName, body = {} }) {
     console.log("sending");
     const html = await ejs.renderFile(
       path.join(__dirname, "../emails", `${file}.ejs`),
@@ -25,12 +25,13 @@ class Email {
         otp: body.otp,
         url: body.resetUrl,
         userName: this.user.userName,
+        inviterName: inviterName,
+        receiverName: receiverName,
         trackingUrl: "#",
         supportUrl: "#",
       }
     );
 
-    console.log(this.user.email);
     try {
       await this.transporter.sendMail({
         from: "Mega Draw test@roware.xyz",
@@ -65,6 +66,31 @@ class Email {
       file: "otp",
       subject: "Mega Draw login Verification",
       body: { otp },
+    });
+  }
+
+  async sendInvite(inviteUrl, inviterName) {
+    await this.send({
+      file: "invite",
+      subject: "You're Invited!",
+      body: { inviteUrl },
+      inviterName,
+    });
+  }
+
+  async acceptedInvite(receiverName) {
+    await this.send({
+      file: "accepted",
+      subject: "Your invite has been accepted!",
+      receiverName,
+    });
+  }
+
+  async declinedInvite(receiverName) {
+    await this.send({
+      file: "delined",
+      subject: "Your invite has been declined!",
+      receiverName,
     });
   }
 }

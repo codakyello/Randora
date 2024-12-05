@@ -5,10 +5,7 @@ export const metadata = {
   title: "Dashboard",
 };
 
-async function Page() {
-  // const data = await getAllCabins();
-  // const cabinCount = data.totalCount;
-
+function Page() {
   return (
     <Box className="flex px-[2rem] flex-col gap-[3.2rem]">
       <Box className="flex flex-col md:flex-row justify-between">

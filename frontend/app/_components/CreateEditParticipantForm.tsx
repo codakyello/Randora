@@ -16,6 +16,7 @@ import useCustomMutation from "../_hooks/useCustomMutation";
 import toast from "react-hot-toast";
 import { useParams } from "next/navigation";
 import { useMenu } from "./Menu";
+import { useModal } from "./Modal";
 
 export default function CreateEditParticipantForm({
   participantToEdit,
@@ -41,6 +42,7 @@ export default function CreateEditParticipantForm({
   const { getToken } = useAuth();
   const token = getToken();
   const { close: closeMenu } = useMenu();
+  const { open: OpenModal } = useModal();
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -56,6 +58,8 @@ export default function CreateEditParticipantForm({
 
     if (name) participantForm.name = name.trim(); // Only include if not empty
     if (email) participantForm.email = email.trim();
+
+    console.log(email);
 
     if (isEditSession) {
       updateParticipant(
@@ -77,8 +81,7 @@ export default function CreateEditParticipantForm({
         {
           onSuccess: () => {
             toast.success("Participant created successfully");
-            onClose?.();
-            closeMenu();
+            OpenModal("add-prize");
           },
 
           onError: (err: Error) => {
@@ -103,7 +106,11 @@ export default function CreateEditParticipantForm({
         </button>
       </Box>
 
-      <FormRow htmlFor="participant_name" label="Name" orientation="horizontal">
+      <FormRow
+        htmlFor="participant_name"
+        label="Name (optional)"
+        orientation="horizontal"
+      >
         <Input
           defaultValue={editValues?.name}
           name="name"
@@ -114,7 +121,7 @@ export default function CreateEditParticipantForm({
 
       <FormRow
         htmlFor="participant_email"
-        label="Email"
+        label="Email (optional)"
         orientation="horizontal"
       >
         <Input
@@ -127,7 +134,7 @@ export default function CreateEditParticipantForm({
 
       <FormRow
         htmlFor="ticket_number"
-        label="Ticket Number"
+        label="Ticket Number (required)"
         orientation="horizontal"
       >
         <Input
@@ -139,12 +146,12 @@ export default function CreateEditParticipantForm({
         />
       </FormRow>
 
-      <Box className="flex justify-end gap-5 items-center">
+      <Box className="flex justify-end  mt-5 gap-5 items-center">
         <Button type="cancel" onClick={onClose}>
           Cancel
         </Button>
         <Button
-          className="w-[17rem] mt-5 h-[4.8rem]"
+          className="w-[17rem] h-[4.8rem]"
           loading={isCreating || isUpdating}
           type="primary"
           action="submit"

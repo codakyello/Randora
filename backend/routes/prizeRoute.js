@@ -6,7 +6,7 @@ const router = express.Router();
 router
   .route("/")
   .get(authenticate, authorize("admin"), prizeController.getAllPrizes)
-  .post(authenticate, authorize("admin", "user"), prizeController.createPrize);
+  .post(authenticate, authorize("admin", "user"), prizeController.createPrizes);
 
 router
   .route("/:id")

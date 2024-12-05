@@ -1,9 +1,4 @@
-const {
-  catchAsync,
-  filterObj,
-  sendSuccessResponseData,
-} = require("../utils/helpers");
-const fs = require("fs");
+const { catchAsync, sendSuccessResponseData } = require("../utils/helpers");
 const csv = require("csv-parser");
 
 const Participant = require("../models/ParticipantsModel");
@@ -58,7 +53,15 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
       csvStream.end(csvBuffer);
 
       csvStream
-        .pipe(csv())
+        .pipe(
+          csv({
+            mapHeaders: ({ header }) =>
+              header
+                .trim() // Remove leading/trailing spaces
+                .replace(/\s+/g, "") // Remove all spaces within the string
+                .toLowerCase(), // Convert to lowercase
+          })
+        )
         .on("data", (row) => rows.push(row))
         .on("end", () => resolve(rows))
         .on("error", () =>
@@ -74,7 +77,7 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
       throw new AppError("CSV file is empty.", 400);
     }
 
-    const hasTicketNumber = participants[0].hasOwnProperty("ticketNumber");
+    const hasTicketNumber = participants[0].hasOwnProperty("ticketnumber");
     const hasEmail = participants[0].hasOwnProperty("email");
     const hasName = participants[0].hasOwnProperty("name");
 
@@ -89,7 +92,7 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
     const processedParticipants = participants.map((participant, index) => {
       const email = participant.email;
       const name = participant.name;
-      const ticketNumber = Number(participant.ticketNumber);
+      const ticketNumber = Number(participant.ticketnumber);
       const rowNumber = index + 2;
 
       if (!ticketNumber) {
@@ -144,7 +147,7 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
 
         if (
           hasTicketNumber &&
-          Number(participants[i].ticketNumber) === ticketNumber
+          Number(participants[i].ticketnumber) === ticketNumber
         ) {
           throw new AppError(
             `Duplicate ticket number: Ticket Number: ${ticketNumber}, at row ${rowNumber} and at row ${
@@ -211,16 +214,19 @@ module.exports.createParticipant = catchAsync(async (req, res) => {
     );
   }
 
-  const existingEmail = await Participant.findOne({
-    eventId,
-    email: req.body.email,
-  });
+  console.log(req.body.email);
+  if (req.body.email) {
+    const existingEmail = await Participant.findOne({
+      eventId,
+      email: req.body.email,
+    });
 
-  if (existingEmail) {
-    throw new AppError(
-      `A participant with this email "${req.body.email}" already exists for this event.`,
-      400
-    );
+    if (existingEmail) {
+      throw new AppError(
+        `A participant with this email "${req.body.email}" already exists for this event.`,
+        400
+      );
+    }
   }
 
   // Create a new participant

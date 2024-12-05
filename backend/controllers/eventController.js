@@ -21,7 +21,7 @@ module.exports.getAllEvents = catchAsync(async (req, res) => {
 
 // get events
 module.exports.getEvent = catchAsync(async (req, res) => {
-  const event = await Event.findById(req.params.id);
+  const event = await Event.findById(req.params.id).populate("creator");
 
   if (!event) {
     throw new AppError("No event found with that ID.", 404);
@@ -34,15 +34,33 @@ module.exports.getEvent = catchAsync(async (req, res) => {
 module.exports.createEvent = catchAsync(async (req, res) => {
   const { name } = req.body;
 
-  // Check if an event with the same name already exists for the user
-  const existingEvent = await Event.findOne({ name, userId: req.user.id });
+  // Check if the user is part of an organisation if yes, save the organisation id
+  const organisationId = req.user.organisationId;
 
+  console.log(organisationId);
+
+  // if organisation save the organisation id, creator id,
+  // if not organisation save with user id
+
+  // Check if an event with the same name already exists for the user
+
+  const filter = organisationId
+    ? { name, organisationId }
+    : { name, userId: req.user.id };
+
+  console.log(filter);
+  const existingEvent = await Event.findOne(filter);
   if (existingEvent) {
     throw new AppError("An event with this name already exists.", 400);
   }
 
   // Create the new event
-  const newEvent = await Event.create({ ...req.body, userId: req.user.id });
+  const newEvent = await Event.create({
+    ...req.body,
+    ...(organisationId
+      ? { organisationId, creator: req.user.id }
+      : { userId: req.user.id }),
+  });
 
   sendSuccessResponseData(res, "event", newEvent);
 });
@@ -54,8 +72,8 @@ module.exports.updateEvent = catchAsync(async (req, res) => {
     throw new AppError("No event found with that ID.", 404);
   }
 
-  if (event.status === "active" || event.status === "completed") {
-    throw new AppError(`Cannot update an ${event.status} event.`, 400);
+  if (event.status === "completed") {
+    throw new AppError(`Cannot update a ${event.status} event.`, 400);
   }
 
   Object.keys(req.body).forEach((key) => {
@@ -117,7 +135,9 @@ module.exports.getEventPrizes = catchAsync(async (req, res) => {
     .paginate()
     .limitFields();
 
-  const totalCount = await Event.countDocuments();
+  const totalCount = await Prize.find({
+    eventId: req.params.id,
+  }).countDocuments();
 
   const prizes = await apiFeatures.query;
 

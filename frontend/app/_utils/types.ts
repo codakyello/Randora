@@ -3,7 +3,22 @@ export type Filter = {
   value: string;
 };
 
+export type Collaborator = {
+  _id: string;
+  username: string;
+  email: string;
+  status: string;
+  image: string;
+};
+
 // Type when creating Cabin
+export interface User {
+  _id: string;
+  userName: string;
+  email: string;
+  accountType: string;
+  image: string;
+}
 
 export interface Event {
   _id: string;
@@ -19,9 +34,10 @@ export interface Event {
 }
 
 export interface EventForm {
-  name: string;
-  type: string;
-  startDate: string;
+  name?: string;
+  type?: string;
+  status?: string;
+  startDate?: string;
 }
 
 export interface Participant {

@@ -9,19 +9,60 @@ import { LiaToolsSolid } from "react-icons/lia";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { HiOutlineUsers } from "react-icons/hi2";
+import { User } from "../_utils/types";
 
-const NavItems = [
-  { name: "Dashboard", icon: <HomeIcon />, link: "/dashboard" },
-  { name: "Giveaways", icon: <CalendarDaysIcon />, link: "/dashboard/events" },
-  { name: "Settings", icon: <Cog6ToothIcon />, link: "/dashboard/settings" },
-  {
-    name: "Tools",
-    icon: <LiaToolsSolid />,
-    link: "/dashboard/tools",
-  },
-];
+export default function NavList({
+  closeNav,
+  user,
+}: {
+  closeNav?: () => void;
+  user: User;
+}) {
+  const NavItems =
+    user.accountType === "organisation"
+      ? [
+          { name: "Dashboard", icon: <HomeIcon />, link: "/dashboard" },
+          {
+            name: "Giveaways",
+            icon: <CalendarDaysIcon />,
+            link: "/dashboard/events",
+          },
+          {
+            name: "Collaborators",
+            icon: <HiOutlineUsers />,
+            link: "/dashboard/collaborators",
+          },
+          {
+            name: "Settings",
+            icon: <Cog6ToothIcon />,
+            link: "/dashboard/settings",
+          },
+          {
+            name: "Tools",
+            icon: <LiaToolsSolid />,
+            link: "/dashboard/tools",
+          },
+        ]
+      : [
+          { name: "Dashboard", icon: <HomeIcon />, link: "/dashboard" },
+          {
+            name: "Giveaways",
+            icon: <CalendarDaysIcon />,
+            link: "/dashboard/events",
+          },
 
-export default function NavList({ closeNav }: { closeNav?: () => void }) {
+          {
+            name: "Settings",
+            icon: <Cog6ToothIcon />,
+            link: "/dashboard/settings",
+          },
+          {
+            name: "Tools",
+            icon: <LiaToolsSolid />,
+            link: "/dashboard/tools",
+          },
+        ];
   const pathName = usePathname();
   return (
     <nav>

@@ -7,10 +7,11 @@ function useOutsideClick<T extends HTMLElement>(
   const ref = useRef<T>(null); // Using a generic HTML element ref
 
   useLayoutEffect(() => {
-    console.log("Outside clicked");
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         handler(); // Call the handler when a click happens outside
+
+        console.log("outside clicked");
       }
     }
 

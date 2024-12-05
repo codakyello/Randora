@@ -13,19 +13,16 @@ const userRoutes = require("./routes/userRoutes");
 const participantRoutes = require("./routes/participantRoute");
 const eventRoutes = require("./routes/eventRoutes");
 const prizeRoutes = require("./routes/prizeRoute");
-
-dotenv.config({ path: "./config.env" });
+const organisationRoutes = require("./routes/organisationRoutes");
 
 const app = express();
 
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, "uploads/");
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, Date.now() + path.extname(file.originalname));
-//   },
-// });
+//Cron Jobs
+require("./cronJobs/renewSubscription");
+require("./cronJobs/subscriptionExpiryCleanup");
+require("./cronJobs/subscriptionRemider");
+
+dotenv.config({ path: "./config.env" });
 
 app.use(cors());
 
@@ -56,6 +53,7 @@ app.use("/api/v1/events", eventRoutes);
 
 app.use("/api/v1/prizes", prizeRoutes);
 
+app.use("/api/v1/organisations", organisationRoutes);
 app.get("/", (_req, res) => {
   res.send("<h1>Deployment Check</h1>");
 });

@@ -68,8 +68,16 @@ module.exports.Me = catchAsync(async function (req, res) {
 });
 
 module.exports.getMyEvents = catchAsync(async (req, res) => {
+  // if he is part of an organisation , get all events of that organisation
+  // else check by just user id
+  const queryConditions = req.user.organisationId
+    ? [{ userId: req.user.id }, { organisationId: req.user.organisationId }]
+    : [{ userId: req.user.id }];
+
   const apiFeatures = new APIFEATURES(
-    Event.find({ userId: req.user.id }),
+    Event.find({
+      $or: queryConditions,
+    }),
     req.query
   )
     .filter()
@@ -77,10 +85,27 @@ module.exports.getMyEvents = catchAsync(async (req, res) => {
     .paginate()
     .limitFields();
 
-  const totalCount = await Event.find({ userId: req.user.id }).countDocuments();
+  const totalCount = await Event.find({
+    $or: [{ userId: req.user.id }, { organizationId: req.user.organizationId }],
+  }).countDocuments();
 
   console.log("totalCount", totalCount);
   const events = await apiFeatures.query;
 
   sendSuccessResponseData(res, "events", events, totalCount);
+});
+
+module.exports.searchUsers = catchAsync(async (req, res) => {
+  const query = req.query.search;
+  const results = await User.find(
+    {
+      $or: [
+        { username: { $regex: query, $options: "i" } },
+        { email: { $regex: query, $options: "i" } },
+      ],
+    },
+    "id email userName image"
+  );
+
+  sendSuccessResponseData(res, "users", results);
 });

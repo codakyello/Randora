@@ -10,10 +10,18 @@ import toast from "react-hot-toast";
 import SpinnerMini from "./SpinnerMini";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import { useAuth } from "../_contexts/AuthProvider";
+import { useModal } from "./Modal";
 
-export default function CsvUploader({ onClose }: { onClose?: () => void }) {
+export default function UploadParticipants({
+  onClose,
+  eventId,
+}: {
+  onClose?: () => void;
+  eventId?: string;
+}) {
   const [fileName, setFileName] = useState<string | null>(null); // State for file name
 
+  console.log(eventId);
   const { getToken } = useAuth();
 
   const token = getToken();
@@ -22,7 +30,7 @@ export default function CsvUploader({ onClose }: { onClose?: () => void }) {
 
   const params = useParams();
 
-  const eventId = params.eventId as string;
+  const { open: openModal } = useModal();
 
   const { isPending: isUploading, mutate: uploadParticipants } =
     useCustomMutation(uploadParticipantsApi);
@@ -42,7 +50,7 @@ export default function CsvUploader({ onClose }: { onClose?: () => void }) {
   ): Promise<void> => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    formData.append("eventId", eventId);
+    formData.append("eventId", eventId || String(params.eventId));
 
     if (!fileName) {
       setError("No file selected.");
@@ -54,7 +62,10 @@ export default function CsvUploader({ onClose }: { onClose?: () => void }) {
       {
         onSuccess: () => {
           toast.success("Participants uploaded successfully");
-          onClose?.();
+          if (eventId) openModal("add-prize");
+          else {
+            onClose?.();
+          }
         },
         onError: (error) => {
           setError(error.message);
@@ -83,6 +94,12 @@ export default function CsvUploader({ onClose }: { onClose?: () => void }) {
       </Box>
 
       <p>Select a .csv file to import participants at once</p>
+      <p className="mt-2">
+        * Csv must contain the column{" "}
+        <span className="font-semibold text-[var(--color-primary)]">
+          ticket number
+        </span>
+      </p>
       <label
         className="block rounded-xl my-10 text-black w-full p-4 text-center border border-dashed cursor-pointer bg-gray-100 hover:bg-gray-200"
         htmlFor="csvFileInput"

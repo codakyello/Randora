@@ -20,8 +20,7 @@ function Page() {
               { name: "All", value: "all" },
               { name: "Active", value: "active" },
               { name: "Inactive", value: "inactive" },
-              { name: "Completed", value: "completed" },
-              { name: "Cancelled", value: "cancelled" },
+              { name: "Complete", value: "completed" },
             ]}
           />
 

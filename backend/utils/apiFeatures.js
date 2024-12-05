@@ -8,16 +8,26 @@ class APIFEATURES {
     const queryObj = { ...this.queryString };
     console.log(queryObj);
     const excludedFields = ["page", "sort", "limit", "fields"];
-
     excludedFields.forEach((el) => delete queryObj[el]);
 
-    // 2) Advanced filtering
+    // Advanced filtering
     let queryStr = JSON.stringify(queryObj);
 
-    // `{price: $gt: 4}`;
+    // Handle operators like gte, gt, lte, lt
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
 
-    this.query = this.query.find(JSON.parse(queryStr));
+    // Handle comma-separated values for fields like status
+    const parsedQuery = JSON.parse(queryStr);
+    Object.keys(parsedQuery).forEach((key) => {
+      if (
+        typeof parsedQuery[key] === "string" &&
+        parsedQuery[key].includes(",")
+      ) {
+        parsedQuery[key] = { $in: parsedQuery[key].split(",") };
+      }
+    });
+
+    this.query = this.query.find(parsedQuery);
     return this;
   }
 

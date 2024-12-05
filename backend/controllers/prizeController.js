@@ -76,33 +76,50 @@ module.exports.assignPrize = catchAsync(async (req, res) => {
   sendSuccessResponseData(res, "Participant updated successfully", participant);
 });
 
-module.exports.createPrize = catchAsync(async (req, res) => {
-  const { eventId } = req.body;
+module.exports.createPrizes = catchAsync(async (req, res) => {
+  console.log(req.body);
+  const prizes = req.body;
+  const eventId = prizes.at(0).eventId;
 
-  const existingPrize = await Prize.findOne({ name: req.body.name, eventId });
-  if (existingPrize) {
-    throw new AppError(
-      "A prize with this name already exists for the event. Consider increasing the quantity of the existing prize instead.",
-      400
-    );
-  }
   // Validate event existence
   const event = await Event.findById(eventId);
   if (!event) {
     throw new AppError("Event does not exist.", 404);
   }
 
-  if (event.status !== "inactive")
-    throw new AppError("Prizes can only be created when an event is inactive");
+  if (event.status !== "inactive") {
+    throw new AppError(
+      "Prizes can only be created when an event is inactive",
+      400
+    );
+  }
 
-  const newPrize = await Prize.create(req.body);
+  // Check for duplicate prize names within the event
+  const existingPrizes = await Prize.find({ eventId });
+  const existingPrizeNames = existingPrizes.map((prize) => prize.name);
 
+  const duplicateNames = prizes
+    .map((prize) => prize.name)
+    .filter((name) => existingPrizeNames.includes(name));
+
+  if (duplicateNames.length > 0) {
+    throw new AppError(
+      `${duplicateNames.join(
+        ", "
+      )} already exist. Consider updating the quantity instead.`,
+      400
+    );
+  }
+
+  const newPrizes = await Prize.insertMany(prizes);
+
+  // Update event prize counts
   await Promise.all([
     Event.updatePrizeCount(eventId),
     Event.updateRemainingPrizeCount(eventId),
   ]);
 
-  sendSuccessResponseData(res, "prize", newPrize);
+  sendSuccessResponseData(res, "prizes", newPrizes);
 });
 
 module.exports.updatePrize = catchAsync(async (req, res) => {

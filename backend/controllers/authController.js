@@ -5,6 +5,7 @@ const { catchAsync } = require("../utils/helpers");
 const AppError = require("../utils/appError");
 const { verifyJwt } = require("../utils/jwt.js");
 const Email = require("../utils/email");
+const Organisation = require("../models/organisationModel.js");
 const { createSendToken } = require("../utils/helpers");
 const { FRONTEND_URL } = require("../utils/const.js");
 
@@ -223,38 +224,66 @@ exports.userLogin = catchAsync(async (req, res) => {
 });
 
 exports.userSignUp = catchAsync(async (req, res) => {
+  console.log(req.body);
+  // Check if the user already exists
   let user = await User.findOne({ email: req.body.email });
 
-  if (user && user.authType === "credentials")
-    throw new AppError("Account already registered. Please log in", 409);
+  if (user) {
+    if (user.authType === "credentials") {
+      throw new AppError("Account already registered. Please log in", 409);
+    } else {
+      throw new AppError(
+        `Account already registered. Please sign in using ${user.authType}`,
+        409
+      );
+    }
+  }
 
-  if (user && user.authType !== "credentials")
-    throw new AppError(
-      `Account already registered. Please sign in using ${user.authType}`,
-      409
-    );
+  // Create a new user
+  user = await User.create({ ...req.body, authType: "credentials" });
 
-  const newUser = await User.create({ ...req.body, authType: "credentials" });
+  // Generate OTP for the new user
+  const otp = await user.generateOtp();
 
-  user = await User.findById(newUser._id);
+  // Handle organization account type
+  if (req.body.accountType === "organisation") {
+    if (!req.body.organisationName) {
+      throw new AppError("Organization name is required", 400);
+    }
 
-  const otp = await newUser.generateOtp();
+    const organisation = new Organisation({
+      owner: user._id,
+      name: req.body.organisationName,
+      subscriptionStatus: "active",
+      // subscriptionExpiryDate: new Date(Date.now() * 1000 * 60 * 60 * 24 * 7),
+    });
 
-  await newUser.save({ validateBeforeSave: false });
+    await organisation.save();
+
+    // Save the organisationId in the user's profile
+    user.organisationId = organisation._id;
+    user.subscriptionExpiryDate = organisation.subscriptionExpiryDate;
+  }
+
+  // Save the user (to ensure OTP and other data are stored)
+  await user.save({ validateBeforeSave: false });
+
+  // Send OTP via email
   try {
-    await new Email(newUser).sendOTP(otp);
+    await new Email(user).sendOTP(otp);
   } catch (e) {
-    console.log(e);
+    console.error("Error sending OTP:", e);
     throw new AppError(
       "An error occurred while sending the OTP. Please try again later.",
       500
     );
   }
 
+  // Send success response
   res.status(200).json({
     status: "success",
     message:
-      "Sign up was successful. A one time otp has been sent to your email",
+      "Sign up was successful. A one-time OTP has been sent to your email.",
   });
 });
 
@@ -488,8 +517,6 @@ module.exports.forgotAdminPassword = catchAsync(async function (req, res) {
       400
     );
   }
-
-  console.log(admin);
 
   if (!admin) throw new AppError("There is no user with this email", 404);
 

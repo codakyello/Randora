@@ -7,9 +7,14 @@ import SpinnerFull from "./SpinnerFull";
 import Button from "./Button";
 import CreateEditEventForm from "./CreateEditEventForm";
 import Menus from "./Menu";
+import CreatePrizeForm from "./CreatePrizeForm";
+import UploadParticipants from "./UploadParticipants";
+import { useState } from "react";
 
 export default function Events() {
   const { data, isLoading } = useEvents();
+
+  const [eventId, setEventId] = useState("");
 
   const events = data?.events;
   const count = data?.totalCount;
@@ -32,7 +37,15 @@ export default function Events() {
           </Box>
 
           <ModalWindow name="add-event">
-            <CreateEditEventForm />
+            <CreateEditEventForm setEventId={setEventId} />
+          </ModalWindow>
+
+          <ModalWindow name="upload-participant">
+            <UploadParticipants eventId={eventId} />
+          </ModalWindow>
+
+          <ModalWindow name="add-prize" listenCapturing={true}>
+            <CreatePrizeForm eventId={eventId} />
           </ModalWindow>
         </Box>
       </Modal>

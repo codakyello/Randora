@@ -3,7 +3,7 @@
 import { EventForm, ParticipantForm, PrizeForm } from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
-// const DEV_URL = "http://localhost:5000/api/v1";
+const DEV_URL = "http://localhost:5000/api/v1";
 
 export async function createParticipant({
   participantForm,
@@ -12,8 +12,7 @@ export async function createParticipant({
   participantForm: ParticipantForm;
   token: string | null;
 }) {
-  console.log(participantForm);
-  const res = await fetch(`${URL}/participants`, {
+  const res = await fetch(`${DEV_URL}/participants`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -42,8 +41,7 @@ export async function uploadParticipants({
   formData: FormData;
   token: string | null;
 }) {
-  console.log(token);
-  const res = await fetch(`${URL}/participants/upload`, {
+  const res = await fetch(`${DEV_URL}/participants/upload`, {
     method: "POST",
     body: formData,
 
@@ -125,7 +123,7 @@ export async function createEvent({
   eventData: EventForm;
   token: string | null;
 }) {
-  const res = await fetch(`${URL}/events`, {
+  const res = await fetch(`${DEV_URL}/events`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -154,7 +152,7 @@ export async function updateEvent({
   eventData: EventForm;
   token: string | null;
 }) {
-  const res = await fetch(`${URL}/events/${eventId}`, {
+  const res = await fetch(`${DEV_URL}/events/${eventId}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -194,14 +192,14 @@ export async function deleteEvent({
   }
 }
 
-export async function createPrize({
+export async function createPrizes({
   prizeForm,
   token,
 }: {
-  prizeForm: PrizeForm;
+  prizeForm: PrizeForm[];
   token: string | null;
 }) {
-  const res = await fetch(`${URL}/prizes`, {
+  const res = await fetch(`${DEV_URL}/prizes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

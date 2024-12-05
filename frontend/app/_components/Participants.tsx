@@ -3,11 +3,11 @@ import { Box } from "@chakra-ui/react";
 import Modal, { ModalOpen, ModalWindow } from "./Modal";
 import ParticipantTable from "./ParticipantTable";
 import Button from "./Button";
-import CsvUploader from "./CsvUploader";
 import SpinnerFull from "./SpinnerFull";
 import useEventParticipants from "../_hooks/useEventParticipants";
 import CreateEditParticipantForm from "./CreateEditParticipantForm";
 import Menus from "./Menu";
+import UploadParticipants from "./UploadParticipants";
 
 export default function Participants({ eventId }: { eventId: string }) {
   const { data, isLoading } = useEventParticipants(eventId);
@@ -29,14 +29,14 @@ export default function Participants({ eventId }: { eventId: string }) {
           )}
 
           <Box className="flex justify-between">
-            <ModalOpen name="upload-csv">
+            <ModalOpen name="upload-participants">
               <Box>
                 <Button type="primary">Upload Participant</Button>
               </Box>
             </ModalOpen>
 
-            <ModalWindow name="upload-csv">
-              <CsvUploader />
+            <ModalWindow name="upload-participants">
+              <UploadParticipants />
             </ModalWindow>
 
             <ModalOpen name="add-participant">

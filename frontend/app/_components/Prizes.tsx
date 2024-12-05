@@ -3,10 +3,10 @@ import { Box } from "@chakra-ui/react";
 import Modal, { ModalOpen, ModalWindow } from "./Modal";
 import Button from "./Button";
 import SpinnerFull from "./SpinnerFull";
-import CreateEditPrizeForm from "./CreateEditPrizeForm";
 import PrizeTable from "./PrizeTable";
 import useEventPrizes from "../_hooks/useEventPrizes";
 import Menus from "./Menu";
+import CreatePrizeForm from "./CreatePrizeForm";
 
 export default function Prizes({ eventId }: { eventId: string }) {
   const { data, isLoading } = useEventPrizes(eventId);
@@ -28,14 +28,14 @@ export default function Prizes({ eventId }: { eventId: string }) {
           )}
 
           <Box className="flex justify-between">
-            <ModalOpen name="add-prize">
+            <ModalOpen name="create-prize">
               <Box>
                 <Button type="primary">Add Prize</Button>
               </Box>
             </ModalOpen>
 
-            <ModalWindow name="add-prize">
-              <CreateEditPrizeForm />
+            <ModalWindow listenCapturing={false} name="create-prize">
+              <CreatePrizeForm />
             </ModalWindow>
           </Box>
         </Box>

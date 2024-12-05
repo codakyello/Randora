@@ -15,16 +15,21 @@ import { IoCloseOutline } from "react-icons/io5";
 import { DatePicker } from "./DatePicker";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import toast from "react-hot-toast";
+import { useModal } from "./Modal";
 import { useMenu } from "./Menu";
 
 export default function CreateEditEventForm({
   eventToEdit,
   onClose,
+  setEventId,
 }: {
   eventToEdit?: Event;
   onClose?: () => void;
+  setEventId?: (id: string) => void;
 }) {
+  const { open: openModal, close: closeModal } = useModal();
   const { close: closeMenu } = useMenu();
+
   const { mutate: updateEvent, isPending: isUpdating } =
     useCustomMutation(updateEventApi);
 
@@ -62,7 +67,7 @@ export default function CreateEditEventForm({
         {
           onSuccess: () => {
             toast.success("Event updated successfully");
-            onClose?.();
+            closeModal();
             closeMenu();
           },
 
@@ -75,9 +80,11 @@ export default function CreateEditEventForm({
       createEvent(
         { eventData, token },
         {
-          onSuccess: () => {
+          onSuccess: (event) => {
+            console.log(event._id);
             toast.success("Event created successfully");
-            onClose?.();
+            setEventId?.(event._id);
+            openModal("upload-participant");
           },
 
           onError: (err: Error) => {
@@ -143,9 +150,10 @@ export default function CreateEditEventForm({
       />
 
       <Box className="flex mt-5 justify-end gap-5 items-center">
-        <Button type="cancel" onClick={onClose}>
+        <Button onClick={onClose} type="cancel">
           Cancel
         </Button>
+
         <Button
           className="w-[17rem]  h-[4.8rem]"
           loading={isCreating || isUpdating}

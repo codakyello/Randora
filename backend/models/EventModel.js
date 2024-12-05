@@ -24,7 +24,14 @@ const eventSchema = new Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true,
+  },
+  organisationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Organisation",
+  },
+  creator: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
   },
   csvUploaded: {
     type: Boolean,
@@ -42,6 +49,11 @@ const eventSchema = new Schema({
   participantCount: { type: Number, default: 0 },
   prizeCount: { type: Number, default: 0 },
   remainingPrize: { type: Number, default: 0, min: 0 },
+});
+
+eventSchema.pre(/^find/, function (next) {
+  this.populate("creator");
+  next();
 });
 
 eventSchema.statics.updateParticipantsCount = async function (eventId) {

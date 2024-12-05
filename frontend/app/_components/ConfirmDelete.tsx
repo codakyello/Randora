@@ -30,7 +30,7 @@ export default function ConfirmDelete({
       </p>
 
       <Box className="justify-end gap-5  flex ">
-        <Button onClick={close} type="cancel">
+        <Button onClick={onClose} type="cancel">
           Cancel
         </Button>
         <Button loading={isDeleting} onClick={onConfirm} type="danger">

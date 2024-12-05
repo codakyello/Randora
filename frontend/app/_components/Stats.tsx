@@ -7,11 +7,12 @@ export default function Stats({ confirmEvents }: { confirmEvents: Event[] }) {
     0
   );
 
-  const totalPrizes = confirmEvents.reduce(
-    (acc, event) => acc + event.prizeCount,
-    0
-  );
+  const totalPrizes = confirmEvents.reduce((acc, event) => {
+    console.log(event.prizeCount);
+    return acc + event.prizeCount;
+  }, 0);
 
+  console.log(totalPrizes);
   const remainingPrizes = confirmEvents.reduce(
     (acc, event) => acc + event.remainingPrize,
     0
@@ -35,7 +36,7 @@ export default function Stats({ confirmEvents }: { confirmEvents: Event[] }) {
       backgroundColor: "grey",
       statColor: "primary",
       titleColor: "grey",
-      description: "Completed events count.",
+      description: "Completed/active events count.",
       value: totalEvents,
     },
     {

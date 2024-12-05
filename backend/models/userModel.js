@@ -43,6 +43,13 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
     role: { type: String, default: "user" },
+
+    // account is free until paid for
+    // dont set anything for them
+    // set it only once they pay
+    subscriptionExpiryDate: {
+      type: Date,
+    },
     logo: String,
     image: String,
     password: {
@@ -70,6 +77,18 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
       select: false,
+    },
+    organisationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Organisation", // The organization the user belongs to
+    },
+    accountType: {
+      type: String,
+      enum: {
+        values: ["organisation", "individual"],
+        message: "Account Type is either organisation or individual ",
+      },
+      required: [true, "Please provide an account type"],
     },
   },
   { timestamps: true }

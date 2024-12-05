@@ -1,1 +1,1 @@
-module.exports.FRONTEND_URL = "https://seamless-point-app.vercel.app";
+module.exports.FRONTEND_URL = "https://randora.vercel.app";

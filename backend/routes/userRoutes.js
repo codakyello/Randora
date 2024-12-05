@@ -20,6 +20,13 @@ router.post("/verify-otp", authController.verityUserOTP);
 
 router.post("/resend-otp", authController.resendUserOTP);
 
+router.get(
+  "/search",
+  authController.authenticate,
+  authController.authorize("user"),
+  userController.searchUsers
+);
+
 router.patch(
   "/update-my-password",
   authController.authenticate,
@@ -59,4 +66,10 @@ router.get(
   userController.getAllUser
 );
 
+router.get(
+  "/search",
+  authController.authenticate,
+  authController.authorize("user"),
+  userController.searchUsers
+);
 module.exports = router;

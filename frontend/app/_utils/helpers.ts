@@ -7,12 +7,14 @@ export const subtractDates = (
   differenceInDays(parseISO(String(dateStr1)), parseISO(String(dateStr2)));
 
 // Format the distance of a given date from now, omitting 'about' and adjusting 'in'
-export const formatDistanceFromNow = (dateStr: string): string =>
-  formatDistance(new Date(dateStr), new Date(), {
+export const formatDistanceFromNow = (date: Date | string) => {
+  const parsedDate = typeof date === "string" ? parseISO(date) : date;
+  return formatDistance(parsedDate, new Date(), {
     addSuffix: true,
   })
     .replace("about ", "")
     .replace("in", "In");
+};
 
 export const getToday = (options: { end?: boolean } = {}): string => {
   const today = new Date();
