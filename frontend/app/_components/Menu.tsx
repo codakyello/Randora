@@ -85,7 +85,7 @@ function Toggle({ id }: { id: string }) {
         y: rect.bottom + window.scrollY, // Position below the toggle
       });
     }
-  }, [context?.openId, id]);
+  }, [context?.openId, id, context]);
 
   if (!context) {
     return null;
