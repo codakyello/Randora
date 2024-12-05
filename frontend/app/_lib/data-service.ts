@@ -10,7 +10,7 @@ import { RESULTS_PER_PAGE } from "../_utils/constants";
 import { getToken } from "../_utils/serverUtils";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
-const DEV_URL = "http://localhost:5000/api/v1";
+// const DEV_URL = "http://localhost:5000/api/v1";
 
 // /////////////
 // // AUTH
@@ -114,7 +114,7 @@ export async function signUp(formData: FormData, accountType: string) {
   let res;
   try {
     // const token = getToken
-    res = await fetch(`${DEV_URL}/users/signUp`, {
+    res = await fetch(`${URL}/users/signUp`, {
       method: "POST",
       body: JSON.stringify({
         email,
@@ -414,7 +414,7 @@ export async function getMyEvents(searchParams: {
       query += "&sort=-createdAt";
   }
 
-  const res = await fetch(`${DEV_URL}/users/me/events${query}`, {
+  const res = await fetch(`${URL}/users/me/events${query}`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -445,7 +445,7 @@ export async function getAllEvents() {
   if (!token) return;
 
   const res = await fetch(
-    `${DEV_URL}/users/me/events?sort=startDate&status=active,completed`,
+    `${URL}/users/me/events?sort=startDate&status=active,completed`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -475,7 +475,7 @@ export async function getEvent(eventId: string) {
   console.log(token);
   if (!token) return;
 
-  const res = await fetch(`${DEV_URL}/users/me/events/${eventId}`, {
+  const res = await fetch(`${URL}/users/me/events/${eventId}`, {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -609,7 +609,7 @@ export async function getEventPrizes(
   console.log(query);
 
   try {
-    const res = await fetch(`${DEV_URL}/events/${eventId}/prizes${query}`, {
+    const res = await fetch(`${URL}/events/${eventId}/prizes${query}`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -681,7 +681,7 @@ export async function getAllCollaborators(
   console.log(organisationId);
   try {
     const res = await fetch(
-      `${DEV_URL}/organisations/${organisationId}/collaborators?${query}`,
+      `${URL}/organisations/${organisationId}/collaborators?${query}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -717,7 +717,7 @@ export async function getAllCollaborators(
 //   if (!token) return;
 
 //   const res = await fetch(
-//     `${DEV_URL}/events/${eventId}/collaborators/${collaboratorId}`,
+//     `${URL}/events/${eventId}/collaborators/${collaboratorId}`,
 //     {
 //       method: "POST",
 //       headers: {
