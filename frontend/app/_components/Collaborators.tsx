@@ -16,8 +16,6 @@ export default function Collaborators({
 }) {
   const { isLoading, data } = useCollaborators(organisationId);
 
-  console.log(data);
-
   if (isLoading) return <SpinnerFull />;
 
   const collaborators = data?.collaborators;
@@ -41,7 +39,7 @@ export default function Collaborators({
             </ModalOpen>
           </Box>
 
-          <ModalWindow name="add-collaborator">
+          <ModalWindow name="add-collaborator" listenCapturing={true}>
             <AddCollaboratorForm />
           </ModalWindow>
         </Box>

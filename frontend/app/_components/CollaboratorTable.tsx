@@ -17,8 +17,10 @@ export default function CollaboratorTable({
 }) {
   return (
     <Modal>
-      <Table columns={["3rem, 1fr, 1fr, 3rem"]}>
-        <Header headers={["", "Collaborator", "Status", ""]} />
+      <Table columns={["5rem, 1fr, 1fr, 3rem"]}>
+        <Header
+          headers={["", "Collaborator", <div className="ml-2">Status</div>, ""]}
+        />
         <Menus>
           <Body>
             {collaborators.map((collaborator) => (

@@ -27,6 +27,9 @@ const organisationSchema = new mongoose.Schema({
       email: {
         type: String, // Required for invites, optional for users
       },
+      userName: {
+        type: String,
+      },
       userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User", // Required for collaborators

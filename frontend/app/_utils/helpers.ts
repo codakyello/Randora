@@ -44,9 +44,10 @@ export const generateGridTemplateColumns = (columns: string[]) => {
 export function getTagName(status: string): string {
   const statusToTagName = {
     completed: "blue",
-    cancelled: "red-50",
     active: "green",
     inactive: "silver",
+    pending: "silver",
+    collaborator: "blue",
   };
 
   type Status = keyof typeof statusToTagName;

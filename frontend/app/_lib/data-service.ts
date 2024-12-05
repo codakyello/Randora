@@ -8,9 +8,10 @@ import { RESULTS_PER_PAGE } from "../_utils/constants";
 // import { notFound } from "next/navigation";
 // import { EventForm, ParticipantForm } from "../_utils/types";
 import { getToken } from "../_utils/serverUtils";
+import { User } from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
-// const DEV_URL = "http://localhost:5000/api/v1";
+const DEV_URL = "http://localhost:5000/api/v1";
 
 // /////////////
 // // AUTH
@@ -61,6 +62,7 @@ export async function updateSetting(data: Partial<Setting>, token: string) {
     return { status: "error", message: "An unknown error occured" };
   }
 }
+
 export async function login(formData: FormData) {
   // Safely extract email and password
   const email = formData.get("email") as string | null;
@@ -681,7 +683,7 @@ export async function getAllCollaborators(
   console.log(organisationId);
   try {
     const res = await fetch(
-      `${URL}/organisations/${organisationId}/collaborators?${query}`,
+      `${DEV_URL}/organisations/${organisationId}/collaborators?${query}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -711,29 +713,3 @@ export async function getAllCollaborators(
     }
   }
 }
-
-// export async function sendInvite(collaboratorId: string, eventId: string) {
-//   const token = await getToken();
-//   if (!token) return;
-
-//   const res = await fetch(
-//     `${URL}/events/${eventId}/collaborators/${collaboratorId}`,
-//     {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//     }
-//   );
-// }
-// export async function searchUsers(searchInput: string, signal: AbortSignal) {
-//   const token = await getToken();
-//   if (!token) return;
-
-//   // wrap in try catch
-
-//   // abort request if signal is aborted
-//   try {
-
-// }

@@ -170,7 +170,7 @@ export default function CreatePrizeForm({
               />
 
               <Button
-                className="!p-3 h-full aspect-square"
+                className="!p-2 h-full aspect-square"
                 type="cancel"
                 action="button"
                 onClick={() => handleDeleteInput(index)}

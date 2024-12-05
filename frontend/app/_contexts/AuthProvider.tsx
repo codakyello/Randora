@@ -15,6 +15,7 @@ type User = {
   email: string;
   userName: string;
   image: string;
+  organisationId: string;
 };
 const AuthContext = createContext<
   | {

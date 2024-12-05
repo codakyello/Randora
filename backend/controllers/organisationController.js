@@ -3,7 +3,8 @@ const AppError = require("../utils/appError");
 const Email = require("../utils/email");
 const Organisation = require("../models/organisationModel");
 const { FRONTEND_URL } = require("../utils/const");
-const { catchAsync } = require("../utils/helpers");
+const crypto = require("crypto");
+const { catchAsync, sendSuccessResponseData } = require("../utils/helpers");
 
 module.exports.validateInvite = catchAsync(async (req, res) => {
   const { token } = req.body;
@@ -60,9 +61,12 @@ module.exports.sendInvite = catchAsync(async (req, res) => {
 
   // 2 days expiry
   const expiresAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
+  const user = await User.findOne({ email: userEmail });
+  if (!user) throw new AppError("User not found", 404);
 
   const invite = {
-    email: userEmail,
+    email: user.email,
+    userName: user.userName,
     token,
     expiresAt,
     status: "pending",
@@ -71,8 +75,9 @@ module.exports.sendInvite = catchAsync(async (req, res) => {
   const inviteUrl = `${FRONTEND_URL}/collaborators/invite?token=${token}`;
   const inviter = await User.findById(organisation.owner);
 
-  const email = new Email(userEmail);
   try {
+    const email = new Email(user);
+
     await email.sendInvite(inviteUrl, inviter.userName);
   } catch (err) {
     throw new AppError("There was a problem sending the invite", 500);
@@ -125,30 +130,34 @@ module.exports.respondToInvite = catchAsync(async (req, res) => {
   }
 });
 
-module.exports.getOrganisationCollaborators = catchAsync(async (req, res) => {
+module.exports.getCollaborators = catchAsync(async (req, res) => {
   const organisationId = req.params.id;
-
-  console.log("here");
   console.log(organisationId);
+  console.log("getting collaborators");
 
-  const organisation = await Organisation.findById(organisationId).populate(
-    "collaborators.userId",
-    "name email"
+  const organisation = await Organisation.findById(organisationId).select(
+    "collaborators"
   );
-
+  console.log(organisation);
   if (!organisation)
     throw new AppError("No organisation found with this ID", 404);
-
-  const collaborators = organisation.collaborators.filter(
-    (collaborator) => collaborator.status === "accepted"
+  return sendSuccessResponseData(
+    res,
+    "collaborators",
+    organisation.collaborators
   );
-
-  res.status(200).json({ status: "success", data: collaborators });
 });
 
 module.exports.deleteCollaborator = catchAsync(async (req, res) => {
   const organisationId = req.params.id;
   const collaboratorId = req.params.collaboratorId;
+
+  console.log(
+    "this is organisation controller",
+    organisationId,
+    collaboratorId,
+    "this is organisation controller"
+  );
 
   //delete collaborator by their collaboratorId
 
@@ -162,8 +171,10 @@ module.exports.deleteCollaborator = catchAsync(async (req, res) => {
     (collaborator) => collaborator._id === collaboratorId
   );
 
-  if (collaboratorIndex === -1)
-    throw new AppError("Collaborator not found", 404);
+  console.log(collaboratorIndex, "collaboratorIndex");
+
+  // if (collaboratorIndex === -1)
+  //   throw new AppError("Collaborator not found", 404);
 
   organisation.collaborators.splice(collaboratorIndex, 1);
   await organisation.save();

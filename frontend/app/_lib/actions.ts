@@ -1,9 +1,9 @@
 "use client";
 
-import { EventForm, ParticipantForm, PrizeForm } from "../_utils/types";
+import { EventForm, ParticipantForm, PrizeForm, User } from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
-// const DEV_URL = "http://localhost:5000/api/v1";
+const DEV_URL = "http://localhost:5000/api/v1";
 
 export async function createParticipant({
   participantForm,
@@ -270,4 +270,66 @@ export async function deletePrize({
   }
 
   return { status: "success" };
+}
+
+export async function sendInvite({
+  organisationId,
+  user,
+  token,
+}: {
+  organisationId: string;
+  user: User | null;
+  token: string | null;
+}) {
+  // wrap in try catch
+  try {
+    const res = await fetch(
+      `${DEV_URL}/organisations/${organisationId}/collaborators/invite`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(user),
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    return data;
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    }
+  }
+}
+
+export async function deleteCollaborator({
+  organisationId,
+  collaboratorId,
+  token,
+}: {
+  organisationId: string;
+  collaboratorId: string;
+  token: string | null;
+}) {
+  const res = await fetch(
+    `${DEV_URL}/organisations/${organisationId}/collaborators/${collaboratorId}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) throw new Error(data.message);
+
+  return data;
 }

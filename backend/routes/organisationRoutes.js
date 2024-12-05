@@ -9,7 +9,7 @@ router
   .get(
     authController.authenticate,
     authController.authorize("user"),
-    organisationController.getOrganisationCollaborators
+    organisationController.getCollaborators
   );
 
 // delete collaborator

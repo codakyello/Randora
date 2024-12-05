@@ -96,11 +96,12 @@ module.exports.getMyEvents = catchAsync(async (req, res) => {
 });
 
 module.exports.searchUsers = catchAsync(async (req, res) => {
+  console.log("searching users");
   const query = req.query.search;
   const results = await User.find(
     {
       $or: [
-        { username: { $regex: query, $options: "i" } },
+        { userName: { $regex: query, $options: "i" } },
         { email: { $regex: query, $options: "i" } },
       ],
     },
