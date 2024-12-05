@@ -17,9 +17,11 @@ export default function Table({
 }) {
   return (
     <TableContext.Provider value={{ columns }}>
-      <Box className="overflow-x-scroll no-scrollbar rounded-[var(--border-radius-md)] border border-[var(--color-grey-200)] bg-[var(--color-grey-0)] text-[1.4rem]">
-        {children}
-      </Box>
+      <div className="overflow-y-hidden">
+        <Box className="overflow-x-scroll no-scrollbar rounded-[var(--border-radius-md)] border border-[var(--color-grey-200)] bg-[var(--color-grey-0)] text-[1.4rem]">
+          {children}
+        </Box>
+      </div>
     </TableContext.Provider>
   );
 }
@@ -41,7 +43,7 @@ export function Header({ headers }: { headers: string[] | ReactNode[] }) {
         display: "grid",
         gridTemplateColumns: generateGridTemplateColumns(columns),
       }}
-      className=" gap-[2.4rem] py-[1.6rem] px-[2.4rem] bg-[var(--color-grey-50)] border-b-[var(--color-grey-100)]"
+      className="w-fit gap-[2.4rem] py-[1.6rem] px-[2.4rem] bg-[var(--color-grey-50)] border-b-[var(--color-grey-100)]"
     >
       {headers.map((header, index) => (
         <div key={index} className="uppercase font-semibold">
@@ -62,7 +64,7 @@ export function Body<T>({
   children?: ReactNode;
 }) {
   return (
-    <Box className="no-scrollbar ">
+    <Box className="no-scrollbar w-fit">
       {data?.map(render || (() => null)) || children}
     </Box>
   );
