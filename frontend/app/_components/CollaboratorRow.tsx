@@ -82,6 +82,7 @@ export function CollaboratorRow({
                     onSuccess: () => {
                       toast.success("Collaborator deleted successfully");
                       closeModal();
+                      closeMenu();
                     },
                     onError: (error) => {
                       toast.error(error.message);

@@ -120,6 +120,10 @@ module.exports.respondToInvite = catchAsync(async (req, res) => {
     organisation.collaborators[collaboratorIndex].status = "accepted";
     organisation.collaborators[collaboratorIndex].userId = user._id;
 
+    // save organisation id in user
+    user.organisationId = organisation._id;
+    await user.save();
+
     await organisation.save();
     return res.status(200).json({ message: "Invite accepted successfully" });
   } else {

@@ -109,6 +109,9 @@ export default function AddCollaboratorForm({
           setSearchInput("");
           onClose?.();
         },
+        onError: (error) => {
+          toast.error(error.message);
+        },
       }
     );
 

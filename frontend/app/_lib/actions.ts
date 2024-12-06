@@ -282,29 +282,24 @@ export async function sendInvite({
   token: string | null;
 }) {
   // wrap in try catch
-  try {
-    const res = await fetch(
-      `${DEV_URL}/organisations/${organisationId}/collaborators/invite`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(user),
-      }
-    );
 
-    const data = await res.json();
-
-    if (!res.ok) throw new Error(data.message);
-
-    return data;
-  } catch (err) {
-    if (err instanceof Error) {
-      return { status: "error", message: err.message };
+  const res = await fetch(
+    `${DEV_URL}/organisations/${organisationId}/collaborators/invite`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(user),
     }
-  }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) throw new Error(data.message);
+
+  return data;
 }
 
 export async function deleteCollaborator({

@@ -86,7 +86,7 @@ module.exports.getMyEvents = catchAsync(async (req, res) => {
     .limitFields();
 
   const totalCount = await Event.find({
-    $or: [{ userId: req.user.id }, { organizationId: req.user.organizationId }],
+    $or: [{ userId: req.user.id }, { organisationId: req.user.organisationId }],
   }).countDocuments();
 
   console.log("totalCount", totalCount);

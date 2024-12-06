@@ -8,7 +8,7 @@ import { RESULTS_PER_PAGE } from "../_utils/constants";
 // import { notFound } from "next/navigation";
 // import { EventForm, ParticipantForm } from "../_utils/types";
 import { getToken } from "../_utils/serverUtils";
-import { User } from "../_utils/types";
+// import { User } from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
 const DEV_URL = "http://localhost:5000/api/v1";
@@ -447,7 +447,7 @@ export async function getAllEvents() {
   if (!token) return;
 
   const res = await fetch(
-    `${URL}/users/me/events?sort=startDate&status=active,completed`,
+    `${DEV_URL}/users/me/events?sort=startDate&status=active,completed`,
     {
       headers: {
         "Content-Type": "application/json",
