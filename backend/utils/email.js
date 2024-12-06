@@ -34,7 +34,7 @@ class Email {
 
     try {
       await this.transporter.sendMail({
-        from: "Mega Draw test@roware.xyz",
+        from: "Randora test@roware.xyz",
         to: this.user.email,
         subject,
         html,
@@ -49,7 +49,7 @@ class Email {
   async sendWelcome() {
     await this.send({
       file: "welcome",
-      subject: "Welcome to the MegaDraw Family 🎉",
+      subject: "Welcome to Randora 🎉",
     });
   }
 
@@ -64,7 +64,7 @@ class Email {
   async sendOTP(otp) {
     await this.send({
       file: "otp",
-      subject: "Mega Draw login Verification",
+      subject: "Randora login Verification",
       body: { otp },
     });
   }

@@ -43,7 +43,7 @@ export function Header({ headers }: { headers: string[] | ReactNode[] }) {
         display: "grid",
         gridTemplateColumns: generateGridTemplateColumns(columns),
       }}
-      className="w-fit gap-[2.4rem] py-[1.6rem] px-[2.4rem] bg-[var(--color-grey-50)] border-b-[var(--color-grey-100)]"
+      className="min-w-[100%] w-fit gap-[2.4rem] py-[1.6rem] px-[2.4rem] bg-[var(--color-grey-50)] border-b-[var(--color-grey-100)]"
     >
       {headers.map((header, index) => (
         <div key={index} className="uppercase font-semibold">
@@ -64,7 +64,7 @@ export function Body<T>({
   children?: ReactNode;
 }) {
   return (
-    <Box className="no-scrollbar w-fit">
+    <Box className="no-scrollbar min-w-[100%] w-fit">
       {data?.map(render || (() => null)) || children}
     </Box>
   );

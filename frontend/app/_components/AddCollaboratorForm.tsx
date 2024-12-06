@@ -6,19 +6,21 @@ import Input from "./Input";
 import { useEffect, useState } from "react";
 import SpinnerMini from "./SpinnerMini";
 import Image from "next/image";
-import { User } from "../_utils/types";
+import { Collaborator, User } from "../_utils/types";
 import { useAuth } from "../_contexts/AuthProvider";
 import { sendInvite as sendInviteApi } from "../_lib/actions";
 import toast from "react-hot-toast";
 import useCustomMutation from "../_hooks/useCustomMutation";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
-const DEV_URL = "http://localhost:5000/api/v1";
+// const URL = "http://localhost:5000/api/v1";
 
 export default function AddCollaboratorForm({
   onClose,
+  collaborators,
 }: {
   onClose?: () => void;
+  collaborators: Collaborator[];
 }) {
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [searchInput, setSearchInput] = useState("");
@@ -26,6 +28,7 @@ export default function AddCollaboratorForm({
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const { user: currentUser, getToken } = useAuth();
+
   const token = getToken();
 
   const { mutate: sendInvite, isPending: isLoading } =
@@ -44,16 +47,13 @@ export default function AddCollaboratorForm({
 
           setLoading(true); // Start loading state
 
-          const res = await fetch(
-            `${DEV_URL}/users/search?search=${searchInput}`,
-            {
-              signal,
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
+          const res = await fetch(`${URL}/users/search?search=${searchInput}`, {
+            signal,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
 
           const data = await res.json();
 
@@ -117,6 +117,9 @@ export default function AddCollaboratorForm({
 
     setLoading(false);
   };
+
+  console.log(searchResults);
+
   return (
     <Box className="w-full  flex flex-col gap-[1.2rem] px-[3rem] py-[3rem] rounded-[var(--border-radius-lg)] shadow-lg z-50 bg-[var(--color-grey-0)]">
       <Box className="flex w-full items-center mb-[2rem] justify-between">
@@ -185,30 +188,80 @@ export default function AddCollaboratorForm({
           <Box className="w-full max-h-[30rem] overflow-y-scroll">
             {searchResults
               ?.filter((user: User) => currentUser?._id !== user._id)
-              ?.map((user: User, index: number) => (
-                <Box
-                  onClick={() => {
-                    setSearchResults([]);
-                    setSelectedUser(user);
-                  }}
-                  key={index}
-                  className="grid px-[2rem] hover:bg-[var(--color-grey-50)] cursor-pointer py-[1.5rem] items-center gap-[3rem] grid-cols-[3rem_1fr]"
-                >
-                  <Box className="flex w-[4.5rem] aspect-square relative items-center ">
-                    <Image
-                      src={user.image}
-                      alt="avatar"
-                      fill
-                      className="rounded-full"
-                    />
-                  </Box>
+              ?.map((user: User, index: number) => {
+                const collaborator = collaborators.find(
+                  (collab) => collab.email === user.email
+                );
 
-                  <Box>
-                    <p>{user.userName}</p>
-                    <p className="text-[var(--color-grey-500)]">{user.email}</p>
+                if (collaborator)
+                  console.log("is existing collab", collaborator);
+
+                return collaborator ? (
+                  <Box
+                    key={index}
+                    onClick={() => {
+                      if (!collaborator) {
+                        setSearchResults([]);
+                        setSelectedUser(user);
+                      }
+                    }}
+                    className={`grid px-[2rem] ${
+                      !collaborator
+                        ? "hover:bg-[var(--color-grey-50)] cursor-pointer"
+                        : "opacity-50"
+                    } py-[1.5rem] items-center gap-[3rem] grid-cols-[3rem_1fr]`}
+                  >
+                    <Box className="flex w-[4.5rem] aspect-square relative items-center">
+                      <Image
+                        src={user.image}
+                        alt="avatar"
+                        fill
+                        className="rounded-full"
+                      />
+                    </Box>
+                    <Box>
+                      <p className="font-semibold text-[var(--color-primary)]">
+                        {user.userName}
+                      </p>
+                      <p className="text-[var(--color-grey-500)]">
+                        {collaborator.status === "accepted"
+                          ? "Already a collaborator"
+                          : "Has a pending invite"}
+                      </p>
+                    </Box>
                   </Box>
-                </Box>
-              ))}
+                ) : (
+                  <Box
+                    key={index}
+                    onClick={() => {
+                      if (!collaborator) {
+                        setSearchResults([]);
+                        setSelectedUser(user);
+                      }
+                    }}
+                    className={`grid px-[2rem] ${
+                      !collaborator
+                        ? "hover:bg-[var(--color-grey-50)] cursor-pointer"
+                        : "opacity-50"
+                    } py-[1.5rem] items-center gap-[3rem] grid-cols-[3rem_1fr]`}
+                  >
+                    <Box className="flex w-[4.5rem] aspect-square relative items-center">
+                      <Image
+                        src={user.image}
+                        alt="avatar"
+                        fill
+                        className="rounded-full"
+                      />
+                    </Box>
+                    <Box>
+                      <p>{user.userName}</p>
+                      <p className="text-[var(--color-grey-500)]">
+                        Invite to organisation
+                      </p>
+                    </Box>
+                  </Box>
+                );
+              })}
           </Box>
 
           <Button

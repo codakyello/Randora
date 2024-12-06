@@ -98,8 +98,10 @@ module.exports.getMyEvents = catchAsync(async (req, res) => {
 module.exports.searchUsers = catchAsync(async (req, res) => {
   console.log("searching users");
   const query = req.query.search;
+  // dont find users that have accountType set to organisation
   const results = await User.find(
     {
+      accountType: { $ne: "organisation" },
       $or: [
         { userName: { $regex: query, $options: "i" } },
         { email: { $regex: query, $options: "i" } },

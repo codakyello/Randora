@@ -11,7 +11,7 @@ import { getToken } from "../_utils/serverUtils";
 // import { User } from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
-const DEV_URL = "http://localhost:5000/api/v1";
+// const DEV_URL = "http://localhost:5000/api/v1";
 
 // /////////////
 // // AUTH
@@ -443,11 +443,10 @@ export async function getMyEvents(searchParams: {
 export async function getAllEvents() {
   const token = await getToken();
 
-  console.log(token);
   if (!token) return;
 
   const res = await fetch(
-    `${DEV_URL}/users/me/events?sort=startDate&status=active,completed`,
+    `${URL}/users/me/events?sort=startDate&status=active,completed`,
     {
       headers: {
         "Content-Type": "application/json",
@@ -639,51 +638,14 @@ export async function getEventPrizes(
 }
 
 // function to get all collaborators
-export async function getAllCollaborators(
-  organisationId: string,
-  searchParams: {
-    page: string | null;
-    status: string | null;
-    sortBy: string | null;
-  }
-) {
-  let query = "";
-
-  const page = searchParams.page || 1;
-  const status = searchParams.status;
-  const sort = searchParams.sortBy;
-
-  // Page
-  query += `?page=${page}&limit=${RESULTS_PER_PAGE}`;
-
-  // Filter
-  if (status && status === "winners") query += `&isWinner=true`;
-
-  // Sort, highest participant,
-  switch (sort) {
-    case "createdDate-desc":
-      query += "&sort=-createdAt";
-      break;
-    case "createdDate-asc":
-      query += "&sort=createdAt";
-      break;
-    case "ticketNumber-desc":
-      query += "&sort=-ticketNumber";
-      break;
-    case "ticketNumber-asc":
-      query += "&sort=ticketNumber";
-      break;
-    default:
-      query += "&sort=-createdAt";
-  }
-
+export async function getAllCollaborators(organisationId: string) {
   const token = await getToken();
   if (!token) return;
 
   console.log(organisationId);
   try {
     const res = await fetch(
-      `${DEV_URL}/organisations/${organisationId}/collaborators?${query}`,
+      `${URL}/organisations/${organisationId}/collaborators`,
       {
         headers: {
           "Content-Type": "application/json",

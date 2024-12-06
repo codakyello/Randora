@@ -19,7 +19,14 @@ export default function CollaboratorTable({
     <Modal>
       <Table columns={["5rem, 1fr, 1fr, 3rem"]}>
         <Header
-          headers={["", "Collaborator", <div className="ml-2">Status</div>, ""]}
+          headers={[
+            "",
+            "Collaborator",
+            <div key="status" className="ml-2">
+              Status
+            </div>,
+            "",
+          ]}
         />
         <Menus>
           <Body>

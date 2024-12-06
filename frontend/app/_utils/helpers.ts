@@ -47,7 +47,7 @@ export function getTagName(status: string): string {
     active: "green",
     inactive: "silver",
     pending: "silver",
-    collaborator: "blue",
+    accepted: "green",
   };
 
   type Status = keyof typeof statusToTagName;

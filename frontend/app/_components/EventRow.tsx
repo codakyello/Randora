@@ -138,6 +138,7 @@ export default function EventRow({ event }: { event: Event }) {
                 <HiPencil className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
               }
               onClick={() => {
+                console.log("clicked");
                 router.push(`/dashboard/events/${eventId}/participants`);
               }}
               disabled={isDeleting || isUpdating}
@@ -153,7 +154,9 @@ export default function EventRow({ event }: { event: Event }) {
 
         <ModalOpen name="delete-event">
           <Menus.Button
-            onClick={() => {}}
+            onClick={() => {
+              console.log("clicked");
+            }}
             icon={
               <HiTrash className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
             }
@@ -163,7 +166,7 @@ export default function EventRow({ event }: { event: Event }) {
           </Menus.Button>
         </ModalOpen>
 
-        <ModalWindow name="delete-event">
+        <ModalWindow name="delete-event" listenCapturing={true}>
           <ConfirmDelete
             resourceName="Event"
             isDeleting={isDeleting}

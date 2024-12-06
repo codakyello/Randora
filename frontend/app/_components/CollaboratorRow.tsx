@@ -4,8 +4,6 @@ import { getTagName } from "../_utils/helpers";
 import Tag from "./Tag";
 import Row from "./Row";
 import { Box } from "@chakra-ui/react";
-// import Button from "./Button";
-// import { FaTrash } from "react-icons/fa";
 import Image from "next/image";
 import { deleteCollaborator as deleteCollaboratorApi } from "../_lib/actions";
 import useCustomMutation from "../_hooks/useCustomMutation";
@@ -13,8 +11,7 @@ import { useAuth } from "../_contexts/AuthProvider";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import ConfirmDelete from "./ConfirmDelete";
 import Menus from "./Menu";
-import { HiEye, HiTrash } from "react-icons/hi2";
-import Link from "next/link";
+import { HiTrash } from "react-icons/hi2";
 import toast from "react-hot-toast";
 
 export function CollaboratorRow({
@@ -39,61 +36,64 @@ export function CollaboratorRow({
   return (
     <Row>
       <Box className="flex w-[4.5rem] aspect-square relative items-center ">
-        <Image className="rounded-full" src={image} alt={userName} fill />
+        <Image className="rounded-full" src={image} alt="" fill />
       </Box>
       <Box className="flex flex-col gap-[.2rem]">
         <span className="font-medium">{userName}</span>
         <span className="text-[1.2rem] text-[var(--color-grey-500)]">
-          {email}
+          {status === "accepted" && email}{" "}
+          {status === "accepted" ? (
+            <span>&middot; Collaborator</span>
+          ) : (
+            "Has a pending invite"
+          )}
         </span>
       </Box>
 
       <Tag type={getTagName(status)}>{status.replace("-", " ")}</Tag>
 
-      <Box className="relative z-[9999]">
-        <Menus.Toogle id={_id} />
+      <Menus.Toogle id={_id} />
 
-        <Menus.Menu id={_id}>
-          <ModalOpen name="delete-collaborator">
-            <Menus.Button
-              onClick={() => {}}
-              icon={
-                <HiTrash className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
-              }
-              disabled={isDeleting}
-            >
-              Delete
-            </Menus.Button>
-          </ModalOpen>
+      <Menus.Menu id={_id}>
+        <ModalOpen name="delete-collaborator">
+          <Menus.Button
+            onClick={() => {}}
+            icon={
+              <HiTrash className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+            }
+            disabled={isDeleting}
+          >
+            Delete
+          </Menus.Button>
+        </ModalOpen>
 
-          <ModalWindow name="delete-collaborator">
-            <ConfirmDelete
-              resourceName="Collaborator"
-              isDeleting={isDeleting}
-              onConfirm={() =>
-                currentUser?.organisationId &&
-                deleteCollaborator(
-                  {
-                    organisationId: currentUser.organisationId,
-                    collaboratorId: _id,
-                    token,
+        <ModalWindow name="delete-collaborator" listenCapturing={true}>
+          <ConfirmDelete
+            resourceName="Collaborator"
+            isDeleting={isDeleting}
+            onConfirm={() =>
+              currentUser?.organisationId &&
+              deleteCollaborator(
+                {
+                  organisationId: currentUser.organisationId,
+                  collaboratorId: _id,
+                  token,
+                },
+                {
+                  onSuccess: () => {
+                    toast.success("Collaborator deleted successfully");
+                    closeModal();
+                    closeMenu();
                   },
-                  {
-                    onSuccess: () => {
-                      toast.success("Collaborator deleted successfully");
-                      closeModal();
-                      closeMenu();
-                    },
-                    onError: (error) => {
-                      toast.error(error.message);
-                    },
-                  }
-                )
-              }
-            />
-          </ModalWindow>
-        </Menus.Menu>
-      </Box>
+                  onError: (error) => {
+                    toast.error(error.message);
+                  },
+                }
+              )
+            }
+          />
+        </ModalWindow>
+      </Menus.Menu>
     </Row>
   );
 }

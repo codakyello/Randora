@@ -8,6 +8,8 @@ import CollaboratorTable from "./CollaboratorTable";
 import useCollaborators from "../_hooks/useCollaborators";
 import SpinnerFull from "./SpinnerFull";
 import AddCollaboratorForm from "./AddCollaboratorForm";
+import { useSearchParams } from "next/navigation";
+import { Collaborator } from "../_utils/types";
 
 export default function Collaborators({
   organisationId,
@@ -16,18 +18,46 @@ export default function Collaborators({
 }) {
   const { isLoading, data } = useCollaborators(organisationId);
 
+  const searchParams = useSearchParams();
+
+  const status = searchParams.get("status");
+  const sortBy = searchParams.get("sortBy"); // default to "date"
+
   if (isLoading) return <SpinnerFull />;
 
   const collaborators = data?.collaborators;
+
   const totalCount = data?.totalCount;
+
+  if (!collaborators) return <h2>No collaborators yet</h2>;
+
+  let derivedCollabs = collaborators;
+
+  if (status !== "all") {
+    derivedCollabs = collaborators.filter(
+      (collabs: Collaborator) => collabs.status === status
+    );
+  }
+
+  if (sortBy) {
+    derivedCollabs = [...derivedCollabs].sort((a, b) => {
+      if (sortBy === "username-asc") {
+        return a.userName.localeCompare(b.userName);
+      }
+      if (sortBy === "username-desc") {
+        return b.userName.localeCompare(a.userName);
+      }
+      return 0;
+    });
+  }
 
   return (
     <Menus>
       <Modal>
         <Box className="gap-10 min-h-[65vh] md:min-h-[63.5vh] xl:min-h-[72vh] flex flex-col justify-between">
-          {collaborators?.length ? (
+          {derivedCollabs?.length ? (
             <CollaboratorTable
-              collaborators={collaborators}
+              collaborators={derivedCollabs}
               count={totalCount}
             />
           ) : (
@@ -40,7 +70,7 @@ export default function Collaborators({
           </Box>
 
           <ModalWindow name="add-collaborator" listenCapturing={true}>
-            <AddCollaboratorForm />
+            <AddCollaboratorForm collaborators={collaborators} />
           </ModalWindow>
         </Box>
       </Modal>

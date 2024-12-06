@@ -5,6 +5,7 @@ export type Filter = {
 
 export type Collaborator = {
   _id: string;
+  userId: string;
   userName: string;
   email: string;
   status: string;

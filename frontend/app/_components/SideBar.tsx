@@ -5,6 +5,7 @@ import LogoutButton from "./LogoutButton";
 import UpgradePlan from "./UpgradePlan";
 import { differenceInDays } from "date-fns";
 import { getUser } from "../_lib/data-service";
+import { Box } from "@chakra-ui/react";
 
 export default async function SideBar() {
   const user = await getUser();
@@ -12,6 +13,8 @@ export default async function SideBar() {
   if (user && user.subscriptionExpiryDate) {
     subscriptionExpiryDate = user.subscriptionExpiryDate.trim();
   }
+
+  console.log(subscriptionExpiryDate);
 
   return (
     <>
@@ -27,13 +30,15 @@ export default async function SideBar() {
 
         {/*  render this when the subscription expiry date is less than 7 days */}
 
-        {subscriptionExpiryDate &&
-          differenceInDays(new Date(subscriptionExpiryDate), new Date()) <
-            7 && (
-            <UpgradePlan subscriptionExpiryDate={subscriptionExpiryDate} />
-          )}
+        <Box className="flex flex-col gap-16 mt-auto">
+          {subscriptionExpiryDate &&
+            differenceInDays(new Date(subscriptionExpiryDate), new Date()) <
+              7 && (
+              <UpgradePlan subscriptionExpiryDate={subscriptionExpiryDate} />
+            )}
 
-        <LogoutButton />
+          <LogoutButton />
+        </Box>
       </aside>
     </>
   );

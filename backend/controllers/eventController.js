@@ -67,6 +67,15 @@ module.exports.createEvent = catchAsync(async (req, res) => {
 
 module.exports.updateEvent = catchAsync(async (req, res) => {
   const event = await Event.findById(req.params.id);
+  const { name } = req.body;
+  const filter = event.organisationId
+    ? { name, organisationId: event.organisationId }
+    : { name, userId: event.userId };
+
+  const existingEvent = await Event.findOne(filter);
+  if (existingEvent && existingEvent._id.toString() !== event._id.toString()) {
+    throw new AppError("An event with this name already exists.", 400);
+  }
 
   if (!event) {
     throw new AppError("No event found with that ID.", 404);
