@@ -8,9 +8,11 @@ import Table, { Body, Footer, Header } from "./Table";
 export default function PrizeTable({
   prizes,
   count,
+  actions = true,
 }: {
   prizes: Prize[] | null;
   count: number | null;
+  actions?: boolean;
 }) {
   return (
     <Table columns={["1fr", "1fr", "1fr", "3rem"]}>
@@ -18,7 +20,9 @@ export default function PrizeTable({
 
       <Body
         data={prizes}
-        render={(prize) => <PrizeRow key={prize._id} prize={prize} />}
+        render={(prize) => (
+          <PrizeRow actions={actions} key={prize._id} prize={prize} />
+        )}
       />
 
       <Footer>

@@ -32,7 +32,7 @@ export default function Pagination({ count }: { count: number | null }) {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   };
   return (
-    <Box className="bg-[var(--color-grey-50)] p-[1.2rem] flex items-center">
+    <Box className="min-w-[100%] w-fit bg-[var(--color-grey-50)] p-[1.2rem] flex items-center">
       <span className="text">
         Showing <Strong>{from}</Strong> to <Strong>{to} </Strong>of{" "}
         <Strong>{count}</Strong> results

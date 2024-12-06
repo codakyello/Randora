@@ -13,7 +13,13 @@ import toast from "react-hot-toast";
 import { useAuth } from "../_contexts/AuthProvider";
 import EditPrizeForm from "./EditPrizeForm";
 
-export default function PrizeRow({ prize }: { prize: Prize }) {
+export default function PrizeRow({
+  prize,
+  actions,
+}: {
+  prize: Prize;
+  actions: boolean;
+}) {
   const { name, image, quantity, _id: prizeId } = prize;
 
   const { getToken } = useAuth();
@@ -56,45 +62,49 @@ export default function PrizeRow({ prize }: { prize: Prize }) {
       <p className="font-semibold">{name}</p>
       <p className="font-semibold">{quantity}</p>
       <div className="relative grid items-end justify-end">
-        <Menus.Toogle id={prizeId} />
+        {actions && (
+          <>
+            <Menus.Toogle id={prizeId} />
 
-        <Menus.Menu id={prizeId}>
-          <ModalOpen name="edit-prize">
-            <Menus.Button
-              disabled={isDeleting}
-              onClick={() => {}}
-              icon={
-                <HiPencil className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
-              }
-            >
-              Edit
-            </Menus.Button>
-          </ModalOpen>
+            <Menus.Menu id={prizeId}>
+              <ModalOpen name="edit-prize">
+                <Menus.Button
+                  disabled={isDeleting}
+                  onClick={() => {}}
+                  icon={
+                    <HiPencil className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+                  }
+                >
+                  Edit
+                </Menus.Button>
+              </ModalOpen>
 
-          <ModalWindow name="edit-prize">
-            <EditPrizeForm prizeToEdit={prize} />
-          </ModalWindow>
+              <ModalWindow name="edit-prize" listenCapturing={true}>
+                <EditPrizeForm prizeToEdit={prize} />
+              </ModalWindow>
 
-          <ModalOpen name="delete-prize">
-            <Menus.Button
-              disabled={isDeleting}
-              onClick={() => {}}
-              icon={
-                <HiTrash className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
-              }
-            >
-              Delete
-            </Menus.Button>
-          </ModalOpen>
+              <ModalOpen name="delete-prize">
+                <Menus.Button
+                  disabled={isDeleting}
+                  onClick={() => {}}
+                  icon={
+                    <HiTrash className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+                  }
+                >
+                  Delete
+                </Menus.Button>
+              </ModalOpen>
 
-          <ModalWindow name="delete-prize">
-            <ConfirmDelete
-              resourceName="Prize"
-              isDeleting={isDeleting}
-              onConfirm={handleDelete}
-            />
-          </ModalWindow>
-        </Menus.Menu>
+              <ModalWindow name="delete-prize" listenCapturing={true}>
+                <ConfirmDelete
+                  resourceName="Prize"
+                  isDeleting={isDeleting}
+                  onConfirm={handleDelete}
+                />
+              </ModalWindow>
+            </Menus.Menu>
+          </>
+        )}
       </div>
     </Row>
   );
