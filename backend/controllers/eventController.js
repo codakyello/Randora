@@ -118,8 +118,8 @@ module.exports.deleteEvent = catchAsync(async (req, res) => {
   const event = await Event.findById(id);
 
   if (
-    event.organisationId.toString() !== req.user.organisationId.toString() &&
-    event.userId.toString() !== req.user._id.toString()
+    event.organisationId?.toString() !== req.user.organisationId?.toString() &&
+    event.userId?.toString() !== req.user._id?.toString()
   ) {
     throw new AppError("You do not have permission to access this event.", 404);
   }
@@ -145,8 +145,8 @@ module.exports.getEventParticipants = catchAsync(async (req, res) => {
   const event = await Event.findById(req.params.id);
 
   if (
-    event.organisationId.toString() !== req.user.organisationId.toString() &&
-    event.userId.toString() !== req.user._id.toString()
+    event.organisationId?.toString() !== req.user.organisationId?.toString() &&
+    event.userId?.toString() !== req.user._id?.toString()
   ) {
     throw new AppError("You do not have permission to access this event.", 404);
   }

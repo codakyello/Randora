@@ -19,7 +19,10 @@ export function CollaboratorRow({
 }: {
   collaborator: Collaborator;
 }) {
-  const { _id, userName, email, status, image } = collaborator;
+  const {
+    user: { _id, userName, email, image },
+    status,
+  } = collaborator;
 
   console.log(collaborator);
 
@@ -36,7 +39,7 @@ export function CollaboratorRow({
   return (
     <Row>
       <Box className="flex w-[4.5rem] aspect-square relative items-center ">
-        <Image className="rounded-full" src={image} alt="" fill />
+        <Image className="rounded-full " src={image} alt="" fill />
       </Box>
       <Box className="flex flex-col gap-[.2rem]">
         <span className="font-medium">{userName}</span>

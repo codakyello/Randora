@@ -12,7 +12,7 @@ export default function EventStats({
   prizes: Prize[];
   participants: Participant[];
 }) {
-  const winners = participants.filter((participant) => participant.prize);
+  const winners = participants?.filter((participant) => participant.prize);
   const stats = [
     {
       title: "Participants",
@@ -20,7 +20,7 @@ export default function EventStats({
       statColor: "black",
       titleColor: "black",
       description: "Unique participants filtered by email.",
-      value: totalParticipants,
+      value: totalParticipants || 0,
     },
     {
       title: "Winners",
@@ -28,7 +28,7 @@ export default function EventStats({
       statColor: "primary",
       titleColor: "grey",
       description: `Winners for ${event.name}`,
-      value: winners.length,
+      value: winners?.length || 0,
     },
     {
       title: "Prizes",
@@ -36,7 +36,7 @@ export default function EventStats({
       statColor: "primary",
       titleColor: "grey",
       description: `Prizes for ${event.name}`,
-      value: prizes.length,
+      value: prizes?.length || 0,
     },
   ];
 

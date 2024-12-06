@@ -26,10 +26,12 @@ export default function Collaborators({
   if (isLoading) return <SpinnerFull />;
 
   const collaborators = data?.collaborators;
-
+  console.log(collaborators);
   const totalCount = data?.totalCount;
 
   if (!collaborators) return <h2>No collaborators yet</h2>;
+
+  console.log(collaborators);
 
   let derivedCollabs = collaborators;
 
@@ -42,10 +44,10 @@ export default function Collaborators({
   if (sortBy) {
     derivedCollabs = [...derivedCollabs].sort((a, b) => {
       if (sortBy === "username-asc") {
-        return a.userName.localeCompare(b.userName);
+        return a.user.userName.localeCompare(b.user.userName);
       }
       if (sortBy === "username-desc") {
-        return b.userName.localeCompare(a.userName);
+        return b.user.userName.localeCompare(a.user.userName);
       }
       return 0;
     });

@@ -65,8 +65,7 @@ module.exports.sendInvite = catchAsync(async (req, res) => {
   if (!user) throw new AppError("User not found", 404);
 
   const invite = {
-    email: user.email,
-    userName: user.userName,
+    user: user._id,
     token,
     expiresAt,
     status: "pending",
@@ -112,15 +111,14 @@ module.exports.respondToInvite = catchAsync(async (req, res) => {
   );
   const collaborator = organisation.collaborators[collaboratorIndex];
 
-  const user = await User.findOne({ email: collaborator.email });
+  const user = await User.findById(collaborator.user);
   if (!user) return res.status(404).json({ error: "User not found" });
 
   if (accept) {
     // Accept invite
     organisation.collaborators[collaboratorIndex].status = "accepted";
-    organisation.collaborators[collaboratorIndex].userId = user._id;
 
-    // save organisation id in user
+    // Setting organisationId is the cheese
     user.organisationId = organisation._id;
     await user.save();
 
@@ -139,10 +137,10 @@ module.exports.getCollaborators = catchAsync(async (req, res) => {
   console.log(organisationId);
   console.log("getting collaborators");
 
-  const organisation = await Organisation.findById(organisationId).select(
-    "collaborators"
-  );
-  console.log(organisation);
+  const organisation = await Organisation.findById(organisationId)
+    .select("collaborators")
+    .populate("collaborators.user");
+
   if (!organisation)
     throw new AppError("No organisation found with this ID", 404);
   return sendSuccessResponseData(
@@ -163,8 +161,6 @@ module.exports.deleteCollaborator = catchAsync(async (req, res) => {
     "this is organisation controller"
   );
 
-  //delete collaborator by their collaboratorId
-
   if (!collaboratorId) throw new AppError("Collaborator ID is required", 400);
 
   const organisation = await Organisation.findById(organisationId);
@@ -172,18 +168,15 @@ module.exports.deleteCollaborator = catchAsync(async (req, res) => {
   if (!organisation)
     throw new AppError("No organisation found with this ID", 404);
 
-  console.log(organisation.collaborators, "organisation.collaborators");
   const collaboratorIndex = organisation.collaborators.findIndex(
     (collaborator) => collaborator._id.toString() === collaboratorId.toString()
   );
-
-  console.log(collaboratorIndex, "collaboratorIndex");
 
   if (collaboratorIndex === -1)
     throw new AppError("Collaborator not found", 404);
 
   await User.updateOne(
-    { email: organisation.collaborators[collaboratorIndex].email },
+    { _id: organisation.collaborators[collaboratorIndex].user },
     { $set: { organisationId: null } }
   );
   organisation.collaborators.splice(collaboratorIndex, 1);

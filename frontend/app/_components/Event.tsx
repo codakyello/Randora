@@ -59,7 +59,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
               prizes={prizes}
             />
           </Box>
-          {participants.length > 0 ? (
+          {participants?.length > 0 ? (
             <Box className="space-y-5 mt-16">
               <div className="flex justify-between items-end">
                 <h2>Participants</h2>
@@ -73,7 +73,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
               </div>
               <ParticipantTable
                 actions={false}
-                participants={participants.slice(0, 5)}
+                participants={participants?.slice(0, 5)}
                 count={5}
               />
             </Box>
@@ -87,7 +87,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
                 Add Participants
               </Link>
 
-              {prizes.length === 0 && (
+              {!prizes?.length && (
                 <Box className=" flex-col flex items-center mt-16">
                   <h2>No prizes yet</h2>
                   <Link
@@ -101,7 +101,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
             </Box>
           )}
 
-          {prizes.length > 0 && (
+          {prizes?.length > 0 && (
             <Box className="space-y-5 mt-16">
               <div className="flex justify-between items-end">
                 <h2>Prizes</h2>
@@ -115,7 +115,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
               </div>
               <PrizeTable
                 actions={false}
-                prizes={prizes.slice(0, 5)}
+                prizes={prizes?.slice(0, 5)}
                 count={5}
               />
             </Box>

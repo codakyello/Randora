@@ -190,7 +190,7 @@ export default function AddCollaboratorForm({
               ?.filter((user: User) => currentUser?._id !== user._id)
               ?.map((user: User, index: number) => {
                 const collaborator = collaborators.find(
-                  (collab) => collab.email === user.email
+                  (collab) => collab.user.email === user.email
                 );
 
                 if (collaborator)

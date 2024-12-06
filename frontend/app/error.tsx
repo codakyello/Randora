@@ -12,7 +12,7 @@ export default function Error({
 }) {
   console.log(error);
   return (
-    <main className="flex h-screen justify-center items-center flex-col gap-6 mt-8">
+    <main className="flex h-screen bg-[var(--color-grey-0)] justify-center items-center flex-col gap-6">
       <h1 className="text-[3rem] font-semibold">Something went wrong!</h1>
       <p className="text-[1.8rem]">Please try again later.</p>
 
