@@ -32,6 +32,13 @@ router
     eventController.deleteEventParticipants
   );
 
+router
+  .route("/:id/all-participants")
+  .get(
+    authenticate,
+    authorize("user", "admin"),
+    eventController.getEventAllParticipants
+  );
 // get all event prizes
 router
   .route("/:id/prizes")

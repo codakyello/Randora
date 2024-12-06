@@ -1,7 +1,18 @@
 import Stat from "./Stat";
-import { Event } from "../_utils/types";
+import { Event, Participant, Prize } from "../_utils/types";
 
-export default function EventStats({ event }: { event: Event }) {
+export default function EventStats({
+  event,
+  totalParticipants,
+  prizes,
+  participants,
+}: {
+  event: Event;
+  totalParticipants: number;
+  prizes: Prize[];
+  participants: Participant[];
+}) {
+  const winners = participants.filter((participant) => participant.prize);
   const stats = [
     {
       title: "Participants",
@@ -9,7 +20,7 @@ export default function EventStats({ event }: { event: Event }) {
       statColor: "black",
       titleColor: "black",
       description: "Unique participants filtered by email.",
-      value: event.participantCount,
+      value: totalParticipants,
     },
     {
       title: "Winners",
@@ -17,7 +28,15 @@ export default function EventStats({ event }: { event: Event }) {
       statColor: "primary",
       titleColor: "grey",
       description: `Winners for ${event.name}`,
-      value: event.prizeCount,
+      value: winners.length,
+    },
+    {
+      title: "Prizes",
+      backgroundColor: "grey",
+      statColor: "primary",
+      titleColor: "grey",
+      description: `Prizes for ${event.name}`,
+      value: prizes.length,
     },
   ];
 

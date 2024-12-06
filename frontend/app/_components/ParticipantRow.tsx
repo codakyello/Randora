@@ -15,8 +15,10 @@ import { useAuth } from "../_contexts/AuthProvider";
 
 export default function ParticipantRow({
   participant,
+  actions = true,
 }: {
   participant: Participant;
+  actions?: boolean;
 }) {
   const { close: closeModal } = useModal();
 
@@ -68,49 +70,51 @@ export default function ParticipantRow({
         </Box>
       )}
 
-      <Box className="relative">
-        <Menus.Toogle id={participantId} />
+      {actions && (
+        <>
+          <Menus.Toogle id={participantId} />
 
-        <Menus.Menu id={participantId}>
-          <ModalOpen name="edit-participant">
-            <Menus.Button
-              disabled={false}
-              onClick={() => {}}
-              icon={
-                <HiPencil className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
-              }
-            >
-              Edit
-            </Menus.Button>
-          </ModalOpen>
+          <Menus.Menu id={participantId}>
+            <ModalOpen name="edit-participant">
+              <Menus.Button
+                disabled={false}
+                onClick={() => {}}
+                icon={
+                  <HiPencil className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+                }
+              >
+                Edit
+              </Menus.Button>
+            </ModalOpen>
 
-          <ModalWindow name="edit-participant">
-            <CreateEditParticipantForm participantToEdit={participant} />
-          </ModalWindow>
+            <ModalWindow name="edit-participant" listenCapturing={true}>
+              <CreateEditParticipantForm participantToEdit={participant} />
+            </ModalWindow>
 
-          <ModalOpen name="delete-participant">
-            <Menus.Button
-              onClick={() => {}}
-              icon={
-                <HiTrash className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
-              }
-              disabled={isDeleting}
-            >
-              <div className="w-full">Delete</div>
-            </Menus.Button>
-          </ModalOpen>
+            <ModalOpen name="delete-participant">
+              <Menus.Button
+                onClick={() => {}}
+                icon={
+                  <HiTrash className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+                }
+                disabled={isDeleting}
+              >
+                <div className="w-full">Delete</div>
+              </Menus.Button>
+            </ModalOpen>
 
-          <ModalWindow name="delete-participant">
-            <ConfirmDelete
-              resourceName="Participant"
-              isDeleting={isDeleting}
-              onConfirm={() => {
-                handleDelete();
-              }}
-            />
-          </ModalWindow>
-        </Menus.Menu>
-      </Box>
+            <ModalWindow name="delete-participant" listenCapturing={true}>
+              <ConfirmDelete
+                resourceName="Participant"
+                isDeleting={isDeleting}
+                onConfirm={() => {
+                  handleDelete();
+                }}
+              />
+            </ModalWindow>
+          </Menus.Menu>
+        </>
+      )}
     </Row>
   );
 }

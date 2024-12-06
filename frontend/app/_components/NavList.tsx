@@ -24,7 +24,7 @@ export default function NavList({
       ? [
           { name: "Dashboard", icon: <HomeIcon />, link: "/dashboard" },
           {
-            name: "Giveaways",
+            name: "Events",
             icon: <CalendarDaysIcon />,
             link: "/dashboard/events",
           },

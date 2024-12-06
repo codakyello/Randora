@@ -21,7 +21,18 @@ module.exports.getAllEvents = catchAsync(async (req, res) => {
 
 // get events
 module.exports.getEvent = catchAsync(async (req, res) => {
+  // check if the user owns the event
+  const user = req.user;
   const event = await Event.findById(req.params.id).populate("creator");
+
+  // check if the user owns the event
+  //
+  if (
+    event.organisationId?.toString() !== user.organisationId?.toString() &&
+    event.userId?.toString() !== user._id?.toString()
+  ) {
+    throw new AppError("You do not have permission to access this event.", 404);
+  }
 
   if (!event) {
     throw new AppError("No event found with that ID.", 404);
@@ -59,7 +70,7 @@ module.exports.createEvent = catchAsync(async (req, res) => {
     ...req.body,
     ...(organisationId
       ? { organisationId, creator: req.user.id }
-      : { userId: req.user.id }),
+      : { userId: req.user.id, creator: req.user.id }),
   });
 
   sendSuccessResponseData(res, "event", newEvent);
@@ -67,6 +78,14 @@ module.exports.createEvent = catchAsync(async (req, res) => {
 
 module.exports.updateEvent = catchAsync(async (req, res) => {
   const event = await Event.findById(req.params.id);
+
+  if (
+    event.organisationId.toString() !== req.user.organisationId.toString() &&
+    event.userId.toString() !== req.user._id.toString()
+  ) {
+    throw new AppError("You do not have permission to access this event.", 404);
+  }
+
   const { name } = req.body;
   const filter = event.organisationId
     ? { name, organisationId: event.organisationId }
@@ -97,6 +116,13 @@ module.exports.deleteEvent = catchAsync(async (req, res) => {
   const { id } = req.params;
 
   const event = await Event.findById(id);
+
+  if (
+    event.organisationId.toString() !== req.user.organisationId.toString() &&
+    event.userId.toString() !== req.user._id.toString()
+  ) {
+    throw new AppError("You do not have permission to access this event.", 404);
+  }
   if (!event) {
     throw new AppError("No event found with that ID.", 404);
   }
@@ -116,6 +142,15 @@ module.exports.deleteEvent = catchAsync(async (req, res) => {
 });
 
 module.exports.getEventParticipants = catchAsync(async (req, res) => {
+  const event = await Event.findById(req.params.id);
+
+  if (
+    event.organisationId.toString() !== req.user.organisationId.toString() &&
+    event.userId.toString() !== req.user._id.toString()
+  ) {
+    throw new AppError("You do not have permission to access this event.", 404);
+  }
+
   const apiFeatures = new APIFEATURES(
     Participant.find({ eventId: req.params.id }),
     req.query
@@ -134,7 +169,34 @@ module.exports.getEventParticipants = catchAsync(async (req, res) => {
   sendSuccessResponseData(res, "participants", participants, totalCount);
 });
 
+module.exports.getEventAllParticipants = catchAsync(async (req, res) => {
+  const event = await Event.findById(req.params.id);
+
+  if (
+    event.organisationId.toString() !== req.user.organisationId.toString() &&
+    event.userId.toString() !== req.user._id.toString()
+  ) {
+    throw new AppError("You do not have permission to access this event.", 404);
+  }
+
+  const participants = await Participant.find({ eventId: req.params.id });
+
+  const totalCount = await Participant.find({
+    eventId: req.params.id,
+  }).countDocuments();
+
+  sendSuccessResponseData(res, "participants", participants, totalCount);
+});
+
 module.exports.getEventPrizes = catchAsync(async (req, res) => {
+  const event = await Event.findById(req.params.id);
+
+  if (
+    event.organisationId.toString() !== req.user.organisationId.toString() &&
+    event.userId.toString() !== req.user._id.toString()
+  ) {
+    throw new AppError("You do not have permission to access this event.", 404);
+  }
   const apiFeatures = new APIFEATURES(
     Prize.find({ eventId: req.params.id }),
     req.query

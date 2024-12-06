@@ -471,31 +471,44 @@ export async function getAllEvents() {
 }
 
 export async function getEvent(eventId: string) {
-  const token = await getToken();
+  let statusCode;
+  try {
+    const token = await getToken();
 
-  console.log(token);
-  if (!token) return;
+    console.log(token);
+    if (!token) return;
 
-  const res = await fetch(`${URL}/users/me/events/${eventId}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    const res = await fetch(`${URL}/events/${eventId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (!res.ok) {
-    throw new Error(data.message);
+    statusCode = res.status;
+
+    if (!res.ok) {
+      throw new Error(data.message);
+    }
+
+    const {
+      data: { event },
+    } = data;
+
+    return { event };
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", statusCode, message: err.message };
+    } else {
+      return {
+        status: "error",
+        statusCode,
+        message: "An unknown error occurred",
+      };
+    }
   }
-
-  const {
-    totalCount,
-    results,
-    data: { events },
-  } = data;
-
-  return { events, totalCount, results };
 }
 
 export async function getEventParticipants(
@@ -506,6 +519,7 @@ export async function getEventParticipants(
     sortBy: string | null;
   }
 ) {
+  let statusCode;
   let query = "";
 
   const page = searchParams.page || 1;
@@ -549,6 +563,7 @@ export async function getEventParticipants(
 
     const data = await res.json();
 
+    statusCode = res.status;
     if (!res.ok) throw new Error(data.message);
 
     const {
@@ -560,9 +575,52 @@ export async function getEventParticipants(
     return { participants, totalCount, results };
   } catch (err) {
     if (err instanceof Error) {
-      return { status: "error", message: err.message };
+      return { status: "error", statusCode, message: err.message };
     } else {
-      return { status: "error", message: "An unknown error occurred" };
+      return {
+        status: "error",
+        statusCode,
+        message: "An unknown error occurred",
+      };
+    }
+  }
+}
+
+export async function getAllEventParticipants(eventId: string) {
+  let statusCode;
+
+  const token = await getToken();
+  if (!token) return;
+
+  try {
+    const res = await fetch(`${URL}/events/${eventId}/all-participants`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    statusCode = res.status;
+    if (!res.ok) throw new Error(data.message);
+
+    const {
+      totalCount,
+      results,
+      data: { participants },
+    } = data;
+
+    return { participants, totalCount, results };
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", statusCode, message: err.message };
+    } else {
+      return {
+        status: "error",
+        statusCode,
+        message: "An unknown error occurred",
+      };
     }
   }
 }
@@ -577,7 +635,7 @@ export async function getEventPrizes(
 ) {
   const token = await getToken();
   if (!token) return;
-
+  let statusCode;
   let query = "";
 
   const page = searchParams.page || 1;
@@ -619,6 +677,7 @@ export async function getEventPrizes(
 
     const data = await res.json();
 
+    statusCode = res.status;
     if (!res.ok) throw new Error(data.message);
 
     const {
@@ -630,9 +689,13 @@ export async function getEventPrizes(
     return { prizes, totalCount, results };
   } catch (err) {
     if (err instanceof Error) {
-      return { status: "error", message: err.message };
+      return { status: "error", statusCode, message: err.message };
     } else {
-      return { status: "error", message: "An unknown error occurred" };
+      return {
+        status: "error",
+        statusCode,
+        message: "An unknown error occurred",
+      };
     }
   }
 }

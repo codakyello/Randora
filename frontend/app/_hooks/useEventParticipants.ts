@@ -1,6 +1,6 @@
 "use client";
 import { getEventParticipants } from "../_lib/data-service";
-import { useSearchParams } from "next/navigation";
+import { notFound, useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useEventParticipants(eventId: string) {
@@ -12,14 +12,11 @@ export default function useEventParticipants(eventId: string) {
     sortBy: searchParams.get("sortBy"),
   };
 
-  const {
-    data = { participants: [], totalCount: 0 },
-    error,
-    isLoading,
-  } = useQuery({
+  const { data, error, isLoading } = useQuery({
     queryKey: [`events/${eventId}/participants`, queryParams],
     queryFn: () => getEventParticipants(eventId, queryParams),
   });
+  if (data?.statusCode === 404) return notFound();
 
   return { data, error, isLoading };
 }

@@ -20,8 +20,8 @@ export default function Collaborators({
 
   const searchParams = useSearchParams();
 
-  const status = searchParams.get("status");
-  const sortBy = searchParams.get("sortBy"); // default to "date"
+  const status = searchParams.get("status") || "all";
+  const sortBy = searchParams.get("sortBy") || "username-asc";
 
   if (isLoading) return <SpinnerFull />;
 

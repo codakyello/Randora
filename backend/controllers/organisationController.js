@@ -168,18 +168,24 @@ module.exports.deleteCollaborator = catchAsync(async (req, res) => {
   if (!collaboratorId) throw new AppError("Collaborator ID is required", 400);
 
   const organisation = await Organisation.findById(organisationId);
+
   if (!organisation)
     throw new AppError("No organisation found with this ID", 404);
 
+  console.log(organisation.collaborators, "organisation.collaborators");
   const collaboratorIndex = organisation.collaborators.findIndex(
-    (collaborator) => collaborator._id === collaboratorId
+    (collaborator) => collaborator._id.toString() === collaboratorId.toString()
   );
 
   console.log(collaboratorIndex, "collaboratorIndex");
 
-  // if (collaboratorIndex === -1)
-  //   throw new AppError("Collaborator not found", 404);
+  if (collaboratorIndex === -1)
+    throw new AppError("Collaborator not found", 404);
 
+  await User.updateOne(
+    { email: organisation.collaborators[collaboratorIndex].email },
+    { $set: { organisationId: null } }
+  );
   organisation.collaborators.splice(collaboratorIndex, 1);
   await organisation.save();
 
