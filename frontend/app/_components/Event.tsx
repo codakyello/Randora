@@ -27,6 +27,8 @@ export default function Event({ params }: { params: { eventId: string } }) {
   const event = data?.event;
   const participants = participantsData?.participants;
   const prizes = prizesData?.prizes;
+
+  console.log(prizes);
   const totalCount = participantsData?.totalCount;
 
   const creator = event?.creator;
@@ -54,7 +56,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
             prizes={prizes}
           />
         </Box>
-        {participants ? (
+        {participants.length > 0 ? (
           <Box className="space-y-5 mt-16">
             <div className="flex justify-between items-end">
               <h2>Participants</h2>
@@ -73,7 +75,27 @@ export default function Event({ params }: { params: { eventId: string } }) {
             />
           </Box>
         ) : (
-          <h2>No Participants Found</h2>
+          <Box className="flex flex-col items-center justify-center h-[50vh]">
+            <h2>No participants yet</h2>
+            <Link
+              className="text-[var(--color-primary)]"
+              href={`/dashboard/events/${eventId}/participants`}
+            >
+              Add Participants
+            </Link>
+
+            {prizes.length === 0 && (
+              <Box className=" flex-col flex items-center mt-16">
+                <h2>No prizes yet</h2>
+                <Link
+                  className="text-[var(--color-primary)]"
+                  href={`/dashboard/events/${eventId}/prizes`}
+                >
+                  Add Prizes
+                </Link>
+              </Box>
+            )}
+          </Box>
         )}
       </Box>
     </Menus>
