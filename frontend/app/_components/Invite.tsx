@@ -97,7 +97,7 @@ export default function Invite({
             Accept
           </Button>
           <Button onClick={handleDecline} className="w-[15rem]" type="cancel">
-            {isDeclining ? <SpinnerMini className="text-white" /> : "Decline"}
+            {isDeclining ? <SpinnerMini className="!text-white" /> : "Decline"}
           </Button>
         </Box>
 
