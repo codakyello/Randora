@@ -109,7 +109,7 @@ export default function Invite({
         <Box className="mt-[1rem] items-start text-start  flex flex-col gap-[2rem]">
           <Box className="text-[var(--color-grey-500)]">
             <p className=" mb-2">If you accepts you&apos;ll be able to;</p>
-            <ul className="leading-10 list-disc list-inside">
+            <ul className="leading-[3rem] list-disc list-inside">
               <li>View and edit organisation events </li>
               <li>Create new organisation events</li>
               <li>View organisation analytics</li>
@@ -118,7 +118,7 @@ export default function Invite({
 
           <Box className="text-start text-[var(--color-grey-500)]">
             <p className=" mb-2">Owner of Octa will be able to see:</p>
-            <ul className="leading-10 list-disc list-inside">
+            <ul className="leading-[3rem] list-disc list-inside">
               <li>Your public profile information</li>
               <li>Your email address </li>
               <li>Your userName</li>
