@@ -29,7 +29,7 @@ export default function Invite({
   organisationId: string;
 }) {
   const [isAccepting, setIsAccepting] = useState(false);
-  const [isDeclining, setIsDeclining] = useState(true);
+  const [isDeclining, setIsDeclining] = useState(false);
   const router = useRouter();
   const handleAccept = async () => {
     setIsAccepting(true);
