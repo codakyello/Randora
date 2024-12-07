@@ -5,7 +5,6 @@ import Button from "./Button";
 import Input from "./Input";
 import { useEffect, useState } from "react";
 import SpinnerMini from "./SpinnerMini";
-import Image from "next/image";
 import { Collaborator, User } from "../_utils/types";
 import { useAuth } from "../_contexts/AuthProvider";
 import { sendInvite as sendInviteApi } from "../_lib/actions";
@@ -137,11 +136,13 @@ export default function AddCollaboratorForm({
         <>
           <Box className="grid border rounded-[var(--border-radius-md)] border-[var(--color-primary)] cursor-pointer px-[2rem] py-[1.5rem] items-center gap-[3rem] grid-cols-[3rem_1fr_3rem]">
             <Box className="flex w-[4.5rem] aspect-square relative items-center ">
-              <Image
-                src={selectedUser.image}
-                alt="avatar"
-                fill
-                className="rounded-full"
+              <Box
+                className="flex w-[7rem] aspect-square relative items-center rounded-full"
+                style={{
+                  backgroundImage: `url(${selectedUser.image})`,
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                }}
               />
             </Box>
             <Box>
@@ -181,8 +182,8 @@ export default function AddCollaboratorForm({
             placeholder="Find collaborator"
             required={true}
             className="w-full"
-            name="email"
-            id="my-email"
+            name="search"
+            id="search"
           />
 
           <Box className="w-full max-h-[30rem] overflow-y-scroll">
@@ -211,14 +212,14 @@ export default function AddCollaboratorForm({
                         : "opacity-50"
                     } py-[1.5rem] items-center gap-[3rem] grid-cols-[3rem_1fr]`}
                   >
-                    <Box className="flex w-[4.5rem] aspect-square relative items-center">
-                      <Image
-                        src={user.image}
-                        alt="avatar"
-                        fill
-                        className="rounded-full"
-                      />
-                    </Box>
+                    <Box
+                      className="flex w-[4.5rem] aspect-square relative items-center rounded-full"
+                      style={{
+                        backgroundImage: `url(${user.image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    />
                     <Box>
                       <p className="font-semibold text-[var(--color-primary)]">
                         {user.userName}
@@ -246,11 +247,13 @@ export default function AddCollaboratorForm({
                     } py-[1.5rem] items-center gap-[3rem] grid-cols-[3rem_1fr]`}
                   >
                     <Box className="flex w-[4.5rem] aspect-square relative items-center">
-                      <Image
-                        src={user.image}
-                        alt="avatar"
-                        fill
-                        className="rounded-full"
+                      <Box
+                        className="flex w-[4.5rem] aspect-square relative items-center rounded-full"
+                        style={{
+                          backgroundImage: `url(${user.image})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }}
                       />
                     </Box>
                     <Box>

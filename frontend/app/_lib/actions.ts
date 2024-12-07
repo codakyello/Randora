@@ -3,7 +3,7 @@
 import { EventForm, ParticipantForm, PrizeForm, User } from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
-const DEV_URL = "http://localhost:5000/api/v1";
+// const DEV_URL = "http://localhost:5000/api/v1";
 
 export async function createParticipant({
   participantForm,
@@ -177,7 +177,7 @@ export async function deleteEvent({
 
   console.log(token);
 
-  const res = await fetch(`${DEV_URL}/events/${eventId}`, {
+  const res = await fetch(`${URL}/events/${eventId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -284,7 +284,7 @@ export async function sendInvite({
   // wrap in try catch
 
   const res = await fetch(
-    `${DEV_URL}/organisations/${organisationId}/collaborators/invite`,
+    `${URL}/organisations/${organisationId}/collaborators/invite`,
     {
       method: "POST",
       headers: {

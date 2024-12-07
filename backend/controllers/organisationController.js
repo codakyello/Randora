@@ -7,7 +7,9 @@ const crypto = require("crypto");
 const { catchAsync, sendSuccessResponseData } = require("../utils/helpers");
 
 module.exports.validateInvite = catchAsync(async (req, res) => {
-  const { token } = req.body;
+  const { token } = req.query;
+
+  console.log(token, "this is token");
 
   if (!token) return res.status(400).json({ error: "Token is required" });
 
@@ -16,22 +18,45 @@ module.exports.validateInvite = catchAsync(async (req, res) => {
     {
       "collaborators.token": token,
       "collaborators.expiresAt": { $gt: new Date() },
-    },
-    { "collaborators.$": 1 } // Return only the matched collaborator
+    }
+    // Return only the matched collaborator
   );
+
+  if (!organisation) throw new AppError("Invite not found or has expired", 404);
+
+  // get the collaborator
+
+  const collaboratorIndex = organisation.collaborators.findIndex(
+    (c) => c.token === token
+  );
+  const collaborator = organisation.collaborators[collaboratorIndex];
 
   if (!organisation || !organisation.collaborators.length) {
     return res.status(404).json({ error: "Invite not found or has expired" });
   }
 
-  const invite = organisation.collaborators[0];
+  console.log(organisation, "this is organisation");
+
+  // lets return organisation owner userName, image
+  console.log(organisation.owner, "this is organisation owner");
+  const owner = await User.findById(organisation.owner);
+
+  if (!owner) throw new AppError("Owner not found", 404);
 
   return res.status(200).json({
     status: "success",
     data: {
-      email: invite.email,
-      expiresAt: invite.expiresAt,
-      status: invite.status,
+      owner: {
+        userName: owner.userName,
+        image: owner.image,
+        organisationName: organisation.name,
+      },
+      invite: {
+        userName: collaborator.user.userName,
+        image: collaborator.user.image,
+        expiresAt: collaborator.expiresAt,
+        status: collaborator.status,
+      },
     },
   });
 });
@@ -71,12 +96,12 @@ module.exports.sendInvite = catchAsync(async (req, res) => {
     status: "pending",
   };
 
-  const inviteUrl = `${FRONTEND_URL}/collaborators/invite?token=${token}`;
+  const inviteUrl = `${FRONTEND_URL}/organisation/${organisationId}/invite?token=${token}`;
+
   const inviter = await User.findById(organisation.owner);
 
   try {
     const email = new Email(user);
-
     await email.sendInvite(inviteUrl, inviter.userName);
   } catch (err) {
     throw new AppError("There was a problem sending the invite", 500);
@@ -91,11 +116,11 @@ module.exports.sendInvite = catchAsync(async (req, res) => {
 });
 
 module.exports.respondToInvite = catchAsync(async (req, res) => {
-  const { accept, token } = req.body;
-
-  if (!token) return res.status(400).json({ error: "Token is required" });
+  const { accept } = req.body;
+  const token = req.query.token;
+  if (!token) throw new AppError("Token is required", 400);
   if (accept === undefined)
-    return res.status(400).json({ error: "Accept parameter is required" });
+    throw new AppError("Accept parameter is required", 400);
 
   // Find organisation and match the invite by token and expiry
   const organisation = await Organisation.findOne({
@@ -103,8 +128,9 @@ module.exports.respondToInvite = catchAsync(async (req, res) => {
     "collaborators.expiresAt": { $gt: new Date() },
   });
 
-  if (!organisation)
-    return res.status(404).json({ error: "Invite not found or has expired" });
+  if (!organisation) throw new AppError("Invite not found or has expired", 404);
+  const owner = await User.findById(organisation.owner);
+  if (!owner) throw new AppError("Owner not found", 404);
 
   const collaboratorIndex = organisation.collaborators.findIndex(
     (c) => c.token === token
@@ -112,22 +138,40 @@ module.exports.respondToInvite = catchAsync(async (req, res) => {
   const collaborator = organisation.collaborators[collaboratorIndex];
 
   const user = await User.findById(collaborator.user);
-  if (!user) return res.status(404).json({ error: "User not found" });
+  if (!user) throw new AppError("User not found", 404);
 
+  console.log("in respond to invite");
   if (accept) {
+    console.log("trying to accept invite");
     // Accept invite
+    try {
+      const email = new Email(owner);
+      await email.acceptedInvite(user.userName);
+    } catch (err) {
+      console.log(err);
+    }
     organisation.collaborators[collaboratorIndex].status = "accepted";
+    organisation.collaborators[collaboratorIndex].token = undefined;
+    organisation.collaborators[collaboratorIndex].expiresAt = undefined;
 
     // Setting organisationId is the cheese
     user.organisationId = organisation._id;
-    await user.save();
+    await user.save({ validateBeforeSave: false });
 
+    console.log("invite accepted");
     await organisation.save();
     return res.status(200).json({ message: "Invite accepted successfully" });
   } else {
     // Decline invite
     organisation.collaborators.splice(collaboratorIndex, 1); // Remove invite
     await organisation.save();
+
+    try {
+      const email = new Email(owner);
+      await email.declinedInvite(user.userName);
+    } catch (err) {
+      console.log(err);
+    }
     return res.status(200).json({ message: "Invite declined" });
   }
 });
@@ -174,6 +218,21 @@ module.exports.deleteCollaborator = catchAsync(async (req, res) => {
 
   if (collaboratorIndex === -1)
     throw new AppError("Collaborator not found", 404);
+
+  const collaborator = organisation.collaborators[collaboratorIndex];
+  const user = collaborator.user;
+
+  const status = collaborator.status;
+  const owner = await User.findById(organisation.owner);
+
+  if (status === "accepted") {
+    try {
+      const email = new Email(user);
+      await email.removedFromOrganization(owner.userName, organisation.name);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   await User.updateOne(
     { _id: organisation.collaborators[collaboratorIndex].user },

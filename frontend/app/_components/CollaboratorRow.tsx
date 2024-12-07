@@ -4,7 +4,6 @@ import { getTagName } from "../_utils/helpers";
 import Tag from "./Tag";
 import Row from "./Row";
 import { Box } from "@chakra-ui/react";
-import Image from "next/image";
 import { deleteCollaborator as deleteCollaboratorApi } from "../_lib/actions";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import { useAuth } from "../_contexts/AuthProvider";
@@ -22,6 +21,7 @@ export function CollaboratorRow({
   const {
     user: { _id, userName, email, image },
     status,
+    _id: collaboratorId,
   } = collaborator;
 
   console.log(collaborator);
@@ -38,9 +38,14 @@ export function CollaboratorRow({
 
   return (
     <Row>
-      <Box className="flex w-[4.5rem] aspect-square relative items-center ">
-        <Image className="rounded-full " src={image} alt="" fill />
-      </Box>
+      <Box
+        className="flex w-[4.5rem] aspect-square relative items-center rounded-full"
+        style={{
+          backgroundImage: `url(${image})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      />
       <Box className="flex flex-col gap-[.2rem]">
         <span className="font-medium">{userName}</span>
         <span className="text-[1.2rem] text-[var(--color-grey-500)]">
@@ -79,7 +84,7 @@ export function CollaboratorRow({
               deleteCollaborator(
                 {
                   organisationId: currentUser.organisationId,
-                  collaboratorId: _id,
+                  collaboratorId,
                   token,
                 },
                 {

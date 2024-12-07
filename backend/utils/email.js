@@ -17,7 +17,7 @@ class Email {
     this.user = user;
   }
 
-  async send({ file, subject, receiverName, inviterName, body = {} }) {
+  async send({ file, subject, body = {} }) {
     console.log("sending");
     const html = await ejs.renderFile(
       path.join(__dirname, "../emails", `${file}.ejs`),
@@ -25,10 +25,13 @@ class Email {
         otp: body.otp,
         url: body.resetUrl,
         userName: this.user.userName,
-        inviterName: inviterName,
-        receiverName: receiverName,
+        inviterName: body.inviterName,
+        receiverName: body.receiverName,
+        inviteUrl: body.inviteUrl,
+        organisationName: body.organisationName,
         trackingUrl: "#",
         supportUrl: "#",
+        ownerName: body.ownerName,
       }
     );
 
@@ -69,12 +72,11 @@ class Email {
     });
   }
 
-  async sendInvite(inviteUrl, inviterName) {
+  async sendInvite(inviteUrl, inviterName, organisationName) {
     await this.send({
       file: "invite",
       subject: "You're Invited!",
-      body: { inviteUrl },
-      inviterName,
+      body: { inviteUrl, inviterName, organisationName },
     });
   }
 
@@ -82,15 +84,23 @@ class Email {
     await this.send({
       file: "accepted",
       subject: "Your invite has been accepted!",
-      receiverName,
+      body: { receiverName },
     });
   }
 
   async declinedInvite(receiverName) {
     await this.send({
-      file: "delined",
+      file: "declined",
       subject: "Your invite has been declined!",
-      receiverName,
+      body: { receiverName },
+    });
+  }
+
+  async removedFromOrganization(ownerName, organisationName) {
+    await this.send({
+      file: "removed",
+      subject: "You have been removed from an organization",
+      body: { ownerName, organisationName },
     });
   }
 }

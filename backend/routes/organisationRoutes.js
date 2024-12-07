@@ -37,7 +37,7 @@ router
 
 // validate invite
 router
-  .route("/:id/collaborators/validate")
-  .post(organisationController.validateInvite);
+  .route("/:id/collaborators/invite")
+  .get(organisationController.validateInvite);
 
 module.exports = router;

@@ -738,3 +738,78 @@ export async function getAllCollaborators(organisationId: string) {
     }
   }
 }
+
+export async function validateInviteToken(
+  organisationId: string,
+  token: string
+) {
+  let statusCode;
+  try {
+    const res = await fetch(
+      `${URL}/organisations/${organisationId}/collaborators/invite?token=${token}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        next: { revalidate: 0 },
+      }
+    );
+
+    statusCode = res.status;
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    const {
+      data: { owner, invite },
+    } = data;
+
+    return { owner, invite };
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", statusCode, message: err.message };
+    } else {
+      return {
+        status: "error",
+        statusCode,
+        message: "An unknown error occurred",
+      };
+    }
+  }
+}
+
+export async function respondToInvite(
+  organisationId: string,
+  token: string,
+  accept: boolean
+) {
+  console.log(token);
+  try {
+    console.log("in respond to invite");
+    const res = await fetch(
+      `${URL}/organisations/${organisationId}/collaborators/respond?token=${token}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ accept }),
+      }
+    );
+
+    const data = await res.json();
+    console.log("DAta", data);
+
+    if (!res.ok) throw new Error(data.message);
+    return data;
+  } catch (err) {
+    console.log(err);
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return {
+        status: "error",
+        message: "An unknown error occurred",
+      };
+    }
+  }
+}
