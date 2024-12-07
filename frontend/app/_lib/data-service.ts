@@ -379,7 +379,6 @@ export async function getMyEvents(searchParams: {
   status: string | null;
   sortBy: string | null;
 }) {
-  console.log("in here");
   const token = await getToken();
 
   console.log(token);
@@ -394,7 +393,6 @@ export async function getMyEvents(searchParams: {
   // Page
   query += `?page=${page}&limit=${RESULTS_PER_PAGE}&sort=-createdAt`;
 
-  console.log(query);
   // Filter
   if (status && status !== "all") query += `&status=${status}`;
 
@@ -438,6 +436,36 @@ export async function getMyEvents(searchParams: {
   console.log(events);
 
   return { events, totalCount, results };
+}
+
+export async function getUpcomingEvents() {
+  const token = await getToken();
+
+  if (!token) return;
+
+  const res = await fetch(
+    `${URL}/users/me/events?status=inactive&sort=-startDate`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message);
+  }
+
+  const {
+    data: { events },
+  } = data;
+
+  console.log(events);
+
+  return events;
 }
 
 export async function getAllEvents() {

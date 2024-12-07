@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export default function useEvent(eventId: string) {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["event"],
+    queryKey: ["event", eventId],
     queryFn: () => getEvent(eventId),
   });
 

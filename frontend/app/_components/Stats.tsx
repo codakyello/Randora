@@ -28,11 +28,11 @@ export default function Stats({ confirmEvents }: { confirmEvents: Event[] }) {
       backgroundColor: "stat",
       statColor: "black",
       titleColor: "black",
-      description: "Unique participants filtered by email.",
+      description: "Participants for active/completed events.",
       value: totalParticipants,
     },
     {
-      title: "Events",
+      title: "Completed/Active Events",
       backgroundColor: "grey",
       statColor: "primary",
       titleColor: "grey",
@@ -40,20 +40,20 @@ export default function Stats({ confirmEvents }: { confirmEvents: Event[] }) {
       value: totalEvents,
     },
     {
-      title: "Prizes",
+      title: "Total Prizes (Created)",
       value: totalPrizes,
       backgroundColor: "grey",
       statColor: "primary",
       titleColor: "grey",
-      description: "Total prizes available.",
+      description: "Total prizes created for active/completed events.",
     },
     {
-      title: "Prizes Won",
+      title: "Distributed Prizes",
       value: distributedPrize,
       backgroundColor: "grey",
       statColor: "primary",
       titleColor: "grey",
-      description: "Total prizes drawn in event.",
+      description: "Total prizes drawn in active/completed events.",
     },
   ];
 
