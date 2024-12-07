@@ -30,6 +30,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
   const participants = participantsData?.participants;
   const prizes = prizesData?.prizes;
 
+  if (!event) return <h1 className="p-5">No Event Found </h1>;
   console.log(prizes);
   const totalCount = participantsData?.totalCount;
 

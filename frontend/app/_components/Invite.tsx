@@ -84,7 +84,10 @@ export default function Invite({
             <span className="text-[var(--color-primary)]">
               {owner.userName}
             </span>{" "}
-            is inviting you to join their organisation {owner.organisationName}
+            is inviting you to join their organisation:{" "}
+            <span className="text-[var(--color-primary)]">
+              {owner.organisationName}
+            </span>
           </p>
         </Box>
 
