@@ -8,12 +8,7 @@ import toast from "react-hot-toast";
 import { useState } from "react";
 import SpinnerMini from "./SpinnerMini";
 
-export default function Invite({
-  owner,
-  invite,
-  token,
-  organisationId,
-}: {
+interface InviteProps {
   owner: {
     userName: string;
     image: string;
@@ -27,10 +22,18 @@ export default function Invite({
   };
   token: string;
   organisationId: string;
-}) {
+}
+
+export default function Invite({
+  owner,
+  invite,
+  token,
+  organisationId,
+}: InviteProps) {
   const [isAccepting, setIsAccepting] = useState(false);
   const [isDeclining, setIsDeclining] = useState(false);
   const router = useRouter();
+
   const handleAccept = async () => {
     setIsAccepting(true);
     const res = await respondToInvite(organisationId, token, true);
