@@ -420,7 +420,7 @@ img {
     aspect-ratio: 1;
     border-radius: 50%;
     border: 2px solid var(--color-grey-0);
-    border-right-color: transparent;
+    border-right-color: transparent !important;
     animation: rotate 1s infinite linear;
   }
 

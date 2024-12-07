@@ -29,7 +29,7 @@ export default function Invite({
   organisationId: string;
 }) {
   const [isAccepting, setIsAccepting] = useState(false);
-  const [isDeclining, setIsDeclining] = useState(false);
+  const [isDeclining, setIsDeclining] = useState(true);
   const router = useRouter();
   const handleAccept = async () => {
     setIsAccepting(true);
@@ -52,6 +52,7 @@ export default function Invite({
     } else {
       router.push(`/dashboard`);
     }
+
     setIsDeclining(false);
   };
 
@@ -97,7 +98,11 @@ export default function Invite({
             Accept
           </Button>
           <Button onClick={handleDecline} className="w-[15rem]" type="cancel">
-            {isDeclining ? <SpinnerMini className="!text-white" /> : "Decline"}
+            {isDeclining ? (
+              <SpinnerMini className="border-[var(--color-primary)]" />
+            ) : (
+              "Decline"
+            )}
           </Button>
         </Box>
 
