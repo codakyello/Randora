@@ -15,7 +15,7 @@ export default function PrizeTable({
   actions?: boolean;
 }) {
   return (
-    <Table columns={["1fr", "1fr", "1fr", "3rem"]}>
+    <Table columns={["1fr", "1fr", "8rem", "3rem"]}>
       <Header headers={["", "prize", "quantity"]} />
 
       <Body

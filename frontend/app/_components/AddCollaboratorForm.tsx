@@ -64,6 +64,7 @@ export default function AddCollaboratorForm({
             data: { users },
           } = data;
 
+          console.log(users);
           // Ensure the data is an array
           if (Array.isArray(users)) {
             setSearchResults(users);
@@ -196,7 +197,7 @@ export default function AddCollaboratorForm({
 
                 if (collaborator)
                   console.log("is existing collab", collaborator);
-
+                console.log(user.image);
                 return collaborator ? (
                   <Box
                     key={index}
@@ -220,6 +221,7 @@ export default function AddCollaboratorForm({
                         backgroundPosition: "center",
                       }}
                     />
+
                     <Box>
                       <p className="font-semibold text-[var(--color-primary)]">
                         {user.userName}

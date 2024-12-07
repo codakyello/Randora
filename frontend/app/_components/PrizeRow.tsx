@@ -60,7 +60,7 @@ export default function PrizeRow({
         />
       </Box>
       <p className="font-semibold">{name}</p>
-      <p className="font-semibold">{quantity}</p>
+      <p className="font-semibold ml-[-1rem] text-center">{quantity}</p>
       <div className="relative grid items-end justify-end">
         {actions && (
           <>

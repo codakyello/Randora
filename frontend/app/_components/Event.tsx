@@ -42,8 +42,8 @@ export default function Event({ params }: { params: { eventId: string } }) {
   return (
     <Menus>
       <Modal>
-        <Box className="flex px-[2rem] flex-col gap-[3.2rem]">
-          <Box className="flex flex-col md:flex-row justify-between space-y-1">
+        <Box className="flex pl-[2rem] flex-col gap-[3.2rem]">
+          <Box className="flex flex-col">
             <h1 className="md:mb-0">{event.name}</h1>
             <div className="flex gap-8 opacity-80 text-[1.4rem]">
               <span>
@@ -54,7 +54,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
               </span>
             </div>
           </Box>
-          <Box className="grid min-h-[10rem] grid-cols-[repeat(auto-fit,minmax(25rem,1fr))] gap-[2.4rem] ">
+          <Box className="grid pr-[2rem] min-h-[10rem] grid-cols-[repeat(auto-fit,minmax(25rem,1fr))] gap-[2.4rem] ">
             <EventStats
               event={event}
               participants={participants}
@@ -70,8 +70,10 @@ export default function Event({ params }: { params: { eventId: string } }) {
                   href={`/dashboard/events/${eventId}/participants`}
                   className="font-semibold text-[1.4rem] flex items-center gap-3 text-[var(--color-primary)]"
                 >
-                  <span>View all</span>
-                  <FaChevronRight />
+                  <Box className="pr-[2rem] flex items-center gap-3">
+                    <span>View all</span>
+                    <FaChevronRight />
+                  </Box>
                 </Link>
               </div>
               <ParticipantTable
@@ -89,22 +91,10 @@ export default function Event({ params }: { params: { eventId: string } }) {
               >
                 Add Participants
               </Link>
-
-              {!prizes?.length && (
-                <Box className=" flex-col flex items-center mt-16">
-                  <h2>No prizes yet</h2>
-                  <Link
-                    className="text-[var(--color-primary)]"
-                    href={`/dashboard/events/${eventId}/prizes`}
-                  >
-                    Add Prizes
-                  </Link>
-                </Box>
-              )}
             </Box>
           )}
 
-          {prizes?.length > 0 && (
+          {prizes?.length > 0 ? (
             <Box className="space-y-5 mt-16">
               <div className="flex justify-between items-end">
                 <h2>Prizes</h2>
@@ -112,8 +102,10 @@ export default function Event({ params }: { params: { eventId: string } }) {
                   href={`/dashboard/events/${eventId}/prizes`}
                   className="font-semibold text-[1.4rem] flex items-center gap-3 text-[var(--color-primary)]"
                 >
-                  <span>View all</span>
-                  <FaChevronRight />
+                  <Box className="pr-[2rem] flex items-center gap-3">
+                    <span>View all</span>
+                    <FaChevronRight />
+                  </Box>
                 </Link>
               </div>
               <PrizeTable
@@ -121,6 +113,16 @@ export default function Event({ params }: { params: { eventId: string } }) {
                 prizes={prizes?.slice(0, 5)}
                 count={5}
               />
+            </Box>
+          ) : (
+            <Box className="flex flex-col mt-16 items-center justify-center">
+              <h2>No prizes yet</h2>
+              <Link
+                className="text-[var(--color-primary)]"
+                href={`/dashboard/events/${eventId}/prizes`}
+              >
+                Add Prizes
+              </Link>
             </Box>
           )}
         </Box>
