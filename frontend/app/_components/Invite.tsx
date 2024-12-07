@@ -121,7 +121,7 @@ export default function Invite({
             <ul className="leading-[3rem] list-disc list-inside">
               <li>Your public profile information</li>
               <li>Your email address </li>
-              <li>Your userName</li>
+              <li>Your username</li>
             </ul>
           </Box>
         </Box>

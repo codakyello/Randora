@@ -42,12 +42,14 @@ export default function Event({ params }: { params: { eventId: string } }) {
     <Menus>
       <Modal>
         <Box className="flex px-[2rem] flex-col gap-[3.2rem]">
-          <Box className="flex flex-col md:flex-row justify-between space-y-3">
+          <Box className="flex flex-col md:flex-row justify-between space-y-2">
             <h1 className="md:mb-0">{event.name}</h1>
             <div className="flex gap-8 opacity-80 text-[1.4rem]">
               <span>
                 Created by{" "}
-                {creator?._id === user?._id ? "You" : creator?.userName}
+                <span className=" text-[var(--color-primary)]">
+                  {creator?._id === user?._id ? "You" : creator?.userName}
+                </span>
               </span>
             </div>
           </Box>
