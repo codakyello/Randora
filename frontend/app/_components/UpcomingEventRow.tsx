@@ -8,7 +8,7 @@ export default function UpcomingEventRow({ event }: { event: Event }) {
   return (
     <Link
       href={`/dashboard/events/${event._id}`}
-      className="cursor-pointer border-b hover:border-[var(--color-primary)] transition-colors duration-300 border-[var(--color-grey-100)] gap-x-[2rem] py-[1.5rem] items-center grid grid-cols-3"
+      className="cursor-pointer border-b hover:border-[#bab9ff] transition-colors duration-300 border-[var(--color-grey-100)] gap-x-[2rem] py-[1.5rem] items-center grid grid-cols-3"
     >
       <Box className="">{event.name}</Box>
       <Box className="flex items-center flex-col gap-[.2rem]">
