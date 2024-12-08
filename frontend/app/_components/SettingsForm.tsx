@@ -223,73 +223,6 @@ export default function SettingsForm({
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Controls */}
-            <div className="space-y-6">
-              <div>
-                <label className="block text-[0.875em] font-medium mb-2">
-                  Logo
-                </label>
-                <div className="flex items-start gap-4">
-                  <div className="w-20 h-20 relative shrink-0">
-                    {settings.brandLogo ? (
-                      <div className="relative w-full h-full group">
-                        <Image
-                          src={settings.brandLogo}
-                          alt="Logo"
-                          fill
-                          className="rounded-xl border border-neutral-200 object-contain bg-white p-2"
-                        />
-                        <button
-                          type="button"
-                          onClick={clearLogo}
-                          className="absolute -top-2 -right-2 p-1.5 rounded-full bg-white border shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-4 h-4 text-neutral-500" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="w-full h-full rounded-xl border-2 border-dashed border-neutral-300 bg-neutral-50 grid place-items-center">
-                        <Upload className="w-6 h-6 text-neutral-400" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="space-y-2 flex-1">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className="hidden"
-                      id="logo-upload"
-                    />
-                    <label
-                      htmlFor="logo-upload"
-                      className="inline-flex px-4 py-2 text-[0.875em] font-medium rounded-lg border border-neutral-300 hover:bg-neutral-50 cursor-pointer"
-                    >
-                      Choose Image
-                    </label>
-                    <p className="text-[0.75em] text-neutral-500">
-                      Recommended: Square image, at least 512x512px
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[0.875em] font-medium mb-2">
-                  Brand Name
-                </label>
-                <input
-                  type="text"
-                  value={settings.brandName}
-                  onChange={(e) =>
-                    setSettings({ ...settings, brandName: e.target.value })
-                  }
-                  className="w-full px-4 py-2.5 rounded-lg border-neutral-300 focus:border-indigo-500 focus:ring-indigo-500 text-[0.875em]"
-                  placeholder="Enter your brand name"
-                />
-              </div>
-            </div>
-
             {/* Large Preview */}
             <div className="flex flex-col items-center justify-center p-6 rounded-xl bg-neutral-50">
               <div className="w-full aspect-square relative max-w-[240px]">
@@ -329,7 +262,12 @@ export default function SettingsForm({
       {/* Theme Card */}
       <div className="bg-white rounded-2xl border border-neutral-200/60 overflow-hidden">
         <div className="p-6 space-y-6">
-          <h2 className="text-[1.25em] font-medium text-neutral-900">Theme</h2>
+          <div>
+            <h2 className="text-[1.25em] font-medium text-neutral-900">Theme</h2>
+            <p className="text-[0.875em] text-neutral-600 mt-1">
+              Customize the colors and appearance of your event page
+            </p>
+          </div>
           <div className="space-y-6">
             <div>
               <label className="block text-[0.875em] font-medium mb-3">
