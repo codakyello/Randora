@@ -67,7 +67,9 @@ export default function EventRow({ event }: { event: Event }) {
   return (
     <Row>
       <Box className="font-semibold">{name}</Box>
-      <Box className="flex flex-col gap-[.2rem]">{type.toUpperCase()}</Box>
+      <Box className="flex font-semibold text-[1.2rem] flex-col gap-[.2rem]">
+        {type.toUpperCase()}
+      </Box>
       <Box className="flex flex-col gap-[.2rem]">
         <span className="font-medium">
           {isToday(new Date(startDate))
@@ -84,9 +86,7 @@ export default function EventRow({ event }: { event: Event }) {
       <Box className="flex justify-center items-center flex-col gap-[.2rem]">
         {prizeCount}
       </Box>
-
       <Menus.Toogle id={eventId} />
-
       <Menus.Menu id={eventId}>
         <Menus.Button
           icon={
