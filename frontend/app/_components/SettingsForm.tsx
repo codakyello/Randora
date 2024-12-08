@@ -127,7 +127,7 @@ export default function SettingsForm({
         const { url } = await uploadRes.json();
         updatedSettings.brandLogo = url;
       }
-      const token = null;
+      const token = "";
       const res = await updateUserSettings(updatedSettings, token);
       if (res.status === "success") {
         toast.success("Settings updated successfully");
@@ -151,7 +151,9 @@ export default function SettingsForm({
       {/* Branding Section */}
       <div className="bg-white rounded-xl border border-neutral-200 p-8 space-y-8 shadow-sm">
         <div>
-          <h2 className="text-[1.25em] font-semibold text-neutral-900">Branding</h2>
+          <h2 className="text-[1.25em] font-semibold text-neutral-900">
+            Branding
+          </h2>
           <p className="text-[0.875em] text-neutral-600 mt-1">
             Customize how your brand appears on the event page
           </p>
@@ -161,7 +163,9 @@ export default function SettingsForm({
           {/* Left Column - Upload Controls */}
           <div className="space-y-8">
             <div className="space-y-4">
-              <label className="block text-[0.875em] font-medium">Brand Logo</label>
+              <label className="block text-[0.875em] font-medium">
+                Brand Logo
+              </label>
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 relative">
                   {settings.brandLogo ? (
@@ -203,7 +207,9 @@ export default function SettingsForm({
             </div>
 
             <div className="space-y-4">
-              <label className="block text-[0.875em] font-medium">Brand Name</label>
+              <label className="block text-[0.875em] font-medium">
+                Brand Name
+              </label>
               <input
                 type="text"
                 value={settings.brandName}
@@ -244,7 +250,9 @@ export default function SettingsForm({
                   {settings.brandName || "Your Brand Name"}
                 </div>
                 <p className="text-[0.875em] text-neutral-600">
-                  {settings.brandName ? "Brand name preview" : "Enter a brand name to see preview"}
+                  {settings.brandName
+                    ? "Brand name preview"
+                    : "Enter a brand name to see preview"}
                 </p>
               </div>
             </div>
@@ -390,7 +398,9 @@ export default function SettingsForm({
       {/* Effects Section */}
       <div className="bg-white rounded-xl border border-neutral-200 p-8 space-y-8 shadow-sm">
         <div>
-          <h2 className="text-[1.25em] font-semibold text-neutral-900">Effects</h2>
+          <h2 className="text-[1.25em] font-semibold text-neutral-900">
+            Effects
+          </h2>
           <p className="text-[0.875em] text-neutral-600 mt-1">
             Configure animation and sound effects
           </p>
