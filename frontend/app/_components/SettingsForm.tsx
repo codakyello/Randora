@@ -127,7 +127,7 @@ export default function SettingsForm({
         const { url } = await uploadRes.json();
         updatedSettings.brandLogo = url;
       }
-      const token = null;
+      const token = undefined;
       const res = await updateUserSettings(updatedSettings, token);
       if (res.status === "success") {
         toast.success("Settings updated successfully");
@@ -148,79 +148,81 @@ export default function SettingsForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Branding Section */}
-      <div className="bg-white rounded-xl border border-neutral-200 p-8 space-y-8 shadow-sm">
-        <div>
-          <h2 className="text-[1.25em] font-semibold text-neutral-900">Branding</h2>
-          <p className="text-[0.875em] text-neutral-600 mt-1">
-            Customize how your brand appears on the event page
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr,1.5fr] gap-12">
-          {/* Left Column - Upload Controls */}
-          <div className="space-y-8">
-            <div className="space-y-4">
-              <label className="block text-[0.875em] font-medium">Brand Logo</label>
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 relative">
-                  {settings.brandLogo ? (
-                    <div className="relative w-full h-full">
-                      <Image
-                        src={settings.brandLogo}
-                        alt="Brand logo"
-                        fill
-                        className="rounded-lg border object-contain bg-white"
-                      />
-                      <button
-                        type="button"
-                        onClick={clearLogo}
-                        className="absolute -top-2 -right-2 p-1 rounded-full bg-white border shadow-sm hover:bg-neutral-50"
-                      >
-                        <X className="w-4 h-4 text-neutral-500" />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="w-full h-full rounded-lg border-2 border-dashed border-neutral-300 grid place-items-center">
-                      <Upload className="text-neutral-400" />
-                    </div>
-                  )}
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoUpload}
-                  className="hidden"
-                  id="logo-upload"
-                />
-                <label
-                  htmlFor="logo-upload"
-                  className="px-4 py-2 font-medium rounded-md text-indigo-600 border border-indigo-600 hover:bg-indigo-50 cursor-pointer"
-                >
-                  Upload Logo
-                </label>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <label className="block text-[0.875em] font-medium">Brand Name</label>
-              <input
-                type="text"
-                value={settings.brandName}
-                onChange={(e) =>
-                  setSettings({ ...settings, brandName: e.target.value })
-                }
-                className="w-full rounded-md border-neutral-300 focus:border-indigo-600"
-                placeholder="Enter your brand name"
-              />
+      {/* Branding Card */}
+      <div className="md:col-span-2 bg-white rounded-2xl border border-neutral-200/60 overflow-hidden">
+        <div className="p-6 space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-[1.25em] font-medium text-neutral-900">Brand Identity</h2>
+            <div className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-600 text-[0.75em] font-medium">
+              Required
             </div>
           </div>
 
-          {/* Right Column - Preview */}
-          <div className="space-y-4">
-            <label className="block text-[0.875em] font-medium">Preview</label>
-            <div className="p-8 rounded-lg border space-y-8 bg-white">
-              <div className="h-32 relative mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Controls */}
+            <div className="space-y-6">
+              <div>
+                <label className="block text-[0.875em] font-medium mb-2">Logo</label>
+                <div className="flex items-start gap-4">
+                  <div className="w-20 h-20 relative shrink-0">
+                    {settings.brandLogo ? (
+                      <div className="relative w-full h-full group">
+                        <Image
+                          src={settings.brandLogo}
+                          alt="Logo"
+                          fill
+                          className="rounded-xl border border-neutral-200 object-contain bg-white p-2"
+                        />
+                        <button
+                          type="button"
+                          onClick={clearLogo}
+                          className="absolute -top-2 -right-2 p-1.5 rounded-full bg-white border shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-4 h-4 text-neutral-500" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="w-full h-full rounded-xl border-2 border-dashed border-neutral-300 bg-neutral-50 grid place-items-center">
+                        <Upload className="w-6 h-6 text-neutral-400" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2 flex-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="hidden"
+                      id="logo-upload"
+                    />
+                    <label
+                      htmlFor="logo-upload"
+                      className="inline-flex px-4 py-2 text-[0.875em] font-medium rounded-lg border border-neutral-300 hover:bg-neutral-50 cursor-pointer"
+                    >
+                      Choose Image
+                    </label>
+                    <p className="text-[0.75em] text-neutral-500">
+                      Recommended: Square image, at least 512x512px
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[0.875em] font-medium mb-2">Brand Name</label>
+                <input
+                  type="text"
+                  value={settings.brandName}
+                  onChange={(e) => setSettings({ ...settings, brandName: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-lg border-neutral-300 focus:border-indigo-500 focus:ring-indigo-500 text-[0.875em]"
+                  placeholder="Enter your brand name"
+                />
+              </div>
+            </div>
+
+            {/* Large Preview */}
+            <div className="flex flex-col items-center justify-center p-6 rounded-xl bg-neutral-50">
+              <div className="w-full aspect-square relative max-w-[240px]">
                 {settings.brandLogo ? (
                   <Image
                     src={settings.brandLogo}
@@ -229,158 +231,68 @@ export default function SettingsForm({
                     className="object-contain"
                   />
                 ) : (
-                  <div className="w-full h-full rounded-lg border-2 border-dashed border-neutral-200 grid place-items-center">
+                  <div className="w-full h-full rounded-xl border-2 border-dashed border-neutral-200 grid place-items-center">
                     <div className="text-center space-y-2">
                       <Upload className="w-8 h-8 text-neutral-300 mx-auto" />
                       <span className="text-[0.875em] text-neutral-400">
-                        Upload a logo to see preview
+                        Logo preview
                       </span>
                     </div>
                   </div>
                 )}
               </div>
-              <div className="text-center space-y-2">
-                <div className="text-[1.25em] font-medium text-neutral-900">
-                  {settings.brandName || "Your Brand Name"}
-                </div>
-                <p className="text-[0.875em] text-neutral-600">
-                  {settings.brandName ? "Brand name preview" : "Enter a brand name to see preview"}
-                </p>
+              <div className="mt-4 text-[1em] font-medium text-neutral-900">
+                {settings.brandName || "Your Brand Name"}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Theme Section */}
-      <div className="bg-white rounded-lg border p-6 space-y-6">
-        <div>
-          <h2 className="font-semibold">Theme</h2>
-          <p className="text-neutral-600">
-            Choose colors and styles for your event page
-          </p>
-        </div>
-
-        <div className="space-y-6">
-          {/* Color Presets */}
-          <div>
-            <label className="block font-medium mb-2">Color Presets</label>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(32px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(36px,1fr))] gap-2 max-w-sm">
-              {themePresets.map((theme, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => setSettings((prev) => ({ ...prev, theme }))}
-                  className={`aspect-square rounded-md border transition-all ${
-                    settings.theme.primary === theme.primary
-                      ? "border-indigo-600 scale-110 shadow-sm"
-                      : "border-transparent hover:scale-105"
-                  }`}
-                  style={{ backgroundColor: theme.primary }}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Custom Color Picker */}
-          <div>
-            <label className="block font-medium mb-2">Custom Color</label>
-            <div className="flex items-center gap-4">
-              {/* <Dialog
-                open={isColorPickerOpen}
-                onOpenChange={setIsColorPickerOpen}
-              >
-                <DialogTrigger asChild>
+      {/* Theme Card */}
+      <div className="bg-white rounded-2xl border border-neutral-200/60 overflow-hidden">
+        <div className="p-6 space-y-6">
+          <h2 className="text-[1.25em] font-medium text-neutral-900">Theme</h2>
+          <div className="space-y-6">
+            <div>
+              <label className="block text-[0.875em] font-medium mb-3">Colors</label>
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(4rem,1fr))] gap-3">
+                {themePresets.map((theme, index) => (
                   <button
+                    key={index}
                     type="button"
-                    className="w-12 h-12 rounded-lg border-2 border-neutral-200 transition-all hover:scale-105"
-                    style={{ backgroundColor: settings.theme.primary }}
+                    onClick={() => setSettings((prev) => ({ ...prev, theme }))}
+                    className={`w-full aspect-square rounded-lg transition-all ${
+                      settings.theme.primary === theme.primary
+                        ? "ring-2 ring-indigo-600 ring-offset-2 scale-95"
+                        : "hover:scale-95"
+                    }`}
+                    style={{ backgroundColor: theme.primary }}
                   />
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md w-full p-4 bg-white">
-                  <div className="space-y-4">
-                    <HexColorPicker
-                      color={tempColor}
-                      onChange={handleColorChange}
-                      style={{ width: "100%" }}
-                    />
-                    <div className="flex justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setIsColorPickerOpen(false)}
-                        className="px-4 py-2 text-sm font-medium rounded-md border border-neutral-300 hover:bg-neutral-50"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleConfirmColor}
-                        className="px-4 py-2 text-sm font-medium rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
-                      >
-                        Confirm
-                      </button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog> */}
-              <span className="text-neutral-600">
-                Click to choose a custom color
-              </span>
-            </div>
-          </div>
-
-          {/* Logo Preview */}
-          {settings.brandLogo && (
-            <div className="mt-4">
-              <label className="block font-medium mb-2">Logo Preview</label>
-              <div className="relative w-32 h-32 border rounded-lg overflow-hidden bg-white">
-                <Image
-                  src={settings.brandLogo}
-                  alt="Logo preview"
-                  fill
-                  className="object-contain p-2"
-                />
+                ))}
               </div>
             </div>
-          )}
 
-          {/* Preview */}
-          <div>
-            <label className="block font-medium mb-2">Preview</label>
-            <div className="p-4 rounded-lg border space-y-4">
-              <div className="space-y-2">
-                <div className="font-medium">Buttons</div>
-                <div className="flex gap-4">
-                  <button
-                    type="button"
-                    className="px-4 py-2 rounded-md text-white"
-                    style={{ backgroundColor: settings.theme.primary }}
-                  >
-                    Primary Button
-                  </button>
-                  <button
-                    type="button"
-                    className="px-4 py-2 rounded-md border"
-                    style={{
-                      borderColor: settings.theme.primary,
-                      color: settings.theme.primary,
-                    }}
-                  >
-                    Secondary Button
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <div className="font-medium">Text</div>
-                <div className="space-y-1">
-                  <div style={{ color: settings.theme.primary }}>
-                    Primary Text Color
-                  </div>
-                  <div style={{ color: settings.theme.secondary }}>
-                    Secondary Text Color
-                  </div>
-                </div>
+            <div>
+              <label className="block text-[0.875em] font-medium mb-3">Preview</label>
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded-lg text-white text-[0.875em]"
+                  style={{ backgroundColor: settings.theme.primary }}
+                >
+                  Primary
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded-lg border text-[0.875em]"
+                  style={{ 
+                    borderColor: settings.theme.primary,
+                    color: settings.theme.primary 
+                  }}
+                >
+                  Secondary
+                </button>
               </div>
             </div>
           </div>
@@ -388,58 +300,61 @@ export default function SettingsForm({
       </div>
 
       {/* Effects Section */}
-      <div className="bg-white rounded-xl border border-neutral-200 p-8 space-y-8 shadow-sm">
-        <div>
-          <h2 className="text-[1.25em] font-semibold text-neutral-900">Effects</h2>
-          <p className="text-[0.875em] text-neutral-600 mt-1">
-            Configure animation and sound effects
-          </p>
-        </div>
-
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <label className="block text-[0.875em] font-medium text-neutral-900">
-                Confetti Effect
+      <div className="md:col-span-3 bg-white rounded-2xl border border-neutral-200/60 overflow-hidden">
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex items-center justify-between p-4 rounded-xl bg-neutral-50">
+              <div>
+                <label className="block text-[0.875em] font-medium">Confetti Effect</label>
+                <p className="text-[0.75em] text-neutral-500 mt-0.5">
+                  Celebrate winners with style
+                </p>
+              </div>
+              <label className="relative inline-flex items-center">
+                <input
+                  type="checkbox"
+                  checked={settings.confettiEnabled}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      confettiEnabled: e.target.checked,
+                    })
+                  }
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 rounded-full bg-neutral-200 
+                  peer-checked:bg-indigo-600 peer-checked:after:translate-x-full 
+                  after:content-[''] after:absolute after:top-0.5 after:left-0.5 
+                  after:bg-white after:rounded-full after:h-5 after:w-5 
+                  after:transition-all after:shadow-sm" 
+                />
               </label>
-              <p className="text-[0.75em] text-neutral-600">
-                Show confetti animation when a winner is selected
-              </p>
             </div>
-            <label className="relative inline-flex items-center">
-              <input
-                type="checkbox"
-                checked={settings.confettiEnabled}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    confettiEnabled: e.target.checked,
-                  })
-                }
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600" />
-            </label>
-          </div>
 
-          <div className="flex items-center justify-between">
-            <div>
-              <label className="block font-medium">Sound Effects</label>
-              <p className="text-neutral-600">
-                Play sound effects during spinning
-              </p>
+            <div className="flex items-center justify-between p-4 rounded-xl bg-neutral-50">
+              <div>
+                <label className="block text-[0.875em] font-medium">Sound Effects</label>
+                <p className="text-[0.75em] text-neutral-500 mt-0.5">
+                  Add excitement with sounds
+                </p>
+              </div>
+              <label className="relative inline-flex items-center">
+                <input
+                  type="checkbox"
+                  checked={settings.soundEnabled}
+                  onChange={(e) =>
+                    setSettings({ ...settings, soundEnabled: e.target.checked })
+                  }
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-6 rounded-full bg-neutral-200 
+                  peer-checked:bg-indigo-600 peer-checked:after:translate-x-full 
+                  after:content-[''] after:absolute after:top-0.5 after:left-0.5 
+                  after:bg-white after:rounded-full after:h-5 after:w-5 
+                  after:transition-all after:shadow-sm" 
+                />
+              </label>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={settings.soundEnabled}
-                onChange={(e) =>
-                  setSettings({ ...settings, soundEnabled: e.target.checked })
-                }
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600" />
-            </label>
           </div>
         </div>
       </div>
@@ -448,7 +363,7 @@ export default function SettingsForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="px-4 py-2 text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-neutral-300"
+          className="px-4 py-2 text-[0.875em] font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-neutral-300"
         >
           {isLoading ? "Saving..." : "Save Changes"}
         </button>
