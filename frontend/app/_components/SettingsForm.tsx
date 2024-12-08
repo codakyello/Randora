@@ -1,7 +1,7 @@
 "use client";
 
-import { updateUserSettings } from "@/app/_utils/serverUtils";
 import { SettingsRandora, ThemeColor } from "@/app/_utils/types";
+import { updateUserSettings } from "@/app/_lib/data-service";
 import { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
 import Image from "next/image";
@@ -148,13 +148,77 @@ export default function SettingsForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {/* Branding Card */}
-      <div className="md:col-span-2 bg-white rounded-2xl border border-neutral-200/60 overflow-hidden">
-        <div className="p-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-[1.25em] font-medium text-neutral-900">Brand Identity</h2>
-            <div className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-600 text-[0.75em] font-medium">
-              Required
+      {/* Branding Section */}
+      <div className="bg-white rounded-xl border border-neutral-200 p-8 space-y-8 shadow-sm">
+        <div>
+          <h2 className="text-[1.25em] font-semibold text-neutral-900">
+            Branding
+          </h2>
+          <p className="text-[0.875em] text-neutral-600 mt-1">
+            Customize how your brand appears on the event page
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr,1.5fr] gap-12">
+          {/* Left Column - Upload Controls */}
+          <div className="space-y-8">
+            <div className="space-y-4">
+              <label className="block text-[0.875em] font-medium">
+                Brand Logo
+              </label>
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 relative">
+                  {settings.brandLogo ? (
+                    <div className="relative w-full h-full">
+                      <Image
+                        src={settings.brandLogo}
+                        alt="Brand logo"
+                        fill
+                        className="rounded-lg border object-contain bg-white"
+                      />
+                      <button
+                        type="button"
+                        onClick={clearLogo}
+                        className="absolute -top-2 -right-2 p-1 rounded-full bg-white border shadow-sm hover:bg-neutral-50"
+                      >
+                        <X className="w-4 h-4 text-neutral-500" />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="w-full h-full rounded-lg border-2 border-dashed border-neutral-300 grid place-items-center">
+                      <Upload className="text-neutral-400" />
+                    </div>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoUpload}
+                  className="hidden"
+                  id="logo-upload"
+                />
+                <label
+                  htmlFor="logo-upload"
+                  className="px-4 py-2 font-medium rounded-md text-indigo-600 border border-indigo-600 hover:bg-indigo-50 cursor-pointer"
+                >
+                  Upload Logo
+                </label>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <label className="block text-[0.875em] font-medium">
+                Brand Name
+              </label>
+              <input
+                type="text"
+                value={settings.brandName}
+                onChange={(e) =>
+                  setSettings({ ...settings, brandName: e.target.value })
+                }
+                className="w-full rounded-md border-neutral-300 focus:border-indigo-600"
+                placeholder="Enter your brand name"
+              />
             </div>
           </div>
 
@@ -162,7 +226,9 @@ export default function SettingsForm({
             {/* Controls */}
             <div className="space-y-6">
               <div>
-                <label className="block text-[0.875em] font-medium mb-2">Logo</label>
+                <label className="block text-[0.875em] font-medium mb-2">
+                  Logo
+                </label>
                 <div className="flex items-start gap-4">
                   <div className="w-20 h-20 relative shrink-0">
                     {settings.brandLogo ? (
@@ -209,11 +275,15 @@ export default function SettingsForm({
               </div>
 
               <div>
-                <label className="block text-[0.875em] font-medium mb-2">Brand Name</label>
+                <label className="block text-[0.875em] font-medium mb-2">
+                  Brand Name
+                </label>
                 <input
                   type="text"
                   value={settings.brandName}
-                  onChange={(e) => setSettings({ ...settings, brandName: e.target.value })}
+                  onChange={(e) =>
+                    setSettings({ ...settings, brandName: e.target.value })
+                  }
                   className="w-full px-4 py-2.5 rounded-lg border-neutral-300 focus:border-indigo-500 focus:ring-indigo-500 text-[0.875em]"
                   placeholder="Enter your brand name"
                 />
@@ -241,8 +311,15 @@ export default function SettingsForm({
                   </div>
                 )}
               </div>
-              <div className="mt-4 text-[1em] font-medium text-neutral-900">
-                {settings.brandName || "Your Brand Name"}
+              <div className="text-center space-y-2">
+                <div className="text-[1.25em] font-medium text-neutral-900">
+                  {settings.brandName || "Your Brand Name"}
+                </div>
+                <p className="text-[0.875em] text-neutral-600">
+                  {settings.brandName
+                    ? "Brand name preview"
+                    : "Enter a brand name to see preview"}
+                </p>
               </div>
             </div>
           </div>
@@ -255,7 +332,9 @@ export default function SettingsForm({
           <h2 className="text-[1.25em] font-medium text-neutral-900">Theme</h2>
           <div className="space-y-6">
             <div>
-              <label className="block text-[0.875em] font-medium mb-3">Colors</label>
+              <label className="block text-[0.875em] font-medium mb-3">
+                Colors
+              </label>
               <div className="grid grid-cols-[repeat(auto-fill,minmax(4rem,1fr))] gap-3">
                 {themePresets.map((theme, index) => (
                   <button
@@ -274,7 +353,9 @@ export default function SettingsForm({
             </div>
 
             <div>
-              <label className="block text-[0.875em] font-medium mb-3">Preview</label>
+              <label className="block text-[0.875em] font-medium mb-3">
+                Preview
+              </label>
               <div className="flex gap-3">
                 <button
                   type="button"
@@ -286,9 +367,9 @@ export default function SettingsForm({
                 <button
                   type="button"
                   className="px-4 py-2 rounded-lg border text-[0.875em]"
-                  style={{ 
+                  style={{
                     borderColor: settings.theme.primary,
-                    color: settings.theme.primary 
+                    color: settings.theme.primary,
                   }}
                 >
                   Secondary
@@ -305,7 +386,9 @@ export default function SettingsForm({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-center justify-between p-4 rounded-xl bg-neutral-50">
               <div>
-                <label className="block text-[0.875em] font-medium">Confetti Effect</label>
+                <label className="block text-[0.875em] font-medium">
+                  Confetti Effect
+                </label>
                 <p className="text-[0.75em] text-neutral-500 mt-0.5">
                   Celebrate winners with style
                 </p>
@@ -322,18 +405,21 @@ export default function SettingsForm({
                   }
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 rounded-full bg-neutral-200 
+                <div
+                  className="w-11 h-6 rounded-full bg-neutral-200 
                   peer-checked:bg-indigo-600 peer-checked:after:translate-x-full 
                   after:content-[''] after:absolute after:top-0.5 after:left-0.5 
                   after:bg-white after:rounded-full after:h-5 after:w-5 
-                  after:transition-all after:shadow-sm" 
+                  after:transition-all after:shadow-sm"
                 />
               </label>
             </div>
 
             <div className="flex items-center justify-between p-4 rounded-xl bg-neutral-50">
               <div>
-                <label className="block text-[0.875em] font-medium">Sound Effects</label>
+                <label className="block text-[0.875em] font-medium">
+                  Sound Effects
+                </label>
                 <p className="text-[0.75em] text-neutral-500 mt-0.5">
                   Add excitement with sounds
                 </p>
@@ -347,11 +433,12 @@ export default function SettingsForm({
                   }
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 rounded-full bg-neutral-200 
+                <div
+                  className="w-11 h-6 rounded-full bg-neutral-200 
                   peer-checked:bg-indigo-600 peer-checked:after:translate-x-full 
                   after:content-[''] after:absolute after:top-0.5 after:left-0.5 
                   after:bg-white after:rounded-full after:h-5 after:w-5 
-                  after:transition-all after:shadow-sm" 
+                  after:transition-all after:shadow-sm"
                 />
               </label>
             </div>

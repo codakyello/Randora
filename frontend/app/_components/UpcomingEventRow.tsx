@@ -11,7 +11,7 @@ export default function UpcomingEventRow({ event }: { event: Event }) {
       className="cursor-pointer border-b hover:border-[#bab9ff] transition-colors duration-300 border-[var(--color-grey-100)] gap-x-[2rem] py-[1.5rem] items-center grid grid-cols-3"
     >
       <Box className="">{event.name}</Box>
-      <Box className="flex items-center flex-col gap-[.2rem]">
+      <Box className="flex items-center font-semibold text-[1.2rem] flex-col gap-[.2rem]">
         {event.type.toUpperCase()}
       </Box>
       <Box className="ml-auto">

@@ -6,6 +6,10 @@ import { getUser } from "@/app/_lib/data-service";
 import SpinnerFull from "@/app/_components/SpinnerFull";
 import { Suspense } from "react";
 
+export const metadata = {
+  title: "Collaborators",
+};
+
 export default async function Page({
   searchParams,
 }: {
@@ -18,7 +22,7 @@ export default async function Page({
   const organisationId = user.organisationId;
 
   return (
-    <Box className="flex pl-[2rem] flex-col gap-[3.2rem]">
+    <Box className="flex px-[2rem] flex-col gap-[3.2rem]">
       <Box className="flex flex-col justify-between xl:flex-row gap-8 pt-1 pr-1 whitespace-nowrap">
         <h1 className="">All collaborators</h1>
         <Box className="flex flex-col md:flex-row flex-wrap gap-6">

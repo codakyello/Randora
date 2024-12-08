@@ -27,7 +27,7 @@ export default function Stat({
           "--title-color": `var(--color-${titleColor}-700)`,
         } as CSSProperties & { [key: string]: string }
       }
-      className="flex flex-col gap-5 bg-[var(--stat-bg-color)] p-[1.6rem] rounded-2xl"
+      className="flex flex-col gap-5 bg-[var(--stat-bg-color)] p-[2.5rem] rounded-2xl"
     >
       <Box className="flex items-center justify-between">
         <h5 className="uppercase text-[var(--title-color)] text-[1.2rem] tracking-[.4px] font-medium">
