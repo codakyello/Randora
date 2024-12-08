@@ -5,10 +5,13 @@ export type Filter = {
 
 export type Collaborator = {
   _id: string;
-  username: string;
-  email: string;
+  user: {
+    _id: string;
+    userName: string;
+    email: string;
+    image: string;
+  };
   status: string;
-  image: string;
 };
 
 // Type when creating Cabin

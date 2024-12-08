@@ -22,7 +22,7 @@ export default function Participants({ eventId }: { eventId: string }) {
     <Modal>
       <Menus>
         <Box className="gap-10 min-h-[65vh] md:min-h-[63.5vh] xl:min-h-[72vh] flex flex-col justify-between">
-          {participants.length ? (
+          {participants?.length ? (
             <ParticipantTable participants={participants} count={count} />
           ) : (
             <h2 className="mt-5">No Participants Found</h2>

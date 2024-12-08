@@ -8,17 +8,21 @@ import Table, { Body, Footer, Header } from "./Table";
 export default function PrizeTable({
   prizes,
   count,
+  actions = true,
 }: {
   prizes: Prize[] | null;
   count: number | null;
+  actions?: boolean;
 }) {
   return (
-    <Table columns={["1fr", "1fr", "1fr", "3rem"]}>
+    <Table columns={["1fr", "1fr", "8rem", "3rem"]}>
       <Header headers={["", "prize", "quantity"]} />
 
       <Body
         data={prizes}
-        render={(prize) => <PrizeRow key={prize._id} prize={prize} />}
+        render={(prize) => (
+          <PrizeRow actions={actions} key={prize._id} prize={prize} />
+        )}
       />
 
       <Footer>

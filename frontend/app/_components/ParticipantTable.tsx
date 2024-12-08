@@ -10,9 +10,11 @@ import ParticipantRow from "./ParticipantRow";
 export default function ParticipantTable({
   participants,
   count,
+  actions = true,
 }: {
   participants: Participant[];
   count: number;
+  actions?: boolean;
 }) {
   return (
     <Modal>
@@ -33,7 +35,11 @@ export default function ParticipantTable({
 
         <Body>
           {participants.map((participant) => (
-            <ParticipantRow participant={participant} key={participant._id} />
+            <ParticipantRow
+              actions={actions}
+              participant={participant}
+              key={participant._id}
+            />
           ))}
         </Body>
 

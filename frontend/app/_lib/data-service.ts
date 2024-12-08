@@ -8,6 +8,7 @@ import { RESULTS_PER_PAGE } from "../_utils/constants";
 // import { notFound } from "next/navigation";
 // import { EventForm, ParticipantForm } from "../_utils/types";
 import { getToken } from "../_utils/serverUtils";
+// import { User } from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
 // const DEV_URL = "http://localhost:5000/api/v1";
@@ -61,6 +62,7 @@ export async function updateSetting(data: Partial<Setting>, token: string) {
     return { status: "error", message: "An unknown error occured" };
   }
 }
+
 export async function login(formData: FormData) {
   // Safely extract email and password
   const email = formData.get("email") as string | null;
@@ -377,7 +379,6 @@ export async function getMyEvents(searchParams: {
   status: string | null;
   sortBy: string | null;
 }) {
-  console.log("in here");
   const token = await getToken();
 
   console.log(token);
@@ -392,7 +393,6 @@ export async function getMyEvents(searchParams: {
   // Page
   query += `?page=${page}&limit=${RESULTS_PER_PAGE}&sort=-createdAt`;
 
-  console.log(query);
   // Filter
   if (status && status !== "all") query += `&status=${status}`;
 
@@ -438,10 +438,39 @@ export async function getMyEvents(searchParams: {
   return { events, totalCount, results };
 }
 
+export async function getUpcomingEvents() {
+  const token = await getToken();
+
+  if (!token) return;
+
+  const res = await fetch(
+    `${URL}/users/me/events?status=inactive&sort=-startDate`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.message);
+  }
+
+  const {
+    data: { events },
+  } = data;
+
+  console.log(events);
+
+  return events;
+}
+
 export async function getAllEvents() {
   const token = await getToken();
 
-  console.log(token);
   if (!token) return;
 
   const res = await fetch(
@@ -470,31 +499,44 @@ export async function getAllEvents() {
 }
 
 export async function getEvent(eventId: string) {
-  const token = await getToken();
+  let statusCode;
+  try {
+    const token = await getToken();
 
-  console.log(token);
-  if (!token) return;
+    console.log(token);
+    if (!token) return;
 
-  const res = await fetch(`${URL}/users/me/events/${eventId}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    const res = await fetch(`${URL}/events/${eventId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (!res.ok) {
-    throw new Error(data.message);
+    statusCode = res.status;
+
+    if (!res.ok) {
+      throw new Error(data.message);
+    }
+
+    const {
+      data: { event },
+    } = data;
+
+    return { event };
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", statusCode, message: err.message };
+    } else {
+      return {
+        status: "error",
+        statusCode,
+        message: "An unknown error occurred",
+      };
+    }
   }
-
-  const {
-    totalCount,
-    results,
-    data: { events },
-  } = data;
-
-  return { events, totalCount, results };
 }
 
 export async function getEventParticipants(
@@ -505,6 +547,7 @@ export async function getEventParticipants(
     sortBy: string | null;
   }
 ) {
+  let statusCode;
   let query = "";
 
   const page = searchParams.page || 1;
@@ -548,6 +591,7 @@ export async function getEventParticipants(
 
     const data = await res.json();
 
+    statusCode = res.status;
     if (!res.ok) throw new Error(data.message);
 
     const {
@@ -559,9 +603,52 @@ export async function getEventParticipants(
     return { participants, totalCount, results };
   } catch (err) {
     if (err instanceof Error) {
-      return { status: "error", message: err.message };
+      return { status: "error", statusCode, message: err.message };
     } else {
-      return { status: "error", message: "An unknown error occurred" };
+      return {
+        status: "error",
+        statusCode,
+        message: "An unknown error occurred",
+      };
+    }
+  }
+}
+
+export async function getAllEventParticipants(eventId: string) {
+  let statusCode;
+
+  const token = await getToken();
+  if (!token) return;
+
+  try {
+    const res = await fetch(`${URL}/events/${eventId}/all-participants`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    statusCode = res.status;
+    if (!res.ok) throw new Error(data.message);
+
+    const {
+      totalCount,
+      results,
+      data: { participants },
+    } = data;
+
+    return { participants, totalCount, results };
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", statusCode, message: err.message };
+    } else {
+      return {
+        status: "error",
+        statusCode,
+        message: "An unknown error occurred",
+      };
     }
   }
 }
@@ -576,7 +663,7 @@ export async function getEventPrizes(
 ) {
   const token = await getToken();
   if (!token) return;
-
+  let statusCode;
   let query = "";
 
   const page = searchParams.page || 1;
@@ -618,6 +705,7 @@ export async function getEventPrizes(
 
     const data = await res.json();
 
+    statusCode = res.status;
     if (!res.ok) throw new Error(data.message);
 
     const {
@@ -629,59 +717,26 @@ export async function getEventPrizes(
     return { prizes, totalCount, results };
   } catch (err) {
     if (err instanceof Error) {
-      return { status: "error", message: err.message };
+      return { status: "error", statusCode, message: err.message };
     } else {
-      return { status: "error", message: "An unknown error occurred" };
+      return {
+        status: "error",
+        statusCode,
+        message: "An unknown error occurred",
+      };
     }
   }
 }
 
 // function to get all collaborators
-export async function getAllCollaborators(
-  organisationId: string,
-  searchParams: {
-    page: string | null;
-    status: string | null;
-    sortBy: string | null;
-  }
-) {
-  let query = "";
-
-  const page = searchParams.page || 1;
-  const status = searchParams.status;
-  const sort = searchParams.sortBy;
-
-  // Page
-  query += `?page=${page}&limit=${RESULTS_PER_PAGE}`;
-
-  // Filter
-  if (status && status === "winners") query += `&isWinner=true`;
-
-  // Sort, highest participant,
-  switch (sort) {
-    case "createdDate-desc":
-      query += "&sort=-createdAt";
-      break;
-    case "createdDate-asc":
-      query += "&sort=createdAt";
-      break;
-    case "ticketNumber-desc":
-      query += "&sort=-ticketNumber";
-      break;
-    case "ticketNumber-asc":
-      query += "&sort=ticketNumber";
-      break;
-    default:
-      query += "&sort=-createdAt";
-  }
-
+export async function getAllCollaborators(organisationId: string) {
   const token = await getToken();
   if (!token) return;
 
   console.log(organisationId);
   try {
     const res = await fetch(
-      `${URL}/organisations/${organisationId}/collaborators?${query}`,
+      `${URL}/organisations/${organisationId}/collaborators`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -712,28 +767,77 @@ export async function getAllCollaborators(
   }
 }
 
-// export async function sendInvite(collaboratorId: string, eventId: string) {
-//   const token = await getToken();
-//   if (!token) return;
+export async function validateInviteToken(
+  organisationId: string,
+  token: string
+) {
+  let statusCode;
+  try {
+    const res = await fetch(
+      `${URL}/organisations/${organisationId}/collaborators/invite?token=${token}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        next: { revalidate: 0 },
+      }
+    );
 
-//   const res = await fetch(
-//     `${URL}/events/${eventId}/collaborators/${collaboratorId}`,
-//     {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//     }
-//   );
-// }
-// export async function searchUsers(searchInput: string, signal: AbortSignal) {
-//   const token = await getToken();
-//   if (!token) return;
+    statusCode = res.status;
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
 
-//   // wrap in try catch
+    const {
+      data: { owner, invite },
+    } = data;
 
-//   // abort request if signal is aborted
-//   try {
+    return { owner, invite };
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", statusCode, message: err.message };
+    } else {
+      return {
+        status: "error",
+        statusCode,
+        message: "An unknown error occurred",
+      };
+    }
+  }
+}
 
-// }
+export async function respondToInvite(
+  organisationId: string,
+  token: string,
+  accept: boolean
+) {
+  console.log(token);
+  try {
+    console.log("in respond to invite");
+    const res = await fetch(
+      `${URL}/organisations/${organisationId}/collaborators/respond?token=${token}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ accept }),
+      }
+    );
+
+    const data = await res.json();
+    console.log("DAta", data);
+
+    if (!res.ok) throw new Error(data.message);
+    return data;
+  } catch (err) {
+    console.log(err);
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return {
+        status: "error",
+        message: "An unknown error occurred",
+      };
+    }
+  }
+}

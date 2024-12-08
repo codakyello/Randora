@@ -6,29 +6,31 @@ import Stats from "./Stats";
 import ParticipantChart from "./ParticipantChart";
 import UpcomingEvents from "./UpcomingEvent";
 import useAllEvents from "../_hooks/useAllEvents";
+import useUpcomingEvents from "../_hooks/useUpcomingEvents";
 
 export default function DashboardLayout() {
   const { data, isLoading, error } = useAllEvents();
+  const {
+    data: upcomingEvents,
+    error: upcomingError,
+    isLoading: upcomingIsLoading,
+  } = useUpcomingEvents();
 
   const events = data?.events;
 
-  const confirmEvents = events;
+  if (isLoading || upcomingIsLoading) return <SpinnerFull />;
 
-  console.log(confirmEvents);
-
-  if (isLoading) return <SpinnerFull />;
-
-  if (error) return null;
+  if (error || upcomingError) return null;
 
   return (
     <>
       <Box className="grid min-h-[10rem] grid-cols-[repeat(auto-fit,minmax(25rem,1fr))] gap-[2.4rem] ">
-        <Stats confirmEvents={confirmEvents} />
+        <Stats confirmEvents={events} />
       </Box>
       <Box className="grid lg:grid-cols-2 grid-cols-1 gap-[2.4rem]">
-        <UpcomingEvents />
+        <UpcomingEvents upcomingEvents={upcomingEvents} />
 
-        {<ParticipantChart events={confirmEvents} />}
+        {<ParticipantChart events={events} />}
       </Box>
     </>
   );

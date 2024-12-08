@@ -93,7 +93,7 @@ export default function UploadParticipants({
         </button>
       </Box>
 
-      <p>Select a .csv file to import participants at once</p>
+      <p>Select a .csv file to upload your participants in one click.</p>
       <p className="mt-2">
         * Csv must contain the column{" "}
         <span className="font-semibold text-[var(--color-primary)]">

@@ -24,12 +24,9 @@ const organisationSchema = new mongoose.Schema({
   },
   collaborators: [
     {
-      email: {
-        type: String, // Required for invites, optional for users
-      },
-      userId: {
+      user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User", // Required for collaborators
+        ref: "User",
       },
       token: {
         type: String, // Used for invites
@@ -49,6 +46,14 @@ const organisationSchema = new mongoose.Schema({
       },
     },
   ],
+});
+
+organisationSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "collaborators.user", // Path to populate
+    select: "userName email image _id", // Select specific fields from User
+  });
+  next();
 });
 
 const Organisation = mongoose.model("Organisation", organisationSchema);

@@ -9,7 +9,7 @@ router
   .get(
     authController.authenticate,
     authController.authorize("user"),
-    organisationController.getOrganisationCollaborators
+    organisationController.getCollaborators
   );
 
 // delete collaborator
@@ -37,7 +37,7 @@ router
 
 // validate invite
 router
-  .route("/:id/collaborators/validate")
-  .post(organisationController.validateInvite);
+  .route("/:id/collaborators/invite")
+  .get(organisationController.validateInvite);
 
 module.exports = router;

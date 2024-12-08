@@ -3,10 +3,13 @@ const AppError = require("../utils/appError");
 const Email = require("../utils/email");
 const Organisation = require("../models/organisationModel");
 const { FRONTEND_URL } = require("../utils/const");
-const { catchAsync } = require("../utils/helpers");
+const crypto = require("crypto");
+const { catchAsync, sendSuccessResponseData } = require("../utils/helpers");
 
 module.exports.validateInvite = catchAsync(async (req, res) => {
-  const { token } = req.body;
+  const { token } = req.query;
+
+  console.log(token, "this is token");
 
   if (!token) return res.status(400).json({ error: "Token is required" });
 
@@ -15,22 +18,45 @@ module.exports.validateInvite = catchAsync(async (req, res) => {
     {
       "collaborators.token": token,
       "collaborators.expiresAt": { $gt: new Date() },
-    },
-    { "collaborators.$": 1 } // Return only the matched collaborator
+    }
+    // Return only the matched collaborator
   );
+
+  if (!organisation) throw new AppError("Invite not found or has expired", 404);
+
+  // get the collaborator
+
+  const collaboratorIndex = organisation.collaborators.findIndex(
+    (c) => c.token === token
+  );
+  const collaborator = organisation.collaborators[collaboratorIndex];
 
   if (!organisation || !organisation.collaborators.length) {
     return res.status(404).json({ error: "Invite not found or has expired" });
   }
 
-  const invite = organisation.collaborators[0];
+  console.log(organisation, "this is organisation");
+
+  // lets return organisation owner userName, image
+  console.log(organisation.owner, "this is organisation owner");
+  const owner = await User.findById(organisation.owner);
+
+  if (!owner) throw new AppError("Owner not found", 404);
 
   return res.status(200).json({
     status: "success",
     data: {
-      email: invite.email,
-      expiresAt: invite.expiresAt,
-      status: invite.status,
+      owner: {
+        userName: owner.userName,
+        image: owner.image,
+        organisationName: organisation.name,
+      },
+      invite: {
+        userName: collaborator.user.userName,
+        image: collaborator.user.image,
+        expiresAt: collaborator.expiresAt,
+        status: collaborator.status,
+      },
     },
   });
 });
@@ -60,19 +86,22 @@ module.exports.sendInvite = catchAsync(async (req, res) => {
 
   // 2 days expiry
   const expiresAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
+  const user = await User.findOne({ email: userEmail });
+  if (!user) throw new AppError("User not found", 404);
 
   const invite = {
-    email: userEmail,
+    user: user._id,
     token,
     expiresAt,
     status: "pending",
   };
 
-  const inviteUrl = `${FRONTEND_URL}/collaborators/invite?token=${token}`;
+  const inviteUrl = `${FRONTEND_URL}/organisation/${organisationId}/invite?token=${token}`;
+
   const inviter = await User.findById(organisation.owner);
 
-  const email = new Email(userEmail);
   try {
+    const email = new Email(user);
     await email.sendInvite(inviteUrl, inviter.userName);
   } catch (err) {
     throw new AppError("There was a problem sending the invite", 500);
@@ -87,11 +116,11 @@ module.exports.sendInvite = catchAsync(async (req, res) => {
 });
 
 module.exports.respondToInvite = catchAsync(async (req, res) => {
-  const { accept, token } = req.body;
-
-  if (!token) return res.status(400).json({ error: "Token is required" });
+  const { accept } = req.body;
+  const token = req.query.token;
+  if (!token) throw new AppError("Token is required", 400);
   if (accept === undefined)
-    return res.status(400).json({ error: "Accept parameter is required" });
+    throw new AppError("Accept parameter is required", 400);
 
   // Find organisation and match the invite by token and expiry
   const organisation = await Organisation.findOne({
@@ -99,72 +128,116 @@ module.exports.respondToInvite = catchAsync(async (req, res) => {
     "collaborators.expiresAt": { $gt: new Date() },
   });
 
-  if (!organisation)
-    return res.status(404).json({ error: "Invite not found or has expired" });
+  if (!organisation) throw new AppError("Invite not found or has expired", 404);
+  const owner = await User.findById(organisation.owner);
+  if (!owner) throw new AppError("Owner not found", 404);
 
   const collaboratorIndex = organisation.collaborators.findIndex(
     (c) => c.token === token
   );
   const collaborator = organisation.collaborators[collaboratorIndex];
 
-  const user = await User.findOne({ email: collaborator.email });
-  if (!user) return res.status(404).json({ error: "User not found" });
+  const user = await User.findById(collaborator.user);
+  if (!user) throw new AppError("User not found", 404);
 
+  console.log("in respond to invite");
   if (accept) {
+    console.log("trying to accept invite");
     // Accept invite
+    try {
+      const email = new Email(owner);
+      await email.acceptedInvite(user.userName);
+    } catch (err) {
+      console.log(err);
+    }
     organisation.collaborators[collaboratorIndex].status = "accepted";
-    organisation.collaborators[collaboratorIndex].userId = user._id;
+    organisation.collaborators[collaboratorIndex].token = undefined;
+    organisation.collaborators[collaboratorIndex].expiresAt = undefined;
 
+    // Setting organisationId is the cheese
+    user.organisationId = organisation._id;
+    await user.save({ validateBeforeSave: false });
+
+    console.log("invite accepted");
     await organisation.save();
     return res.status(200).json({ message: "Invite accepted successfully" });
   } else {
     // Decline invite
     organisation.collaborators.splice(collaboratorIndex, 1); // Remove invite
     await organisation.save();
+
+    try {
+      const email = new Email(owner);
+      await email.declinedInvite(user.userName);
+    } catch (err) {
+      console.log(err);
+    }
     return res.status(200).json({ message: "Invite declined" });
   }
 });
 
-module.exports.getOrganisationCollaborators = catchAsync(async (req, res) => {
+module.exports.getCollaborators = catchAsync(async (req, res) => {
   const organisationId = req.params.id;
-
-  console.log("here");
   console.log(organisationId);
+  console.log("getting collaborators");
 
-  const organisation = await Organisation.findById(organisationId).populate(
-    "collaborators.userId",
-    "name email"
-  );
+  const organisation = await Organisation.findById(organisationId)
+    .select("collaborators")
+    .populate("collaborators.user");
 
   if (!organisation)
     throw new AppError("No organisation found with this ID", 404);
-
-  const collaborators = organisation.collaborators.filter(
-    (collaborator) => collaborator.status === "accepted"
+  return sendSuccessResponseData(
+    res,
+    "collaborators",
+    organisation.collaborators
   );
-
-  res.status(200).json({ status: "success", data: collaborators });
 });
 
 module.exports.deleteCollaborator = catchAsync(async (req, res) => {
   const organisationId = req.params.id;
   const collaboratorId = req.params.collaboratorId;
 
-  //delete collaborator by their collaboratorId
+  console.log(
+    "this is organisation controller",
+    organisationId,
+    collaboratorId,
+    "this is organisation controller"
+  );
 
   if (!collaboratorId) throw new AppError("Collaborator ID is required", 400);
 
   const organisation = await Organisation.findById(organisationId);
+
   if (!organisation)
     throw new AppError("No organisation found with this ID", 404);
 
   const collaboratorIndex = organisation.collaborators.findIndex(
-    (collaborator) => collaborator._id === collaboratorId
+    (collaborator) => collaborator._id.toString() === collaboratorId.toString()
   );
 
   if (collaboratorIndex === -1)
     throw new AppError("Collaborator not found", 404);
 
+  const collaborator = organisation.collaborators[collaboratorIndex];
+  const user = collaborator.user;
+
+  const status = collaborator.status;
+  const owner = await User.findById(organisation.owner);
+
+  if (status === "accepted") {
+    try {
+      const email = new Email(user);
+      await email.removedFromOrganization(owner.userName, organisation.name);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  await User.updateOne(
+    { _id: organisation.collaborators[collaboratorIndex].user },
+    { $set: { organisationId: null } }
+  );
   organisation.collaborators.splice(collaboratorIndex, 1);
   await organisation.save();
 

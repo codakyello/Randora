@@ -86,7 +86,7 @@ module.exports.getMyEvents = catchAsync(async (req, res) => {
     .limitFields();
 
   const totalCount = await Event.find({
-    $or: [{ userId: req.user.id }, { organizationId: req.user.organizationId }],
+    $or: [{ userId: req.user.id }, { organisationId: req.user.organisationId }],
   }).countDocuments();
 
   console.log("totalCount", totalCount);
@@ -96,11 +96,14 @@ module.exports.getMyEvents = catchAsync(async (req, res) => {
 });
 
 module.exports.searchUsers = catchAsync(async (req, res) => {
+  console.log("searching users");
   const query = req.query.search;
+  // dont find users that have accountType set to organisation
   const results = await User.find(
     {
+      accountType: { $ne: "organisation" },
       $or: [
-        { username: { $regex: query, $options: "i" } },
+        { userName: { $regex: query, $options: "i" } },
         { email: { $regex: query, $options: "i" } },
       ],
     },

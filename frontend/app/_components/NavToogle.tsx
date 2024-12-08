@@ -10,9 +10,9 @@ export default function NavToggle() {
       onClick={toggleNav}
     >
       {!isOpen ? (
-        <HamburgerIcon className="text-[var(--color-primary)] text-[3rem]" />
+        <HamburgerIcon color="var(--color-primary)" className="text-[3rem]" />
       ) : (
-        <CloseIcon className="text-[var(--color-primary)] text-[2rem]" />
+        <CloseIcon color="var(--color-primary)" className="text-[2rem]" />
       )}
     </button>
   );

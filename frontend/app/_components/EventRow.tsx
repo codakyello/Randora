@@ -84,94 +84,96 @@ export default function EventRow({ event }: { event: Event }) {
       <Box className="flex justify-center items-center flex-col gap-[.2rem]">
         {prizeCount}
       </Box>
-      <Box className="relative z-[9999]">
-        <Menus.Toogle id={eventId} />
 
-        <Menus.Menu id={eventId}>
+      <Menus.Toogle id={eventId} />
+
+      <Menus.Menu id={eventId}>
+        <Menus.Button
+          icon={
+            <HiEye className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+          }
+          onClick={() => {}}
+          disabled={isDeleting || isUpdating}
+        >
+          <Link href={`/dashboard/events/${eventId}`}>See details</Link>
+        </Menus.Button>
+
+        {event.status === "active" ? (
           <Menus.Button
             icon={
-              <HiEye className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+              <IoCheckmarkDoneSharp className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
             }
-            onClick={() => {}}
+            onClick={() => {
+              updateEvent(
+                {
+                  eventData: { status: "completed" },
+                  token,
+                  eventId,
+                },
+                {
+                  onSuccess: () => {
+                    toast.success("Event has been marked complete");
+                    closeMenu();
+                  },
+                  onError: (err) => {
+                    toast.error(err.message);
+                  },
+                }
+              ); // change from active to complete
+            }}
             disabled={isDeleting || isUpdating}
           >
-            <Link href={`/dashboard/events/${eventId}`}>See details</Link>
+            Complete
           </Menus.Button>
+        ) : (
+          ""
+        )}
 
-          {event.status === "active" ? (
+        {event.status !== "inactive" ? (
+          ""
+        ) : (
+          <ModalOpen name="edit-event">
             <Menus.Button
               icon={
-                <IoCheckmarkDoneSharp className=" w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+                <HiPencil className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
               }
               onClick={() => {
-                updateEvent(
-                  {
-                    eventData: { status: "completed" },
-                    token,
-                    eventId,
-                  },
-                  {
-                    onSuccess: () => {
-                      toast.success("Event has been marked complete");
-                      closeMenu();
-                    },
-                    onError: (err) => {
-                      toast.error(err.message);
-                    },
-                  }
-                ); // change from active to complete
+                console.log("clicked");
+                router.push(`/dashboard/events/${eventId}/participants`);
               }}
               disabled={isDeleting || isUpdating}
             >
-              Complete
-            </Menus.Button>
-          ) : (
-            ""
-          )}
-
-          {event.status !== "inactive" ? (
-            ""
-          ) : (
-            <ModalOpen name="edit-event">
-              <Menus.Button
-                icon={
-                  <HiPencil className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
-                }
-                onClick={() => {
-                  router.push(`/dashboard/events/${eventId}/participants`);
-                }}
-                disabled={isDeleting || isUpdating}
-              >
-                Edit
-              </Menus.Button>
-            </ModalOpen>
-          )}
-
-          <ModalWindow name="edit-event">
-            <CreateEditEventForm eventToEdit={event} />
-          </ModalWindow>
-
-          <ModalOpen name="delete-event">
-            <Menus.Button
-              onClick={() => {}}
-              icon={
-                <HiTrash className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
-              }
-              disabled={isDeleting || isUpdating}
-            >
-              Delete
+              Edit
             </Menus.Button>
           </ModalOpen>
+        )}
 
-          <ModalWindow name="delete-event">
-            <ConfirmDelete
-              resourceName="Event"
-              isDeleting={isDeleting}
-              onConfirm={handleDelete}
-            />
-          </ModalWindow>
-        </Menus.Menu>
-      </Box>
+        <ModalWindow name="edit-event" listenCapturing={true}>
+          <CreateEditEventForm eventToEdit={event} />
+        </ModalWindow>
+
+        <ModalOpen name="delete-event">
+          <Menus.Button
+            onClick={() => {
+              console.log("clicked");
+            }}
+            icon={
+              <HiTrash className="w-[1.6rem] h-[1.6rem] text-[var(--color-grey-400)]" />
+            }
+            disabled={isDeleting || isUpdating}
+          >
+            Delete
+          </Menus.Button>
+        </ModalOpen>
+
+        <ModalWindow name="delete-event" listenCapturing={true}>
+          <ConfirmDelete
+            resourceName="Event"
+            isDeleting={isDeleting}
+            onConfirm={handleDelete}
+          />
+        </ModalWindow>
+      </Menus.Menu>
     </Row>
   );
 }
