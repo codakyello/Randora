@@ -84,3 +84,17 @@ export type BookingRowProps = {
   event?: Event;
   participant?: Participant;
 };
+
+export interface SettingsRandora {
+  theme: ThemeColor;
+  brandLogo?: string;
+  brandName?: string;
+  spinnerStyle: "classic" | "modern" | "minimal";
+  confettiEnabled: boolean;
+  soundEnabled: boolean;
+}
+
+export interface ThemeColor {
+  primary: string;
+  secondary: string;
+}

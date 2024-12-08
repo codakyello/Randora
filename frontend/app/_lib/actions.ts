@@ -1,6 +1,11 @@
-"use client";
+"use server";
 
-import { EventForm, ParticipantForm, PrizeForm } from "../_utils/types";
+import {
+  EventForm,
+  ParticipantForm,
+  PrizeForm,
+  SettingsRandora,
+} from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
 // const DEV_URL = "http://localhost:5000/api/v1";
@@ -271,3 +276,5 @@ export async function deletePrize({
 
   return { status: "success" };
 }
+
+

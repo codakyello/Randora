@@ -1,15 +1,30 @@
-import { Box } from "@chakra-ui/react";
+import { SettingsRandora } from "@/app/_utils/types";
+import SettingsForm from "@/app/_components/SettingsForm";
+import { cookies } from "next/headers";
+import { getUserSettings } from "@/app/_utils/serverUtils";
 
-export const metadata = {
-  title: "Settings",
-};
-export default function Page() {
-  // const settings = await getSettings();
+export default async function SettingsPage() {
+  const token = cookies().get("auth_token")?.value;
+  const settingsRes = await getUserSettings(token);
+  const settings =
+    settingsRes.status === "success"
+      ? (settingsRes.data as SettingsRandora)
+      : null;
 
-  // if (!settings) return null;
   return (
-    <Box className="flex flex-col gap-[2rem] md:gap-[3.2rem]">
-      <h1>Settings</h1>
-    </Box>
+    <div className="min-h-screen pt-14 px-4 sm:px-6 lg:px-8">
+      <div className="container">
+        <div className="mx-auto space-y-12">
+          <div>
+            <h1 className="text-[2em] font-bold text-neutral-900">Settings</h1>
+            <p className="text-[1.125em] text-neutral-600 mt-3">
+              Customize your event page appearance and manage your preferences
+            </p>
+          </div>
+
+          <SettingsForm initialSettings={settings} />
+        </div>
+      </div>
+    </div>
   );
 }
