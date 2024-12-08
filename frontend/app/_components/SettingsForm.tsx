@@ -1,7 +1,7 @@
 "use client";
 
-import { updateUserSettings } from "@/app/_utils/serverUtils";
 import { SettingsRandora, ThemeColor } from "@/app/_utils/types";
+import { updateUserSettings } from "@/app/_lib/data-service";
 import { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
 import Image from "next/image";

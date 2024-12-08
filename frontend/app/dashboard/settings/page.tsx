@@ -1,8 +1,7 @@
 import { SettingsRandora } from "@/app/_utils/types";
 import SettingsForm from "@/app/_components/SettingsForm";
 import { cookies } from "next/headers";
-import { getUserSettings } from "@/app/_utils/serverUtils";
-
+import { getUserSettings } from "@/app/_lib/data-service";
 export default async function SettingsPage() {
   const token = cookies().get("auth_token")?.value;
   const settingsRes = await getUserSettings(token);

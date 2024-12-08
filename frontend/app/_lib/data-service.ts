@@ -8,6 +8,7 @@ import { RESULTS_PER_PAGE } from "../_utils/constants";
 // import { notFound } from "next/navigation";
 // import { EventForm, ParticipantForm } from "../_utils/types";
 import { getToken } from "../_utils/serverUtils";
+import { SettingsRandora } from "../_utils/types";
 // import { User } from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
@@ -839,5 +840,52 @@ export async function respondToInvite(
         message: "An unknown error occurred",
       };
     }
+  }
+}
+
+export async function getUserSettings(token: string | undefined) {
+  try {
+    const res = await fetch(`${URL}/users/settings`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch settings");
+
+    const data = await res.json();
+    return { status: "success", data };
+  } catch (error) {
+    return {
+      status: "error",
+      data: error instanceof Error ? error.message : "Failed to fetch settings",
+    };
+  }
+}
+
+export async function updateUserSettings(
+  settings: SettingsRandora,
+  token: string | undefined
+) {
+  try {
+    const res = await fetch(`${URL}/users/settings`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(settings),
+    });
+
+    if (!res.ok) throw new Error("Failed to update settings");
+
+    const data = await res.json();
+    return { status: "success", data };
+  } catch (error) {
+    return {
+      status: "error",
+      data:
+        error instanceof Error ? error.message : "Failed to update settings",
+    };
   }
 }
