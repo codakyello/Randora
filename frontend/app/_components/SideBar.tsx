@@ -14,8 +14,6 @@ export default async function SideBar() {
     subscriptionExpiryDate = user.subscriptionExpiryDate.trim();
   }
 
-  console.log(subscriptionExpiryDate);
-
   return (
     <>
       {/*Mobile Nav*/}

@@ -6,7 +6,7 @@ function SpinnerFull() {
       display={"flex"}
       height="100vh"
       width="100vw"
-      className="absolute top-0 left-0"
+      className="absolute bg-[var(--color-grey-50)] top-0 left-0"
       alignItems={"center"}
       justifyContent={"center"}
     >

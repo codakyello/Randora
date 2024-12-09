@@ -12,14 +12,19 @@ export default function EventStats({
   prizes: Prize[];
   participants: Participant[];
 }) {
-  const winners = participants?.filter((participant) => participant.prize);
+  const winners = participants?.filter((participant) => participant.isWinner);
+  const remainingPrizes = prizes?.reduce(
+    (acc, prize) => acc + prize.quantity,
+    0
+  );
+
   const stats = [
     {
       title: "Participants",
       backgroundColor: "stat",
       statColor: "black",
       titleColor: "black",
-      description: "Unique participants filtered by email.",
+      description: `Total participants for ${event.name}`,
       value: totalParticipants || 0,
     },
     {
@@ -31,12 +36,21 @@ export default function EventStats({
       value: winners?.length || 0,
     },
     {
-      title: "Prizes",
+      title: "Prizes created",
       backgroundColor: "grey",
       statColor: "primary",
       titleColor: "grey",
-      description: `Prizes for ${event.name}`,
-      value: prizes?.length || 0,
+      description: `Prizes created for ${event.name}`,
+      value: event.prizeCount,
+    },
+
+    {
+      title: "Prizes left",
+      backgroundColor: "grey",
+      statColor: "primary",
+      titleColor: "grey",
+      description: `Remaining prizes for ${event.name}`,
+      value: remainingPrizes || 0,
     },
   ];
 

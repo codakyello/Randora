@@ -55,15 +55,17 @@ export interface Participant {
 export interface ParticipantForm {
   name?: string | undefined;
   email?: string | undefined;
-  ticketNumber: number;
-  eventId: string;
+  ticketNumber?: number;
+  eventId?: string;
+  isWinner?: boolean;
+  prizeId?: string;
 }
 
 export interface PrizeForm {
-  name: string;
+  name?: string;
   image?: string;
-  quantity: number;
-  eventId: string;
+  quantity?: number;
+  eventId?: string;
 }
 
 export interface Prize {
@@ -90,7 +92,8 @@ export type BookingRowProps = {
 
 export interface SettingsRandora {
   theme: ThemeColor;
-  brandLogo?: string;
+  textLogo?: string;
+  coverLogo?: string;
   brandName?: string;
   spinnerStyle: "classic" | "modern" | "minimal";
   confettiEnabled: boolean;

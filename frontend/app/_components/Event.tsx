@@ -5,6 +5,7 @@ import ParticipantTable from "@/app/_components/ParticipantTable";
 import Menus from "@/app/_components/Menu";
 import Link from "next/link";
 import { FaChevronRight } from "react-icons/fa";
+import { MdArrowOutward } from "react-icons/md";
 import useEvent from "@/app/_hooks/useEvent";
 import SpinnerFull from "./SpinnerFull";
 import useEventPrizes from "../_hooks/useEventPrizes";
@@ -12,6 +13,9 @@ import useEventAllParticipants from "../_hooks/useEventAllParticipants";
 import { useAuth } from "../_contexts/AuthProvider";
 import PrizeTable from "./PrizeTable";
 import Modal from "./Modal";
+import Button from "./Button";
+import Tag from "./Tag";
+import { getTagName } from "../_utils/helpers";
 
 export default function Event({ params }: { params: { eventId: string } }) {
   const { user } = useAuth();
@@ -32,7 +36,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
 
   if (isLoading || isParticipantsLoading || isPrizesLoading)
     return <SpinnerFull />;
-  console.log(prizes);
+
   const totalCount = participantsData?.totalCount;
 
   const creator = event?.creator;
@@ -43,16 +47,29 @@ export default function Event({ params }: { params: { eventId: string } }) {
     <Menus>
       <Modal>
         <Box className="flex pl-[2rem] flex-col gap-[3.2rem]">
-          <Box className="flex flex-col">
-            <h1 className="md:mb-0">{event.name}</h1>
-            <div className="flex gap-8 opacity-80 text-[1.4rem]">
-              <span>
+          <Box className="flex justify-between items-center">
+            <Box className="flex flex-col">
+              <Box className="flex items-center gap-4">
+                <h1 className="md:mb-0">{event.name}</h1>
+                <Tag type={getTagName(event.status)}>{event.status}</Tag>
+              </Box>
+              <span className="text-[1.4rem] opacity-80">
                 Created by{" "}
-                <span className=" text-[var(--color-primary)]">
+                <span className=" text-[var(--color-primary)] font-medium">
                   {creator?._id === user?._id ? "You" : creator?.userName}
                 </span>
               </span>
-            </div>
+            </Box>
+
+            <Link href={`/lottery/raffle/${eventId}`}>
+              <Button
+                className="mr-[2rem] flex items-center gap-1"
+                type="primary"
+              >
+                Lottery
+                <MdArrowOutward />
+              </Button>
+            </Link>
           </Box>
           <Box className="grid pr-[2rem] min-h-[10rem] grid-cols-[repeat(auto-fit,minmax(25rem,1fr))] gap-[2.4rem] ">
             <EventStats
@@ -86,7 +103,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
             <Box className="flex flex-col mt-16 items-center justify-center">
               <h2>No participants yet</h2>
               <Link
-                className="text-[var(--color-primary)]"
+                className="underline text-[var(--color-primary)]"
                 href={`/dashboard/events/${eventId}/participants`}
               >
                 Add Participants
@@ -118,7 +135,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
             <Box className="flex flex-col mt-16 items-center justify-center">
               <h2>No prizes yet</h2>
               <Link
-                className="text-[var(--color-primary)]"
+                className="underline text-[var(--color-primary)]"
                 href={`/dashboard/events/${eventId}/prizes`}
               >
                 Add Prizes

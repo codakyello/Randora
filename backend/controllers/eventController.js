@@ -19,6 +19,19 @@ module.exports.getAllEvents = catchAsync(async (req, res) => {
   sendSuccessResponseData(res, "events", events, totalCount);
 });
 
+module.exports.getAllEvents = catchAsync(async (req, res) => {
+  const apiFeatures = new APIFEATURES(Event, req.query)
+    .filter()
+    .sort()
+    .paginate()
+    .limitFields();
+
+  const totalCount = Event.countDocuments();
+
+  const events = await apiFeatures.query;
+
+  sendSuccessResponseData(res, "events", events, totalCount);
+});
 // get events
 module.exports.getEvent = catchAsync(async (req, res) => {
   // check if the user owns the event
@@ -211,6 +224,25 @@ module.exports.getEventPrizes = catchAsync(async (req, res) => {
   }).countDocuments();
 
   const prizes = await apiFeatures.query;
+
+  sendSuccessResponseData(res, "prizes", prizes, totalCount);
+});
+
+module.exports.getAllEventPrizes = catchAsync(async (req, res) => {
+  const event = await Event.findById(req.params.id);
+
+  if (
+    event.organisationId.toString() !== req.user.organisationId.toString() &&
+    event.userId.toString() !== req.user._id.toString()
+  ) {
+    throw new AppError("You do not have permission to access this event.", 404);
+  }
+
+  const prizes = await Prize.find({ eventId: req.params.id });
+
+  const totalCount = await Prize.find({
+    eventId: req.params.id,
+  }).countDocuments();
 
   sendSuccessResponseData(res, "prizes", prizes, totalCount);
 });

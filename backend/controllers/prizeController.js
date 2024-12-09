@@ -31,7 +31,8 @@ module.exports.getPrize = catchAsync(async (req, res) => {
 
 // Drawn handler
 module.exports.assignPrize = catchAsync(async (req, res) => {
-  const { prizeId, participantId } = req.body;
+  const prizeId = req.params.id;
+  const { participantId } = req.body;
 
   // Find the prize
   const prize = await Prize.findById(prizeId);
@@ -58,14 +59,16 @@ module.exports.assignPrize = catchAsync(async (req, res) => {
     throw new AppError("No prizes remaining", 400); // Prevent updating if no remaining prizes
   }
 
+  // Reduce the remaining price on the event
   await Event.findByIdAndUpdate(eventId, {
     $inc: { remainingPrize: -1 },
     status: "active",
   });
 
+  // update participant with prizeId and set isWinner true
   const participant = await Participant.findByIdAndUpdate(
     participantId,
-    { prizeId },
+    { prizeId, isWinner: true },
     { new: true }
   );
 

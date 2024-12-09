@@ -328,3 +328,28 @@ export async function deleteCollaborator({
 
   return data;
 }
+
+export async function assignPrize({
+  prizeId,
+  participantId,
+  token,
+}: {
+  prizeId: string;
+  participantId: string;
+  token: string | null;
+}) {
+  const res = await fetch(`${URL}/prizes/${prizeId}/assign-price`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ participantId }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) throw new Error(data.message);
+
+  return data;
+}

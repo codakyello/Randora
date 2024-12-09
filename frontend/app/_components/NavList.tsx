@@ -53,11 +53,6 @@ export default function NavList({
           },
 
           {
-            name: "Settings",
-            icon: <Cog6ToothIcon />,
-            link: "/dashboard/settings",
-          },
-          {
             name: "Tools",
             icon: <LiaToolsSolid />,
             link: "/dashboard/tools",

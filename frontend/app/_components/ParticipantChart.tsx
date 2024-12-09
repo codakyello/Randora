@@ -62,7 +62,9 @@ function ParticipantChart({ events }: { events: Event[] }) {
             />
           </AreaChart>
         ) : (
-          <></>
+          <Box className="flex items-center justify-center h-full">
+            <p className="text-[1.6rem]">Events analytics will appear here</p>
+          </Box>
         )}
       </ResponsiveContainer>
     </Box>

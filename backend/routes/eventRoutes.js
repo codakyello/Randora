@@ -48,4 +48,11 @@ router
     eventController.getEventPrizes
   );
 
+router
+  .route("/:id/all-prizes")
+  .get(
+    authenticate,
+    authorize("user", "admin"),
+    eventController.getAllEventPrizes
+  );
 module.exports = router;

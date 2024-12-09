@@ -1,8 +1,10 @@
-import { Box } from "@chakra-ui/react";
-import { getUser } from "../_lib/data-service";
+"use client";
 
-export default async function UserAvatar() {
-  const user = await getUser();
+import { Box } from "@chakra-ui/react";
+import { useAuth } from "../_contexts/AuthProvider";
+
+export default function UserAvatar() {
+  const { user } = useAuth();
 
   if (!user) return;
 

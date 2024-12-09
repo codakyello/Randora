@@ -1,15 +1,9 @@
 "use server";
-// import { notFound } from "next/navigation";
-// import { eachDayOfInterval } from "date-fns";
 
 import { revalidatePath } from "next/cache";
-import { Setting } from "../_components/UpdateSettingsForm";
 import { RESULTS_PER_PAGE } from "../_utils/constants";
-// import { notFound } from "next/navigation";
-// import { EventForm, ParticipantForm } from "../_utils/types";
 import { getToken } from "../_utils/serverUtils";
 import { SettingsRandora } from "../_utils/types";
-// import { User } from "../_utils/types";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
 // const DEV_URL = "http://localhost:5000/api/v1";
@@ -17,52 +11,52 @@ const URL = "https://mega-draw.vercel.app/api/v1";
 // /////////////
 // // AUTH
 
-export async function getSettings() {
-  try {
-    const res = await fetch(`${URL}/settings`);
+// export async function getSettings() {
+//   try {
+//     const res = await fetch(`${URL}/settings`);
 
-    const data = await res.json();
+//     const data = await res.json();
 
-    if (!res.ok) throw new Error(data.message || "Settings couldnt load");
+//     if (!res.ok) throw new Error(data.message || "Settings couldnt load");
 
-    const {
-      data: { settings },
-    } = data;
-    return settings;
-  } catch (err) {
-    throw err;
-  }
-}
+//     const {
+//       data: { settings },
+//     } = data;
+//     return settings;
+//   } catch (err) {
+//     throw err;
+//   }
+// }
 
-export async function updateSetting(data: Partial<Setting>, token: string) {
-  if (!token) return;
-  try {
-    const res = await fetch(`${URL}/settings`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(data), // Send the serialized data
-    });
+// export async function updateSetting(data: Partial<Setting>, token: string) {
+//   if (!token) return;
+//   try {
+//     const res = await fetch(`${URL}/settings`, {
+//       method: "PATCH",
+//       headers: {
+//         "Content-Type": "application/json",
+//         Authorization: `Bearer ${token}`,
+//       },
+//       body: JSON.stringify(data), // Send the serialized data
+//     });
 
-    const result = await res.json();
+//     const result = await res.json();
 
-    if (!res.ok) throw new Error(result.message || "Failed to update settings");
+//     if (!res.ok) throw new Error(result.message || "Failed to update settings");
 
-    const {
-      data: { settings },
-    } = result;
+//     const {
+//       data: { settings },
+//     } = result;
 
-    revalidatePath("/dashboard/settings");
-    return settings;
-  } catch (err) {
-    if (err instanceof Error) {
-      return { status: "error", message: err.message };
-    }
-    return { status: "error", message: "An unknown error occured" };
-  }
-}
+//     revalidatePath("/dashboard/settings");
+//     return settings;
+//   } catch (err) {
+//     if (err instanceof Error) {
+//       return { status: "error", message: err.message };
+//     }
+//     return { status: "error", message: "An unknown error occured" };
+//   }
+// }
 
 export async function login(formData: FormData) {
   // Safely extract email and password
@@ -698,6 +692,44 @@ export async function getEventPrizes(
 
   try {
     const res = await fetch(`${URL}/events/${eventId}/prizes${query}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    statusCode = res.status;
+    if (!res.ok) throw new Error(data.message);
+
+    const {
+      totalCount,
+      results,
+      data: { prizes },
+    } = data;
+
+    return { prizes, totalCount, results };
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", statusCode, message: err.message };
+    } else {
+      return {
+        status: "error",
+        statusCode,
+        message: "An unknown error occurred",
+      };
+    }
+  }
+}
+
+export async function getAllEventPrizes(eventId: string) {
+  const token = await getToken();
+  if (!token) return;
+  let statusCode;
+
+  try {
+    const res = await fetch(`${URL}/events/${eventId}/all-prizes`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

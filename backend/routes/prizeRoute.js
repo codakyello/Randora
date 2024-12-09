@@ -18,4 +18,8 @@ router
     prizeController.deletePrize
   );
 
+router
+  .route("/:id/assign-price")
+  .patch(authenticate, authorize("admin", "user"), prizeController.assignPrize);
+
 module.exports = router;
