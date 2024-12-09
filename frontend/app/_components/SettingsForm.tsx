@@ -151,6 +151,7 @@ export default function SettingsForm({
         if (textUrl) updatedSettings.textLogo = textUrl;
         if (coverUrl) updatedSettings.coverLogo = coverUrl;
       }
+
       const token = "";
       const res = await updateUserSettings(updatedSettings, token);
       if (res.status === "success") {
@@ -172,352 +173,282 @@ export default function SettingsForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-12">
-      {/* Branding Section */}
-      <Box className="bg-[var(--color-grey-0)] rounded-2xl p-8 space-y-8">
-        <Box>
-          <h2 className="text-[1.25em] font-semibold">Branding</h2>
-          <p className="mt-1">
-            Customize how your brand appears on the event page
-          </p>
-        </Box>
-
-        <Box className="grid bg-[var(--color-grey-0)] p-8 grid-cols-1 lg:grid-cols-[1fr,1fr] gap-12">
-          {/* Left Column - Text Logo */}
-          <Box className="space-y-8">
-            <Box className="space-y-4">
-              <label className="font-medium">Text Logo</label>
-              <Box className="flex items-center gap-4">
-                <Box className="w-16 h-16 relative">
-                  {settings.textLogo ? (
-                    <Box className="relative w-full h-full">
-                      <Image
-                        src={settings.textLogo}
-                        alt="Text logo"
-                        fill
-                        className="object-contain"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => clearLogo("text")}
-                        className="absolute -top-2 -right-2 p-1 rounded-full bg-[var(--color-grey-0)] border shadow-sm hover:bg-neutral-50"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </Box>
-                  ) : (
-                    <Box className="w-full h-full rounded-lg grid place-items-center">
-                      <Upload />
-                    </Box>
-                  )}
-                </Box>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoUpload("text")}
-                  className="hidden"
-                  id="text-logo-upload"
-                />
-                <label
-                  htmlFor="text-logo-upload"
-                  className="px-4 py-2 font-medium rounded-md text-indigo-600 border border-indigo-600 hover:bg-indigo-50 cursor-pointer"
-                >
-                  Upload Text Logo
-                </label>
-              </Box>
-            </Box>
+    <form onSubmit={handleSubmit}>
+      <Box className="space-y-12">
+        {/* Branding Section */}
+        <Box className="bg-[var(--color-grey-0)] rounded-2xl p-8 space-y-8">
+          <Box>
+            <h2 className="text-[1.25em] font-semibold">Branding</h2>
+            <p className="mt-1">
+              Customize how your brand appears on the event page
+            </p>
           </Box>
 
-          {/* Right Column - Cover Logo */}
-          <Box className="space-y-8">
-            <Box className="space-y-4">
-              <label className="font-medium">Cover Logo</label>
-              <Box className="flex items-center gap-4">
-                <Box className="w-16 h-16 relative">
-                  {settings.coverLogo ? (
-                    <Box className="relative w-full h-full">
-                      <Image
-                        src={settings.coverLogo}
-                        alt="Cover logo"
-                        fill
-                        className="object-contain"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => clearLogo("cover")}
-                        className="absolute -top-2 -right-2 p-1 rounded-full bg-[var(--color-grey-0)] border shadow-sm hover:bg-neutral-50"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </Box>
-                  ) : (
-                    <Box className="w-full h-full rounded-lg grid place-items-center">
-                      <Upload />
-                    </Box>
-                  )}
-                </Box>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleLogoUpload("cover")}
-                  className="hidden"
-                  id="cover-logo-upload"
-                />
-                <label
-                  htmlFor="cover-logo-upload"
-                  className="px-4 py-2 font-medium rounded-md text-indigo-600 border border-indigo-600 hover:bg-indigo-50 cursor-pointer"
-                >
-                  Upload Cover Logo
-                </label>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <label className="block text-[0.875em] font-medium">
-                Brand Name
-              </label>
-              <input
-                type="text"
-                value={settings.brandName}
-                onChange={(e) =>
-                  setSettings({ ...settings, brandName: e.target.value })
-                }
-                className="w-full rounded-md border-neutral-300 focus:border-indigo-600"
-                placeholder="Enter your brand name"
-              />
-            </div>
-          </div>
-
-          {/* Right Column - Preview */}
-          <div className="space-y-4">
-            <label className="block text-[0.875em] font-medium">Preview</label>
-            <div className="p-8 rounded-lg border space-y-8 bg-white">
-              <div className="h-32 relative mx-auto">
-                {settings.brandLogo ? (
-                  <Image
-                    src={settings.coverLogo}
-                    alt="Cover logo preview"
-                    fill
-                    className="object-contain"
+          <Box className="grid bg-[var(--color-grey-0)] p-8 grid-cols-1 lg:grid-cols-[1fr,1fr] gap-12">
+            {/* Left Column - Text Logo */}
+            <Box className="space-y-8">
+              <Box className="space-y-4">
+                <label className="font-medium">Text Logo</label>
+                <Box className="flex items-center gap-4">
+                  <Box className="w-16 h-16 relative">
+                    {settings.textLogo ? (
+                      <Box className="relative w-full h-full">
+                        <Image
+                          src={settings.textLogo}
+                          alt="Text logo"
+                          fill
+                          className="object-contain"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => clearLogo("text")}
+                          className="absolute -top-2 -right-2 p-1 rounded-full bg-[var(--color-grey-0)] border shadow-sm hover:bg-neutral-50"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </Box>
+                    ) : (
+                      <Box className="w-full h-full rounded-lg grid place-items-center">
+                        <Upload />
+                      </Box>
+                    )}
+                  </Box>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload("text")}
+                    className="hidden"
+                    id="text-logo-upload"
                   />
-                ) : (
-                  <div className="w-full h-full rounded-lg border-2 border-dashed border-neutral-200 grid place-items-center">
-                    <div className="text-center space-y-2">
-                      <Upload className="w-8 h-8 text-neutral-300 mx-auto" />
-                      <span className="text-[0.875em] text-neutral-400">
-                        Upload a logo to see preview
-                      </span>
-                    </div>
-                  </div>
-                )}
+                  <label
+                    htmlFor="text-logo-upload"
+                    className="px-4 py-2 font-medium rounded-md text-indigo-600 border border-indigo-600 hover:bg-indigo-50 cursor-pointer"
+                  >
+                    Upload Text Logo
+                  </label>
+                </Box>
+              </Box>
+            </Box>
+
+            {/* Right Column - Cover Logo */}
+            <Box className="space-y-8">
+              <Box className="space-y-4">
+                <label className="font-medium">Cover Logo</label>
+                <Box className="flex items-center gap-4">
+                  <Box className="w-16 h-16 relative">
+                    {settings.coverLogo ? (
+                      <Box className="relative w-full h-full">
+                        <Image
+                          src={settings.coverLogo}
+                          alt="Cover logo"
+                          fill
+                          className="object-contain"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => clearLogo("cover")}
+                          className="absolute -top-2 -right-2 p-1 rounded-full bg-[var(--color-grey-0)] border shadow-sm hover:bg-neutral-50"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </Box>
+                    ) : (
+                      <Box className="w-full h-full rounded-lg grid place-items-center">
+                        <Upload />
+                      </Box>
+                    )}
+                  </Box>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload("cover")}
+                    className="hidden"
+                    id="cover-logo-upload"
+                  />
+                  <label
+                    htmlFor="cover-logo-upload"
+                    className="px-4 py-2 font-medium rounded-md text-indigo-600 border border-indigo-600 hover:bg-indigo-50 cursor-pointer"
+                  >
+                    Upload Cover Logo
+                  </label>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+
+          {/* Preview Section */}
+          <Box className="mt-8">
+            <label className="block font-medium mb-4">Logo Previews</label>
+            <Box className="grid grid-cols-2 gap-8">
+              {/* Text Logo Preview */}
+              <Box className="p-8 rounded-2xl border border-[var(--color-grey-200)] space-y-4">
+                <h3 className="font-medium text-center">Text Logo Preview</h3>
+                <Box className="h-32 relative mx-auto">
+                  {settings.textLogo ? (
+                    <Image
+                      src={settings.textLogo}
+                      alt="Text logo preview"
+                      fill
+                      className="object-contain"
+                    />
+                  ) : (
+                    <Box className="w-full h-full rounded-lg grid place-items-center">
+                      <Box className="text-center space-y-2">
+                        <Upload className="w-8 h-8 mx-auto" />
+                        <span>Upload a text logo to see preview</span>
+                      </Box>
+                    </Box>
+                  )}
+                </Box>
+              </Box>
+
+              {/* Cover Logo Preview */}
+              <Box className="p-8 rounded-2xl border border-[var(--color-grey-200)] space-y-4">
+                <h3 className="font-medium text-center">Cover Logo Preview</h3>
+                <Box className="h-32 relative mx-auto">
+                  {settings.coverLogo ? (
+                    <Image
+                      src={settings.coverLogo}
+                      alt="Cover logo preview"
+                      fill
+                      className="object-contain"
+                    />
+                  ) : (
+                    <Box className="w-full h-full rounded-lg grid place-items-center">
+                      <Box className="text-center space-y-2">
+                        <Upload className="w-8 h-8 mx-auto" />
+                        <span>Upload a cover logo to see preview</span>
+                      </Box>
+                    </Box>
+                  )}
+                </Box>
               </Box>
             </Box>
           </Box>
         </Box>
-      </Box>
 
-      {/* Theme Section */}
-      <div className="bg-white rounded-lg border p-6 space-y-6">
-        <div>
-          <h2 className="font-semibold">Theme</h2>
-          <p className="text-neutral-600">
-            Choose colors and styles for your event page
-          </p>
-        </div>
+        {/* Theme Section */}
+        <Box className="rounded-2xl p-8 bg-[var(--color-grey-0)] mt-10 space-y-6">
+          <Box>
+            <h2 className="font-semibold">Theme</h2>
+            <p>Choose colors and styles for your event page</p>
+          </Box>
 
-        <div className="space-y-6">
-          {/* Color Presets */}
-          <div>
-            <label className="block font-medium mb-2">Color Presets</label>
-            <div className="grid grid-cols-[repeat(auto-fill,minmax(32px,1fr))] sm:grid-cols-[repeat(auto-fill,minmax(36px,1fr))] gap-2 max-w-sm">
-              {themePresets.map((theme, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => setSettings((prev) => ({ ...prev, theme }))}
-                  className={`aspect-square rounded-md border transition-all ${
-                    settings.theme.primary === theme.primary
-                      ? "border-indigo-600 scale-110 shadow-sm"
-                      : "border-transparent hover:scale-105"
-                  }`}
-                  style={{ backgroundColor: theme.primary }}
-                />
-              ))}
-            </div>
-          </div>
+          <Box className="space-y-6">
+            {/* Color Presets */}
+            <Box>
+              <label className="block font-medium mb-2">Color Presets</label>
+              <Box className="flex gap-4">
+                {themePresets.map((theme, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => setSettings((prev) => ({ ...prev, theme }))}
+                    className={`aspect-square w-24 rounded-2xl border transition-all ${
+                      settings.theme.primary === theme.primary
+                        ? "border-indigo-600 scale-110 shadow-sm"
+                        : "border-transparent hover:scale-105"
+                    }`}
+                    style={{ backgroundColor: theme.primary }}
+                  />
+                ))}
+              </Box>
+            </Box>
 
-          {/* Custom Color Picker */}
-          <div>
-            <label className="block font-medium mb-2">Custom Color</label>
-            <div className="flex items-center gap-4">
-              {/* <Dialog
-                open={isColorPickerOpen}
-                onOpenChange={setIsColorPickerOpen}
-              >
-                <DialogTrigger asChild>
+            {/* Custom Color Picker */}
+            <Box>
+              <label className="block font-medium mb-2">Custom Color</label>
+              <Box className="flex items-center gap-4">
+                <ModalOpen name="color-picker">
                   <button
                     type="button"
-                    className="w-12 h-12 rounded-lg border-2 border-neutral-200 transition-all hover:scale-105"
+                    className="w-20 aspect-square rounded-lg border-2 border-neutral-200 transition-all hover:scale-105"
                     style={{ backgroundColor: settings.theme.primary }}
                   />
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md w-full p-4 bg-white">
-                  <div className="space-y-4">
+                </ModalOpen>
+                <ModalWindow name="color-picker">
+                  <Box className="space-y-4 w-[35rem]">
                     <HexColorPicker
                       color={tempColor}
                       onChange={handleColorChange}
                       style={{ width: "100%" }}
                     />
-                    <div className="flex justify-end gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setIsColorPickerOpen(false)}
-                        className="px-4 py-2 text-sm font-medium rounded-md border border-neutral-300 hover:bg-neutral-50"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
+                    <Box className="flex mt-2 items-center gap-4">
+                      <Button
+                        type="primary"
                         onClick={handleConfirmColor}
-                        className="px-4 py-2 text-sm font-medium rounded-md bg-indigo-600 text-white hover:bg-indigo-700"
+                        className="px-4 py-2 font-medium rounded-md"
                       >
                         Confirm
-                      </button>
-                    </div>
-                  </div>
-                </DialogContent>
-              </Dialog> */}
-              <span className="text-neutral-600">
-                Click to choose a custom color
-              </span>
-            </div>
-          </div>
+                      </Button>
 
-          {/* Logo Preview */}
-          {settings.brandLogo && (
-            <div className="mt-4">
-              <label className="block font-medium mb-2">Logo Preview</label>
-              <div className="relative w-32 h-32 border rounded-lg overflow-hidden bg-white">
-                <Image
-                  src={settings.brandLogo}
-                  alt="Logo preview"
-                  fill
-                  className="object-contain p-2"
-                />
-              </div>
-            </div>
-          )}
+                      <Button
+                        type="cancel"
+                        onClick={() => setIsColorPickerOpen(false)}
+                        className="px-4 py-2 font-medium rounded-md "
+                      >
+                        Cancel
+                      </Button>
+                    </Box>
+                  </Box>
+                </ModalWindow>
 
-          {/* Preview */}
-          <div>
-            <label className="block font-medium mb-2">Preview</label>
-            <div className="p-4 rounded-lg border space-y-4">
-              <div className="space-y-2">
-                <div className="font-medium">Buttons</div>
-                <div className="flex gap-4">
-                  <button
-                    type="button"
-                    className="px-4 py-2 rounded-md text-white"
-                    style={{ backgroundColor: settings.theme.primary }}
-                  >
-                    Primary Button
-                  </button>
-                  <button
-                    type="button"
-                    className="px-4 py-2 rounded-md border"
-                    style={{
-                      borderColor: settings.theme.primary,
-                      color: settings.theme.primary,
-                    }}
-                  >
-                    Secondary Button
-                  </button>
-                </div>
-              </div>
+                <span>Click to choose a custom color</span>
+              </Box>
+            </Box>
 
-              <div className="space-y-2">
-                <div className="font-medium">Text</div>
-                <div className="space-y-1">
-                  <div style={{ color: settings.theme.primary }}>
-                    Primary Text Color
-                  </div>
-                  <div style={{ color: settings.theme.secondary }}>
-                    Secondary Text Color
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            {/* Preview */}
+            <Box className="mt-8 rounded-[var(--border-radius-md)]  space-y-4 ">
+              <label className="block font-medium mb-2">Preview</label>
+              <Box className="p-4 rounded-lg  space-y-4">
+                <Box className="space-y-2">
+                  <Box className="font-medium">Buttons</Box>
+                  <Box className="flex gap-4">
+                    <button
+                      type="button"
+                      className="px-6 py-4 rounded-2xl text-white"
+                      style={{ backgroundColor: settings.theme.primary }}
+                    >
+                      Primary Button
+                    </button>
+                    <button
+                      type="button"
+                      className="px-4 py-2 rounded-2xl border"
+                      style={{
+                        borderColor: settings.theme.primary,
+                        color: settings.theme.primary,
+                      }}
+                    >
+                      Secondary Button
+                    </button>
+                  </Box>
+                </Box>
 
-      {/* Effects Section */}
-      <div className="bg-white rounded-xl border border-neutral-200 p-8 space-y-8 shadow-sm">
-        <div>
-          <h2 className="text-[1.25em] font-semibold text-neutral-900">
-            Effects
-          </h2>
-          <p className="text-[0.875em] text-neutral-600 mt-1">
-            Configure animation and sound effects
-          </p>
-        </div>
+                <Box className="space-y-2">
+                  <Box className="font-medium">Text</Box>
+                  <Box className="space-y-1">
+                    <Box style={{ color: settings.theme.primary }}>
+                      Primary Text Color
+                    </Box>
+                    <Box style={{ color: settings.theme.secondary }}>
+                      Secondary Text Color
+                    </Box>
+                  </Box>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
+        </Box>
 
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <label className="block text-[0.875em] font-medium text-neutral-900">
-                Confetti Effect
-              </label>
-              <p className="text-[0.75em] text-neutral-600">
-                Show confetti animation when a winner is selected
-              </p>
-            </div>
-            <label className="relative inline-flex items-center">
-              <input
-                type="checkbox"
-                checked={settings.confettiEnabled}
-                onChange={(e) =>
-                  setSettings({
-                    ...settings,
-                    confettiEnabled: e.target.checked,
-                  })
-                }
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600" />
-            </label>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div>
-              <label className="block font-medium">Sound Effects</label>
-              <p className="text-neutral-600">
-                Play sound effects during spinning
-              </p>
-            </div>
-            <label className="relative inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={settings.soundEnabled}
-                onChange={(e) =>
-                  setSettings({ ...settings, soundEnabled: e.target.checked })
-                }
-                className="sr-only peer"
-              />
-              <div className="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600" />
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex justify-end">
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="px-4 py-2 text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-neutral-300"
-        >
-          {isLoading ? "Saving..." : "Save Changes"}
-        </Button>
+        <Box className="flex justify-end">
+          <Button
+            type="primary"
+            disabled={isLoading}
+            className="mt-4 px-4 py-2 font-medium  disabled:bg-neutral-300"
+          >
+            {isLoading ? "Saving..." : "Save Changes"}
+          </Button>
+        </Box>
       </Box>
     </form>
   );
