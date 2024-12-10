@@ -18,19 +18,20 @@ function ParticipantChart({ events }: { events: Event[] }) {
     return {
       label: event.name,
       participants: event.participantCount,
+      prizeDistribution: event.prizeCount - event.remainingPrize,
     };
   });
-
-  console.log(data);
 
   const colors = isDarkMode
     ? {
         participants: { stroke: "#4f46e5", fill: "#bab9ff", text: "#333" },
         text: "#e5e7eb",
         background: "#18212f",
+        prizeDistribution: { stroke: "#22c55e", fill: "#22c55e" },
       }
     : {
         participants: { stroke: "#4f46e5", fill: "#bab9ff", text: "#bab9ff" },
+        prizeDistribution: { stroke: "#16a34a", fill: "#dcfce7" },
         text: "#374151",
         background: "#fff",
       };
@@ -59,6 +60,14 @@ function ParticipantChart({ events }: { events: Event[] }) {
               fill={colors.participants.fill}
               strokeWidth={2}
               name="Total participants"
+            />
+            <Area
+              dataKey="prizeDistribution"
+              type="monotone"
+              stroke={colors.prizeDistribution.stroke}
+              fill={colors.prizeDistribution.fill}
+              strokeWidth={2}
+              name="Prize distribution"
             />
           </AreaChart>
         ) : (
