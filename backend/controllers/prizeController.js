@@ -68,7 +68,7 @@ module.exports.assignPrize = catchAsync(async (req, res) => {
   // update participant with prizeId and set isWinner true
   const participant = await Participant.findByIdAndUpdate(
     participantId,
-    { prizeId, isWinner: true },
+    { prize: prizeId, isWinner: true },
     { new: true }
   );
 

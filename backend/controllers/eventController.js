@@ -165,7 +165,7 @@ module.exports.getEventParticipants = catchAsync(async (req, res) => {
   }
 
   const apiFeatures = new APIFEATURES(
-    Participant.find({ eventId: req.params.id }),
+    Participant.find({ eventId: req.params.id }).populate("prize"),
     req.query
   )
     .filter()
