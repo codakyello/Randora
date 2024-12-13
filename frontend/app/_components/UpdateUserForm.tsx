@@ -7,16 +7,14 @@ import FileInput from "./FileInput";
 import { Box } from "@chakra-ui/react";
 import supabase from "@/app/supabase";
 import toast from "react-hot-toast";
-import { updateUser as updateUserApi } from "../_lib/data-service";
+import { updateUser } from "../_lib/data-service";
 import { useAuth } from "../_contexts/AuthProvider";
 import { User } from "../_utils/types";
-import useCustomMutation from "../_hooks/useCustomMutation";
+import { showToastMessage } from "../_utils/utils";
 
 export default function UpdateUserForm({ user }: { user: User }) {
   const { getToken, login } = useAuth();
   const [loading, setLoading] = useState(false);
-
-  const { mutate: updateUser, isPending } = useCustomMutation(updateUserApi);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,23 +65,23 @@ export default function UpdateUserForm({ user }: { user: User }) {
       }
     }
 
-    // const res = await updateUser(formInputs);
-    // if (res?.status !== "error") {
-    //   login(res);
-    // }
+    const res = await updateUser(formInputs);
+    if (res?.status !== "error") {
+      login(res);
+    }
 
-    // handleUnAuthorisedResponse(res?.statusCode);
+    // useHandleUnAuthorisedResponse(res?.statusCode);
 
-    // showToastMessage(res?.status, res?.message, "Profile updated successfully");
-    updateUser(formInputs, {
-      onSuccess: (data) => {
-        login(data);
-        toast.success("Profile updated successfully");
-      },
-      onError: () => {
-        toast.error("Failed to update profile");
-      },
-    });
+    showToastMessage(res?.status, res?.message, "Profile updated successfully");
+    // updateUser(formInputs, {
+    //   onSuccess: (data) => {
+    //     login(data);
+    //     toast.success("Profile updated successfully");
+    //   },
+    //   onError: () => {
+    //     toast.error("Failed to update profile");
+    //   },
+    // });
     setLoading(false);
   }
 
@@ -123,7 +121,7 @@ export default function UpdateUserForm({ user }: { user: User }) {
           accept="image/*"
           name={"image"}
           id="my-image"
-          loading={loading || isPending}
+          loading={loading}
         />
       </FormRow>
 
@@ -132,7 +130,7 @@ export default function UpdateUserForm({ user }: { user: User }) {
         <Button
           className="h-[4.6rem] w-[15.5rem]"
           action="submit"
-          loading={loading || isPending}
+          loading={loading}
           type="primary"
         >
           Update account

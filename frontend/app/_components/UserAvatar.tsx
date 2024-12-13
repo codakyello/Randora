@@ -1,11 +1,12 @@
-"use client";
 import { Box } from "@chakra-ui/react";
-import useUser from "../_hooks/useUser";
+// import useUser from "../_hooks/useUser";
+import { getUser } from "../_lib/data-service";
 
-export default function UserAvatar() {
-  const { data: user, isLoading, error } = useUser();
-  if (isLoading) return null;
-  if (error) return null;
+export default async function UserAvatar() {
+  // const { data: user, isLoading, error } = useUser();
+  // if (isLoading) return null;
+  // if (error) return null;
+  const user = await getUser();
 
   return (
     <Box className="flex mr-auto md:mr-0 items-center gap-5">

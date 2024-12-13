@@ -12,8 +12,6 @@ import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import Button from "./Button";
 import supabase from "../supabase";
 import SpinnerMini from "./SpinnerMini";
-import useOrganisation from "../_hooks/useOrganisation";
-import Spinner from "./Spinner";
 
 const themePresets = [
   { primary: "#4F46E5" }, // Indigo
@@ -23,13 +21,11 @@ const themePresets = [
   { primary: "#7C3AED" }, // Violet
 ];
 
-export default function SettingsForm() {
-  const {
-    data: organisation,
-    isLoading: isLoadingOrganisation,
-    error,
-  } = useOrganisation();
-
+export default function SettingsForm({
+  organisation,
+}: {
+  organisation: SettingsRandora;
+}) {
   const [settings, setSettings] = useState<SettingsRandora>(
     organisation || {
       brandColor: "",
@@ -57,15 +53,6 @@ export default function SettingsForm() {
       }
     };
   }, []);
-
-  useEffect(() => {
-    if (organisation) {
-      setSettings(organisation);
-    }
-  }, [organisation]);
-
-  if (isLoadingOrganisation) return <Spinner />;
-  if (error) return null;
 
   const handleLogoUpload =
     (type: "text" | "cover") => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -225,11 +212,6 @@ export default function SettingsForm() {
 
     setIsLoading(false);
   };
-
-  if (error) {
-    toast.error("Failed to fetch organisation");
-    return null;
-  }
 
   return (
     <form onSubmit={handleSubmit}>

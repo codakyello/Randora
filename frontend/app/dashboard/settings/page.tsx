@@ -1,7 +1,10 @@
 import SettingsForm from "@/app/_components/SettingsForm";
 import Modal from "@/app/_components/Modal";
-
-export default function SettingsPage() {
+import { getOrganisation, getUser } from "@/app/_lib/data-service";
+export default async function SettingsPage() {
+  const user = await getUser();
+  const organisation = await getOrganisation(user?.organisationId);
+  console.log(organisation);
   return (
     <Modal>
       <div className="px-8">
@@ -13,7 +16,7 @@ export default function SettingsPage() {
             </p>
           </div>
 
-          <SettingsForm />
+          <SettingsForm organisation={organisation} />
         </div>
       </div>
     </Modal>

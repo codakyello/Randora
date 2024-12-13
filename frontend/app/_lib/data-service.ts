@@ -8,6 +8,61 @@ import { SettingsRandora } from "../_utils/types";
 const URL = "https://mega-draw.vercel.app/api/v1";
 // const DEV_URL = "http://localhost:5000/api/v1";
 
+export async function getOrganisation(organisationId: string | undefined) {
+  const token = await getToken();
+
+  try {
+    const res = await fetch(`${URL}/organisations/${organisationId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    const {
+      data: { organisation },
+    } = data;
+
+    return organisation;
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
+  }
+}
+
+export async function getUser() {
+  const token = await getToken();
+  try {
+    const res = await fetch(`${URL}/users/me`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    const {
+      data: { user },
+    } = data;
+    return user;
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
+  }
+}
+
 export async function login(formData: FormData) {
   // Safely extract email and password
   const email = formData.get("email") as string | null;
@@ -238,6 +293,7 @@ export async function updateUser(formData: {
       data: { user },
     } = data;
 
+    revalidatePath("/dashboard/account");
     return user;
   } catch (err: unknown) {
     console.log(err);

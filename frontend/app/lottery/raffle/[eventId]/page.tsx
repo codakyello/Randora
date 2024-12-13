@@ -5,7 +5,7 @@ import {
   getAllEventParticipants,
   getAllEventPrizes,
   getEvent,
-  getEventOrganisation,
+  getOrganisation,
 } from "@/app/_lib/data-service";
 import { Box } from "@chakra-ui/react";
 import { formatDistanceToNow } from "date-fns";
@@ -28,8 +28,9 @@ export default async function Page({
   const { participants } = participantData || {};
   const { prizes } = prizesData || {};
 
-  const organisation = await getEventOrganisation(event?.organisationId);
+  const organisation = await getOrganisation(event?.organisationId);
 
+  console.log(organisation);
   if (statusCode === 404) return notFound();
 
   if (!event)
