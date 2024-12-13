@@ -18,7 +18,7 @@ const OTPInput: React.FC<OTPInputProps> = ({
   id,
   value,
   onChange,
-  fontSize = "1.6rem",
+  fontSize = "16px",
 }) => {
   return (
     <HStack className="grid grid-cols-6">
@@ -27,6 +27,7 @@ const OTPInput: React.FC<OTPInputProps> = ({
           .fill(0)
           .map((_, index) => (
             <PinInputField
+              className="text-[16px]"
               key={index}
               name={`${name}[${index}]`}
               fontSize={fontSize}

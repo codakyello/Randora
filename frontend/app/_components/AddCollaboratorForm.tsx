@@ -148,9 +148,6 @@ export default function AddCollaboratorForm({
             </Box>
             <Box>
               <p>{selectedUser.userName}</p>
-              <p className="text-[var(--color-grey-500)]">
-                {selectedUser.email}
-              </p>
             </Box>
             <button
               className="ml-auto"
