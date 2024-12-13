@@ -112,6 +112,8 @@ function AuthProvider({ children }: { children: ReactNode }) {
 
       dispatch({ type: "token", payload: JSON.parse(token) });
 
+      console.log("token set");
+
       Cookies.set("token", JSON.parse(token));
     } else {
       // setIsAuthenticating(false);
@@ -155,11 +157,14 @@ function AuthProvider({ children }: { children: ReactNode }) {
     if (token) {
       localStorage.setItem("token", JSON.stringify(token));
       Cookies.set("token", token);
+      console.log("token set");
     }
   }, [user, token]);
 
   function login(user: User | null) {
     dispatch({ type: "user", payload: user });
+
+    // Cookies.set("token", token);
   }
 
   function setToken(token: string | null) {

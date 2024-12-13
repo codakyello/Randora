@@ -11,6 +11,7 @@ export default function useCustomMutation<TData = unknown, TVariables = void>(
   const { mutate, isPending } = useMutation({
     mutationFn: mutateFn,
     onSuccess: () => {
+      console.log("invalidating queries");
       queryClient.invalidateQueries();
     },
   });

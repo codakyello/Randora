@@ -20,7 +20,7 @@ export default function NavList({
   user: User;
 }) {
   const NavItems =
-    user.accountType === "organisation"
+    user?.accountType === "organisation"
       ? [
           { name: "Dashboard", icon: <HomeIcon />, link: "/dashboard" },
           {

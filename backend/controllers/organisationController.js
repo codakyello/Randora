@@ -6,6 +6,30 @@ const { FRONTEND_URL } = require("../utils/const");
 const crypto = require("crypto");
 const { catchAsync, sendSuccessResponseData } = require("../utils/helpers");
 
+module.exports.getOrganisation = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  console.log("this is id", id);
+  if (id === "undefined" || id === undefined)
+    return res.status(404).json({ error: "Organisation not found" });
+  const organisation = await Organisation.findById(id);
+  if (!organisation) throw new AppError("Organisation not found", 404);
+
+  sendSuccessResponseData(res, "organisation", organisation);
+});
+
+module.exports.updateOrganisation = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const organisation = await Organisation.findByIdAndUpdate(id, req.body, {
+    new: true,
+  });
+  if (!organisation) throw new AppError("Organisation not found", 404);
+
+  await organisation.save();
+
+  sendSuccessResponseData(res, "organisation", organisation);
+});
+
 module.exports.validateInvite = catchAsync(async (req, res) => {
   const { token } = req.query;
 
@@ -236,7 +260,7 @@ module.exports.deleteCollaborator = catchAsync(async (req, res) => {
 
   await User.updateOne(
     { _id: organisation.collaborators[collaboratorIndex].user },
-    { $set: { organisationId: null } }
+    { $set: { organisationId: undefined } }
   );
   organisation.collaborators.splice(collaboratorIndex, 1);
   await organisation.save();
@@ -251,7 +275,7 @@ module.exports.removeorganisationIdFromUsers = catchAsync(async (req, res) => {
   // Update all users that have this organisationId
   const result = await User.updateMany(
     { organisationId: organisationId },
-    { $set: { organisationId: null } }
+    { $set: { organisationId: undefined } }
   );
 
   if (result.nModified === 0) {

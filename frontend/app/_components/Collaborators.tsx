@@ -10,13 +10,11 @@ import SpinnerFull from "./SpinnerFull";
 import AddCollaboratorForm from "./AddCollaboratorForm";
 import { useSearchParams } from "next/navigation";
 import { Collaborator } from "../_utils/types";
+import { useAuth } from "../_contexts/AuthProvider";
 
-export default function Collaborators({
-  organisationId,
-}: {
-  organisationId: string;
-}) {
-  const { isLoading, data } = useCollaborators(organisationId);
+export default function Collaborators() {
+  const { user } = useAuth();
+  const { isLoading, data } = useCollaborators(user?.organisationId);
 
   const searchParams = useSearchParams();
 

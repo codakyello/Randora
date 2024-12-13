@@ -7,22 +7,16 @@ import FileInput from "./FileInput";
 import { Box } from "@chakra-ui/react";
 import supabase from "@/app/supabase";
 import toast from "react-hot-toast";
-import { updateUser } from "../_lib/data-service";
+import { updateUser as updateUserApi } from "../_lib/data-service";
 import { useAuth } from "../_contexts/AuthProvider";
-import {
-  useHandleUnAuthorisedResponse,
-  showToastMessage,
-} from "@/app/_utils/utils";
+import { User } from "../_utils/types";
+import useCustomMutation from "../_hooks/useCustomMutation";
 
-export default function UpdateUserForm({
-  user,
-}: {
-  user: { email: string; userName: string };
-}) {
+export default function UpdateUserForm({ user }: { user: User }) {
   const { getToken, login } = useAuth();
   const [loading, setLoading] = useState(false);
-  const handleUnAuthorisedResponse = useHandleUnAuthorisedResponse();
-  const { userName, email } = user;
+
+  const { mutate: updateUser, isPending } = useCustomMutation(updateUserApi);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -50,33 +44,49 @@ export default function UpdateUserForm({
       const fileName = `${avatarFile.name}-${Date.now()}`;
 
       if (avatarFile.name) {
-        const { data, error } = await supabase.storage
-          .from("avatars")
-          .upload(`public/${fileName}`, avatarFile, {
-            cacheControl: "3600",
-            upsert: false,
-          });
+        try {
+          const { data, error } = await supabase.storage
+            .from("avatars")
+            .upload(`public/${fileName}`, avatarFile, {
+              cacheControl: "3600",
+              upsert: false,
+            });
 
-        if (error) {
-          toast.error("Image could not be uploaded");
-        } else {
-          formInputs.image = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
+          if (error) {
+            throw new Error(error.message);
+          } else {
+            formInputs.image = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
+          }
+        } catch (error) {
+          if (error instanceof Error) {
+            toast.error(error.message);
+          } else {
+            toast.error("Failed to upload avatar");
+          }
         }
       }
     }
 
-    // Update Admin
-    const res = await updateUser(formInputs);
-    if (res?.status !== "error") {
-      login(res);
-    }
+    // const res = await updateUser(formInputs);
+    // if (res?.status !== "error") {
+    //   login(res);
+    // }
 
-    handleUnAuthorisedResponse(res?.statusCode);
+    // handleUnAuthorisedResponse(res?.statusCode);
 
-    showToastMessage(res?.status, res?.message, "Profile updated successfully");
-
+    // showToastMessage(res?.status, res?.message, "Profile updated successfully");
+    updateUser(formInputs, {
+      onSuccess: (data) => {
+        login(data);
+        toast.success("Profile updated successfully");
+      },
+      onError: () => {
+        toast.error("Failed to update profile");
+      },
+    });
     setLoading(false);
   }
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -93,7 +103,7 @@ export default function UpdateUserForm({
           type="email"
           name="email"
           id="my-email"
-          defaultValue={email}
+          defaultValue={user?.email}
         />
       </FormRow>
 
@@ -103,7 +113,7 @@ export default function UpdateUserForm({
           type="text"
           name="userName"
           id="my-username"
-          defaultValue={userName}
+          defaultValue={user?.userName}
         />
       </FormRow>
 
@@ -113,7 +123,7 @@ export default function UpdateUserForm({
           accept="image/*"
           name={"image"}
           id="my-image"
-          loading={loading}
+          loading={loading || isPending}
         />
       </FormRow>
 
@@ -122,7 +132,7 @@ export default function UpdateUserForm({
         <Button
           className="h-[4.6rem] w-[15.5rem]"
           action="submit"
-          loading={loading}
+          loading={loading || isPending}
           type="primary"
         >
           Update account

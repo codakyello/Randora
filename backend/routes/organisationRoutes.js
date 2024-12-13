@@ -5,6 +5,11 @@ const authController = require("../controllers/authController");
 const organisationController = require("../controllers/organisationController");
 
 router
+  .route("/:id")
+  .get(organisationController.getOrganisation)
+  .patch(organisationController.updateOrganisation);
+
+router
   .route("/:id/collaborators")
   .get(
     authController.authenticate,

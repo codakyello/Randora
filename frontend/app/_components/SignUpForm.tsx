@@ -7,6 +7,9 @@ import Button from "./Button";
 import { Box } from "@chakra-ui/react";
 import { showToastMessage } from "@/app/_utils/utils";
 import Link from "next/link";
+import * as jdenticon from "jdenticon";
+import supabase from "../supabase";
+import toast from "react-hot-toast";
 
 function SignUpForm({
   setEmail,
@@ -23,8 +26,35 @@ function SignUpForm({
     event.preventDefault();
     setLoading(true);
     const formData = new FormData(event.currentTarget);
-
     const email = formData.get("email") as string;
+    const hash =
+      email.split("@")[0] + Math.random().toString(36).substring(2, 15);
+    const svg = jdenticon.toSvg(hash, 100);
+
+    try {
+      const { data, error } = await supabase.storage
+        .from("avatars")
+        .upload(`public/${hash}.svg`, svg, {
+          contentType: "image/svg+xml",
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (error) {
+        throw new Error(error.message);
+      } else {
+        console.log("updloaded");
+
+        formData.append(
+          "image",
+          `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`
+        );
+      }
+    } catch (error) {
+      toast.error("Failed to upload avatar");
+      console.log(error);
+    }
+
     const res = await signUp(formData, accountType);
 
     showToastMessage(res.status, res.message, "User created successfully");
@@ -61,7 +91,13 @@ function SignUpForm({
           </FormRow>
         ) : null}
         <FormRow label="Username (required)" htmlFor="my-username">
-          <Input required={true} type="text" name="userName" id="my-username" />
+          <Input
+            required={true}
+            type="text"
+            name="userName"
+            id="my-username"
+            placeholder="Enter your username"
+          />
         </FormRow>
 
         <FormRow label="Email address (required)" htmlFor="my-email">

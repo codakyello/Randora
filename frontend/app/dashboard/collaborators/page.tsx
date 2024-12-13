@@ -2,7 +2,6 @@ import { Box } from "@chakra-ui/react";
 import Filter from "@/app/_components/Filter";
 import Sort from "@/app/_components/Sort";
 import Collaborators from "@/app/_components/Collaborators";
-import { getUser } from "@/app/_lib/data-service";
 import SpinnerFull from "@/app/_components/SpinnerFull";
 import { Suspense } from "react";
 
@@ -15,11 +14,12 @@ export default async function Page({
 }: {
   searchParams: { status: string; sortBy: string };
 }) {
-  const user = await getUser();
-  console.log(user);
-  console.log(searchParams.status, searchParams.sortBy);
+  // const token = await getToken();
+  // const user = await getUser(token);
+  // console.log(user);
+  // console.log(searchParams.status, searchParams.sortBy);
 
-  const organisationId = user.organisationId;
+  // const organisationId = user.organisationId;
 
   return (
     <Box className="flex px-[2rem] flex-col gap-[3.2rem]">
@@ -56,7 +56,7 @@ export default async function Page({
         key={`${searchParams.status}${searchParams.sortBy}`}
         fallback={<SpinnerFull />}
       >
-        <Collaborators organisationId={organisationId} />
+        <Collaborators />
       </Suspense>
     </Box>
   );

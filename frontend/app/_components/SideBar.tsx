@@ -1,14 +1,18 @@
+"use client";
 import Logo from "./Logo";
 import MobileSideNav from "./MobileSideNav";
 import Nav from "./Nav";
 import LogoutButton from "./LogoutButton";
 import UpgradePlan from "./UpgradePlan";
 import { differenceInDays } from "date-fns";
-import { getUser } from "../_lib/data-service";
 import { Box } from "@chakra-ui/react";
+import useUser from "../_hooks/useUser";
 
-export default async function SideBar() {
-  const user = await getUser();
+export default function SideBar() {
+  const { data: user, isLoading, error } = useUser();
+  if (error) return null;
+  if (isLoading) return null;
+
   let subscriptionExpiryDate = "";
   if (user && user.subscriptionExpiryDate) {
     subscriptionExpiryDate = user.subscriptionExpiryDate.trim();

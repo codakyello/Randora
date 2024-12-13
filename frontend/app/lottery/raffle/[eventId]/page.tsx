@@ -5,15 +5,13 @@ import {
   getAllEventParticipants,
   getAllEventPrizes,
   getEvent,
+  getEventOrganisation,
 } from "@/app/_lib/data-service";
-import { Prize } from "@/app/_utils/types";
 import { Box } from "@chakra-ui/react";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
-// Define types for ticket numbers
 
 export default async function Page({
   params,
@@ -29,12 +27,8 @@ export default async function Page({
   const { event, statusCode } = eventData || {};
   const { participants } = participantData || {};
   const { prizes } = prizesData || {};
-  const remainingPrizes = prizes?.reduce(
-    (acc: number, prize: Prize) => acc + prize.quantity,
-    0
-  );
 
-  console.log(event);
+  const organisation = await getEventOrganisation(event?.organisationId);
 
   if (statusCode === 404) return notFound();
 
@@ -44,11 +38,11 @@ export default async function Page({
         <h1 className="text-[4rem]">Event not Found</h1>
 
         <Link
-          className="absolute flex items-center left-5 top-[4rem] text-[#0634f0] text-[1.6rem] font-semibold"
+          className="absolute flex items-center left-5 top-[4rem] text-[1.6rem] font-semibold"
           href={`/dashboard/events/${event._id}`}
         >
           <ChevronLeftIcon className="text-[2rem]" />
-          <p>Go Back</p>
+          <p className="text-[var(--brand-color)]">Go Back</p>
         </Link>
       </Box>
     );
@@ -65,7 +59,7 @@ export default async function Page({
           href={`/dashboard/events/${event._id}`}
         >
           <ChevronLeftIcon className="text-[2rem]" />
-          <p>Go Back</p>
+          <p className="text-[var(--brand-color)]">Go Back</p>
         </Link>
       </Box>
     );
@@ -86,7 +80,7 @@ export default async function Page({
           href={`/dashboard/events/${event._id}`}
         >
           <ChevronLeftIcon className="text-[2rem]" />
-          <p>Go Back</p>
+          <p className="text-[var(--brand-color)]">Go Back</p>
         </Link>
       </Box>
     );
@@ -117,17 +111,18 @@ export default async function Page({
         )}
 
         <Link
-          className="absolute flex items-center left-5 top-[8rem] text-[#0634f0] text-[1.6rem] font-semibold"
+          className="absolute flex items-center left-5 top-[8rem]  text-[1.6rem] font-semibold"
           href={`/dashboard/events/${event._id}`}
         >
           <ChevronLeftIcon className="text-[2rem]" />
-          <p>Go Back</p>
+          <p className="text-[var(--brand-color)]">Go Back</p>
         </Link>
 
         {participants?.length > 0 &&
-          event.status !== "completed" &&
-          remainingPrizes > 0 && (
+          prizes?.length > 0 &&
+          event.status !== "completed" && (
             <Raffle
+              organisation={organisation}
               prizeData={prizes}
               event={event}
               participantData={participants}

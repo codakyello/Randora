@@ -205,18 +205,12 @@ exports.userLogin = catchAsync(async (req, res) => {
     throw new AppError("Incorrect email or password", 401);
 
   const otp = await user.generateOtp();
-  try {
-    await new Email(user).sendOTP(otp);
-  } catch (e) {
-    console.log(e);
+  console.log(otp);
 
-    throw new AppError(
-      "An error occurred while sending the OTP. Please try again later.",
-      500
-    );
-  }
+  await new Email(user).sendOTP(otp);
 
   await user.save({ validateBeforeSave: false });
+
   res.status(200).json({
     status: "success",
     message: "A one time otp has been sent to your email",
@@ -224,7 +218,6 @@ exports.userLogin = catchAsync(async (req, res) => {
 });
 
 exports.userSignUp = catchAsync(async (req, res) => {
-  console.log(req.body);
   // Check if the user already exists
   let user = await User.findOne({ email: req.body.email });
 
@@ -244,6 +237,7 @@ exports.userSignUp = catchAsync(async (req, res) => {
 
   // Generate OTP for the new user
   const otp = await user.generateOtp();
+  console.log(otp);
 
   // Handle organization account type
   if (req.body.accountType === "organisation") {

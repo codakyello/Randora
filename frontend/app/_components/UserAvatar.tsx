@@ -1,23 +1,24 @@
+"use client";
 import { Box } from "@chakra-ui/react";
-import { getUser } from "../_lib/data-service";
+import useUser from "../_hooks/useUser";
 
-export default async function UserAvatar() {
-  const user = await getUser();
-
-  if (user.status === "error") return;
+export default function UserAvatar() {
+  const { data: user, isLoading, error } = useUser();
+  if (isLoading) return null;
+  if (error) return null;
 
   return (
     <Box className="flex mr-auto md:mr-0 items-center gap-5">
       <Box
         className="flex w-14 aspect-square relative items-center rounded-full"
         style={{
-          backgroundImage: `url(${user.image})`,
+          backgroundImage: `url(${user?.image})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       />
       <span className="text-[1.4rem] font-medium">
-        {user.userName?.split(" ")[0]}
+        {user?.userName?.split(" ")[0]}
       </span>
     </Box>
   );

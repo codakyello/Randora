@@ -8,56 +8,6 @@ import { SettingsRandora } from "../_utils/types";
 const URL = "https://mega-draw.vercel.app/api/v1";
 // const DEV_URL = "http://localhost:5000/api/v1";
 
-// /////////////
-// // AUTH
-
-// export async function getSettings() {
-//   try {
-//     const res = await fetch(`${URL}/settings`);
-
-//     const data = await res.json();
-
-//     if (!res.ok) throw new Error(data.message || "Settings couldnt load");
-
-//     const {
-//       data: { settings },
-//     } = data;
-//     return settings;
-//   } catch (err) {
-//     throw err;
-//   }
-// }
-
-// export async function updateSetting(data: Partial<Setting>, token: string) {
-//   if (!token) return;
-//   try {
-//     const res = await fetch(`${URL}/settings`, {
-//       method: "PATCH",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//       body: JSON.stringify(data), // Send the serialized data
-//     });
-
-//     const result = await res.json();
-
-//     if (!res.ok) throw new Error(result.message || "Failed to update settings");
-
-//     const {
-//       data: { settings },
-//     } = result;
-
-//     revalidatePath("/dashboard/settings");
-//     return settings;
-//   } catch (err) {
-//     if (err instanceof Error) {
-//       return { status: "error", message: err.message };
-//     }
-//     return { status: "error", message: "An unknown error occured" };
-//   }
-// }
-
 export async function login(formData: FormData) {
   // Safely extract email and password
   const email = formData.get("email") as string | null;
@@ -67,8 +17,6 @@ export async function login(formData: FormData) {
   if (!email || !password) {
     return { status: "error", message: "Email and password are required." };
   }
-
-  console.log(email, password);
 
   try {
     const res = await fetch(`${URL}/users/login`, {
@@ -103,6 +51,7 @@ export async function login(formData: FormData) {
 
 export async function signUp(formData: FormData, accountType: string) {
   const email = formData.get("email");
+  const image = formData.get("image");
   const password = formData.get("password");
   const userName = formData.get("userName");
   const confirmPassword = formData.get("confirmPassword");
@@ -120,6 +69,7 @@ export async function signUp(formData: FormData, accountType: string) {
         confirmPassword,
         accountType,
         organisationName,
+        image,
       }),
       headers: {
         "Content-Type": "application/json",
@@ -259,37 +209,6 @@ export async function resendOtp(email: string) {
   }
 }
 
-export async function getUser() {
-  const token = await getToken();
-  let statusCode;
-  try {
-    const res = await fetch(`${URL}/users/me`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    const data = await res.json();
-
-    statusCode = res.status;
-    if (!res.ok) throw new Error(data.message);
-
-    const {
-      data: { user },
-    } = data;
-    return user;
-  } catch (err: unknown) {
-    console.log(err);
-    // Improved error handling
-    if (err instanceof Error) {
-      return { status: "error", statusCode, message: err.message };
-    } else {
-      return { status: "error", message: "An unknown error occurred" };
-    }
-  }
-}
-
 export async function updateUser(formData: {
   email: FormDataEntryValue;
   userName: FormDataEntryValue;
@@ -319,7 +238,6 @@ export async function updateUser(formData: {
       data: { user },
     } = data;
 
-    revalidatePath("/dashboard/account");
     return user;
   } catch (err: unknown) {
     console.log(err);
@@ -723,6 +641,30 @@ export async function getEventPrizes(
   }
 }
 
+export async function getEventOrganisation(organisationId: string | undefined) {
+  const token = await getToken();
+  if (!token) return;
+  try {
+    const res = await fetch(`${URL}/organisations/${organisationId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    return data;
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
+  }
+}
+
 export async function getAllEventPrizes(eventId: string) {
   const token = await getToken();
   if (!token) return;
@@ -762,7 +704,7 @@ export async function getAllEventPrizes(eventId: string) {
 }
 
 // function to get all collaborators
-export async function getAllCollaborators(organisationId: string) {
+export async function getAllCollaborators(organisationId: string | undefined) {
   const token = await getToken();
   if (!token) return;
 
@@ -875,33 +817,17 @@ export async function respondToInvite(
   }
 }
 
-export async function getUserSettings(token: string | undefined) {
-  try {
-    const res = await fetch(`${URL}/users/settings`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!res.ok) throw new Error("Failed to fetch settings");
-
-    const data = await res.json();
-    return { status: "success", data };
-  } catch (error) {
-    return {
-      status: "error",
-      data: error instanceof Error ? error.message : "Failed to fetch settings",
-    };
-  }
-}
-
-export async function updateUserSettings(
+export async function updateOrganisation(
   settings: SettingsRandora,
-  token: string | undefined
+  organisationId: string
 ) {
+  console.log(organisationId, "this is organisationId at update organisation");
   try {
-    const res = await fetch(`${URL}/users/settings`, {
-      method: "PUT",
+    const token = await getToken();
+    if (!token) return;
+
+    const res = await fetch(`${URL}/organisations/${organisationId}`, {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -909,9 +835,11 @@ export async function updateUserSettings(
       body: JSON.stringify(settings),
     });
 
-    if (!res.ok) throw new Error("Failed to update settings");
-
     const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message);
+
+    revalidatePath("/dashboard/settings");
     return { status: "success", data };
   } catch (error) {
     return {

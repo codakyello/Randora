@@ -34,6 +34,7 @@ export interface Event {
   participantCount: number;
   prizeCount: number;
   remainingPrize: number;
+  organisationId?: string;
 }
 
 export interface EventForm {
@@ -85,22 +86,22 @@ export interface Settings {
   breakFastPrice: number;
 }
 
+export interface Organisation {
+  _id: string;
+  name: string;
+  brandColor: string;
+  textLogo: string;
+  coverLogo: string;
+}
+
 export type BookingRowProps = {
   event?: Event;
   participant?: Participant;
 };
 
 export interface SettingsRandora {
-  theme: ThemeColor;
+  _id?: string;
+  brandColor?: string;
   textLogo?: string;
   coverLogo?: string;
-  brandName?: string;
-  spinnerStyle: "classic" | "modern" | "minimal";
-  confettiEnabled: boolean;
-  soundEnabled: boolean;
-}
-
-export interface ThemeColor {
-  primary: string;
-  secondary: string;
 }

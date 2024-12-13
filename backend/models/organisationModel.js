@@ -46,6 +46,16 @@ const organisationSchema = new mongoose.Schema({
       },
     },
   ],
+  textLogo: {
+    type: String, // URL or text for the text logo
+  },
+  coverLogo: {
+    type: String, // URL for the cover logo
+  },
+  brandColor: {
+    type: String, // Hex color code or valid CSS color value
+    default: "#000000", // Default to black
+  },
 });
 
 organisationSchema.pre(/^find/, function (next) {

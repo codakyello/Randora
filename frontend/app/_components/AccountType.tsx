@@ -48,7 +48,7 @@ const AccountType = ({
                 p={4}
                 cursor="pointer"
                 borderRadius="md"
-                className="bg-[var(--color-grey-0)] !rounded-2xl"
+                className="bg-[var(--color-grey-0)] mb-3 !rounded-2xl"
               >
                 <Radio value={type.id} size="lg">
                   <Box display="flex" alignItems="center" gap={4}>

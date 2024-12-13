@@ -54,7 +54,9 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
       setToken(res.token);
       router.push("/dashboard");
     } else {
-      toast.error(res.message);
+      if (res.message === "fetch failed")
+        toast.error("Bad Internet connection");
+      else toast.error(res.message);
     }
 
     setLoading(false);

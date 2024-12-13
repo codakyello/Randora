@@ -1,7 +1,7 @@
 "use client";
 
-import { SettingsRandora, ThemeColor } from "@/app/_utils/types";
-import { updateUserSettings } from "@/app/_lib/data-service";
+import { SettingsRandora } from "@/app/_utils/types";
+import { updateOrganisation } from "@/app/_lib/data-service";
 import { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
 import Image from "next/image";
@@ -10,41 +10,42 @@ import { Box } from "@chakra-ui/react";
 import { HexColorPicker } from "react-colorful";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import Button from "./Button";
+import supabase from "../supabase";
+import SpinnerMini from "./SpinnerMini";
+import useOrganisation from "../_hooks/useOrganisation";
+import Spinner from "./Spinner";
 
-const themePresets: ThemeColor[] = [
-  { primary: "#4F46E5", secondary: "#818CF8" }, // Indigo
-  { primary: "#2563EB", secondary: "#60A5FA" }, // Blue
-  { primary: "#059669", secondary: "#34D399" }, // Emerald
-  { primary: "#DC2626", secondary: "#F87171" }, // Red
-  { primary: "#7C3AED", secondary: "#A78BFA" }, // Violet
+const themePresets = [
+  { primary: "#4F46E5" }, // Indigo
+  { primary: "#0634f0" }, // Blue
+  { primary: "#059669" }, // Emerald
+  { primary: "#DC2626" }, // Red
+  { primary: "#7C3AED" }, // Violet
 ];
 
-export default function SettingsForm({
-  initialSettings,
-}: {
-  initialSettings: SettingsRandora | null;
-}) {
+export default function SettingsForm() {
+  const {
+    data: organisation,
+    isLoading: isLoadingOrganisation,
+    error,
+  } = useOrganisation();
+
   const [settings, setSettings] = useState<SettingsRandora>(
-    initialSettings || {
-      theme: themePresets[0],
+    organisation || {
+      brandColor: "",
       textLogo: "",
       coverLogo: "",
-      brandName: "",
-      spinnerStyle: "classic",
-      confettiEnabled: true,
-      soundEnabled: true,
     }
   );
-  const [tempColor, setTempColor] = useState(settings.theme.primary);
+  const [tempColor, setTempColor] = useState(settings.brandColor);
   const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [textLogoFile, setTextLogoFile] = useState<File | null>(null);
-  const [coverLogoFile, setCoverLogoFile] = useState<File | null>(null);
   const textLogoPreviewUrl = useRef<string | null>(null);
   const coverLogoPreviewUrl = useRef<string | null>(null);
   const { close: closeModal } = useModal();
 
   console.log(isColorPickerOpen);
+  console.log(tempColor);
 
   useEffect(() => {
     return () => {
@@ -57,6 +58,15 @@ export default function SettingsForm({
     };
   }, []);
 
+  useEffect(() => {
+    if (organisation) {
+      setSettings(organisation);
+    }
+  }, [organisation]);
+
+  if (isLoadingOrganisation) return <Spinner />;
+  if (error) return null;
+
   const handleLogoUpload =
     (type: "text" | "cover") => (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
@@ -68,14 +78,12 @@ export default function SettingsForm({
             URL.revokeObjectURL(textLogoPreviewUrl.current);
           }
           textLogoPreviewUrl.current = previewUrl;
-          setTextLogoFile(file);
           setSettings((prev) => ({ ...prev, textLogo: previewUrl }));
         } else {
           if (coverLogoPreviewUrl.current) {
             URL.revokeObjectURL(coverLogoPreviewUrl.current);
           }
           coverLogoPreviewUrl.current = previewUrl;
-          setCoverLogoFile(file);
           setSettings((prev) => ({ ...prev, coverLogo: previewUrl }));
         }
       }
@@ -88,7 +96,6 @@ export default function SettingsForm({
         textLogoPreviewUrl.current = null;
       }
       setSettings((prev) => ({ ...prev, textLogo: "" }));
-      setTextLogoFile(null);
       const fileInput = document.getElementById(
         "text-logo-upload"
       ) as HTMLInputElement;
@@ -99,7 +106,6 @@ export default function SettingsForm({
         coverLogoPreviewUrl.current = null;
       }
       setSettings((prev) => ({ ...prev, coverLogo: "" }));
-      setCoverLogoFile(null);
       const fileInput = document.getElementById(
         "cover-logo-upload"
       ) as HTMLInputElement;
@@ -114,52 +120,100 @@ export default function SettingsForm({
   const handleConfirmColor = () => {
     setSettings((prev) => ({
       ...prev,
-      theme: {
-        ...prev.theme,
-        primary: tempColor,
-        secondary: tempColor,
-      },
+      brandColor: tempColor,
     }));
     setIsColorPickerOpen(false);
     closeModal();
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.target as HTMLFormElement);
+    const textLogoFile = formData.get("textLogo");
+    const coverLogoFile = formData.get("coverLogo");
+
+    const formInputs: {
+      textLogo?: string;
+      coverLogo?: string;
+      brandColor?: string;
+    } = {
+      brandColor: tempColor || "",
+    };
+
+    // Start image uploading
     setIsLoading(true);
+    if (textLogoFile instanceof File) {
+      const fileName = `${textLogoFile.name}-${Date.now()}`;
 
-    try {
-      const updatedSettings = { ...settings };
+      if (textLogoFile.name) {
+        try {
+          const { data, error } = await supabase.storage
+            .from("org-logos")
+            .upload(`public/${fileName}`, textLogoFile, {
+              cacheControl: "3600",
+              upsert: false,
+            });
 
-      // Upload logos if there are new files
-      if (textLogoFile || coverLogoFile) {
-        const formData = new FormData();
-        if (textLogoFile) formData.append("textLogo", textLogoFile);
-        if (coverLogoFile) formData.append("coverLogo", coverLogoFile);
-
-        const uploadRes = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/upload`,
-          {
-            method: "POST",
-            body: formData,
+          if (error) {
+            throw new Error(error.message);
+          } else {
+            console.log("updloaded");
+            formInputs.textLogo = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
           }
-        );
-
-        if (!uploadRes.ok) throw new Error("Logo upload failed");
-
-        const { textUrl, coverUrl } = await uploadRes.json();
-        if (textUrl) updatedSettings.textLogo = textUrl;
-        if (coverUrl) updatedSettings.coverLogo = coverUrl;
+        } catch (error) {
+          if (error instanceof Error) {
+            toast.error(error.message);
+          } else {
+            toast.error("Failed to upload text logo");
+          }
+        }
       }
+    }
 
-      const token = "";
-      const res = await updateUserSettings(updatedSettings, token);
-      if (res.status === "success") {
+    if (coverLogoFile instanceof File) {
+      const fileName = `${coverLogoFile.name}-${Date.now()}`;
+
+      if (coverLogoFile.name) {
+        try {
+          const { data, error } = await supabase.storage
+            .from("org-logos")
+            .upload(`public/${fileName}`, coverLogoFile, {
+              cacheControl: "3600",
+              upsert: false,
+            });
+
+          if (error) {
+            throw new Error(error.message);
+          } else {
+            console.log("updloaded");
+            formInputs.coverLogo = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
+          }
+        } catch (error) {
+          if (error instanceof Error) {
+            toast.error(error.message);
+          } else {
+            toast.error("Failed to upload cover logo");
+          }
+        }
+      }
+    }
+
+    console.log(formInputs);
+
+    console.log(organisation);
+    if (!organisation?._id) {
+      toast.error("Organisation not found here");
+      setIsLoading(false);
+      return;
+    }
+    try {
+      const res = await updateOrganisation(formInputs, organisation._id);
+
+      if (res?.status === "success") {
         toast.success("Settings updated successfully");
-        setTextLogoFile(null);
-        setCoverLogoFile(null);
       } else {
-        toast.error(res.data as string);
+        toast.error(res?.data as string);
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -171,6 +225,11 @@ export default function SettingsForm({
 
     setIsLoading(false);
   };
+
+  if (error) {
+    toast.error("Failed to fetch organisation");
+    return null;
+  }
 
   return (
     <form onSubmit={handleSubmit}>
@@ -191,10 +250,10 @@ export default function SettingsForm({
                 <label className="font-medium">Text Logo</label>
                 <Box className="flex items-center gap-4">
                   <Box className="w-16 h-16 relative">
-                    {settings.textLogo ? (
+                    {settings?.textLogo ? (
                       <Box className="relative w-full h-full">
                         <Image
-                          src={settings.textLogo}
+                          src={settings?.textLogo}
                           alt="Text logo"
                           fill
                           className="object-contain"
@@ -215,6 +274,7 @@ export default function SettingsForm({
                   </Box>
                   <input
                     type="file"
+                    name="textLogo"
                     accept="image/*"
                     onChange={handleLogoUpload("text")}
                     className="hidden"
@@ -236,10 +296,10 @@ export default function SettingsForm({
                 <label className="font-medium">Cover Logo</label>
                 <Box className="flex items-center gap-4">
                   <Box className="w-16 h-16 relative">
-                    {settings.coverLogo ? (
+                    {settings?.coverLogo ? (
                       <Box className="relative w-full h-full">
                         <Image
-                          src={settings.coverLogo}
+                          src={settings?.coverLogo}
                           alt="Cover logo"
                           fill
                           className="object-contain"
@@ -260,6 +320,7 @@ export default function SettingsForm({
                   </Box>
                   <input
                     type="file"
+                    name="coverLogo"
                     accept="image/*"
                     onChange={handleLogoUpload("cover")}
                     className="hidden"
@@ -284,9 +345,9 @@ export default function SettingsForm({
               <Box className="p-8 rounded-2xl border border-[var(--color-grey-200)] space-y-4">
                 <h3 className="font-medium text-center">Text Logo Preview</h3>
                 <Box className="h-32 relative mx-auto">
-                  {settings.textLogo ? (
+                  {settings?.textLogo ? (
                     <Image
-                      src={settings.textLogo}
+                      src={settings?.textLogo}
                       alt="Text logo preview"
                       fill
                       className="object-contain"
@@ -306,9 +367,9 @@ export default function SettingsForm({
               <Box className="p-8 rounded-2xl border border-[var(--color-grey-200)] space-y-4">
                 <h3 className="font-medium text-center">Cover Logo Preview</h3>
                 <Box className="h-32 relative mx-auto">
-                  {settings.coverLogo ? (
+                  {settings?.coverLogo ? (
                     <Image
-                      src={settings.coverLogo}
+                      src={settings?.coverLogo}
                       alt="Cover logo preview"
                       fill
                       className="object-contain"
@@ -323,6 +384,11 @@ export default function SettingsForm({
                   )}
                 </Box>
               </Box>
+
+              <p className="mt-4 text-[1.4rem]">
+                Note: Make sure your logos looks good on both light and dark
+                backgrounds
+              </p>
             </Box>
           </Box>
         </Box>
@@ -343,9 +409,15 @@ export default function SettingsForm({
                   <button
                     key={index}
                     type="button"
-                    onClick={() => setSettings((prev) => ({ ...prev, theme }))}
+                    onClick={() => {
+                      setTempColor(theme.primary);
+                      setSettings((prev) => ({
+                        ...prev,
+                        brandColor: theme.primary,
+                      }));
+                    }}
                     className={`aspect-square w-24 rounded-2xl border transition-all ${
-                      settings.theme.primary === theme.primary
+                      settings.brandColor === theme.primary
                         ? "border-indigo-600 scale-110 shadow-sm"
                         : "border-transparent hover:scale-105"
                     }`}
@@ -354,7 +426,6 @@ export default function SettingsForm({
                 ))}
               </Box>
             </Box>
-
             {/* Custom Color Picker */}
             <Box>
               <label className="block font-medium mb-2">Custom Color</label>
@@ -363,7 +434,7 @@ export default function SettingsForm({
                   <button
                     type="button"
                     className="w-20 aspect-square rounded-lg border-2 border-neutral-200 transition-all hover:scale-105"
-                    style={{ backgroundColor: settings.theme.primary }}
+                    style={{ backgroundColor: settings.brandColor }}
                   />
                 </ModalOpen>
                 <ModalWindow name="color-picker">
@@ -407,7 +478,7 @@ export default function SettingsForm({
                     <button
                       type="button"
                       className="px-6 py-4 rounded-2xl text-white"
-                      style={{ backgroundColor: settings.theme.primary }}
+                      style={{ backgroundColor: settings.brandColor }}
                     >
                       Primary Button
                     </button>
@@ -415,8 +486,8 @@ export default function SettingsForm({
                       type="button"
                       className="px-4 py-2 rounded-2xl border"
                       style={{
-                        borderColor: settings.theme.primary,
-                        color: settings.theme.primary,
+                        borderColor: settings.brandColor,
+                        color: settings.brandColor,
                       }}
                     >
                       Secondary Button
@@ -427,12 +498,7 @@ export default function SettingsForm({
                 <Box className="space-y-2">
                   <Box className="font-medium">Text</Box>
                   <Box className="space-y-1">
-                    <Box style={{ color: settings.theme.primary }}>
-                      Primary Text Color
-                    </Box>
-                    <Box style={{ color: settings.theme.secondary }}>
-                      Secondary Text Color
-                    </Box>
+                    <Box style={{ color: settings.brandColor }}>Text Color</Box>
                   </Box>
                 </Box>
               </Box>
@@ -442,11 +508,12 @@ export default function SettingsForm({
 
         <Box className="flex justify-end">
           <Button
+            action="submit"
             type="primary"
             disabled={isLoading}
-            className="mt-4 px-4 py-2 font-medium  disabled:bg-neutral-300"
+            className="w-[15rem] h-[5rem] px-4 py-2 font-medium "
           >
-            {isLoading ? "Saving..." : "Save Changes"}
+            {isLoading ? <SpinnerMini /> : "Save Changes"}
           </Button>
         </Box>
       </Box>

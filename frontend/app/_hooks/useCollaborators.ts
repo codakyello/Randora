@@ -3,7 +3,7 @@
 import { getAllCollaborators } from "../_lib/data-service";
 import { useQuery } from "@tanstack/react-query";
 
-export default function useCollaborators(organisationId: string) {
+export default function useCollaborators(organisationId: string | undefined) {
   const {
     data = { collaborators: [], totalCount: 0 },
     error,
