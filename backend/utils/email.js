@@ -67,10 +67,10 @@ class Email {
       });
     } catch (error) {
       console.log(error);
-      // throw new AppError(
-      //   "An error occurred while sending the OTP. Please try again later.",
-      //   500
-      // );
+      throw new AppError(
+        "An error occurred while sending the OTP. Please try again later.",
+        500
+      );
     }
   }
 
@@ -84,10 +84,10 @@ class Email {
     } catch (error) {
       console.log(error);
 
-      // throw new AppError(
-      //   "An error occurred while sending the OTP. Please try again later.",
-      //   500
-      // );
+      throw new AppError(
+        "An error occurred while sending the OTP. Please try again later.",
+        500
+      );
     }
   }
 
