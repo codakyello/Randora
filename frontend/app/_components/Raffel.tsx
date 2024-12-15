@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import JSConfetti from "js-confetti";
 import { Box } from "@chakra-ui/react";
-import { ModalWindow, useModal } from "./Modal";
+import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import { IoCloseOutline } from "react-icons/io5";
 import { Event, Organisation, Participant, Prize } from "../_utils/types";
 import toast from "react-hot-toast";
@@ -14,6 +14,7 @@ import {
   updateEvent as updateEventApi,
 } from "../_lib/actions";
 import { useAuth } from "../_contexts/AuthProvider";
+import RaffelPrizesList from "./RaffelPrizesList";
 
 export default function Raffle({
   organisation,
@@ -26,25 +27,22 @@ export default function Raffle({
   event: Event;
   participantData: Participant[];
 }) {
-  console.log("inside raffel");
-
   const [participants, setParticipants] = useState<Participant[]>(() =>
     participantData.filter((participant) => !participant.isWinner)
   );
-  const [prizes, setPrizes] = useState<Prize[]>(() =>
-    prizeData.filter((prize) => prize.quantity > 0)
-  );
+  const [prizes, setPrizes] = useState<Prize[]>(prizeData);
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [currentParticipant, setCurrentParticipant] =
     useState<Participant | null>(null);
-  const [currentPrize, setCurrentPrize] = useState<Prize | null>(null);
+  // const [currentPrize, setCurrentPrize] = useState<Prize | null>(null);
+  const [selectedPrize, setSelectedPrize] = useState<Prize | null>(null);
+  const [prizeWon, setPrizeWon] = useState<string | null>(null);
   const [drumRoll, setDrumRoll] = useState<HTMLAudioElement | null>(null);
   const [crash, setCrash] = useState<HTMLAudioElement | null>(null);
   const { open: openModal, close } = useModal();
   const resetRef = useRef<boolean>(false);
   const [active, setActive] = useState<boolean>(false);
   const { getToken } = useAuth();
-
   const token = getToken();
 
   const { mutate: updateParticipant } = useCustomMutation(updateParticipantApi);
@@ -67,7 +65,18 @@ export default function Raffle({
   );
 
   const pickWinner = async () => {
+    console.log(selectedPrize);
     // send a post request to server to set event to active
+    if (!selectedPrize) {
+      toast.error("Please select a prize");
+      return;
+    }
+
+    if (selectedPrize.quantity < 1) {
+      toast.error("Choose a different prize!");
+      return;
+    }
+
     if (!active) {
       console.log("setting active");
       updateEvent(
@@ -102,7 +111,6 @@ export default function Raffle({
     if (drumRoll) drumRoll.play();
 
     let selectedParticipant: Participant | null = null;
-    let selectedPrize: Prize | null = null;
 
     for (let i = 0; i < 55; i++) {
       if (resetRef.current) {
@@ -113,14 +121,10 @@ export default function Raffle({
 
       const randomParticipant =
         participants[Math.floor(Math.random() * participants.length)];
-      const randomPrizeIndex = Math.floor(Math.random() * prizes.length);
-      const randomPrize = prizes[randomPrizeIndex];
 
       setCurrentParticipant(randomParticipant);
-      setCurrentPrize(randomPrize);
 
       selectedParticipant = randomParticipant;
-      selectedPrize = randomPrize;
 
       await wait(0.1);
     }
@@ -154,14 +158,16 @@ export default function Raffle({
 
       // Update prize state to reduce quantity
       setPrizes((prevPrizes) =>
-        prevPrizes
-          .map((prize) =>
-            prize._id === selectedPrize._id
-              ? { ...prize, quantity: prize.quantity - 1 }
-              : prize
-          )
-          .filter((prize) => prize.quantity > 0)
+        prevPrizes.map((prize) =>
+          prize._id === selectedPrize._id
+            ? { ...prize, quantity: prize.quantity - 1 }
+            : prize
+        )
       );
+
+      setSelectedPrize(null);
+
+      setPrizeWon(selectedPrize.name);
 
       assignPrize(
         {
@@ -185,7 +191,7 @@ export default function Raffle({
 
       // Open the modal with the final values
       setCurrentParticipant(selectedParticipant);
-      setCurrentPrize(selectedPrize);
+      // setCurrentPrize(selectedPrize);
       openModal("showWinner");
     }
   };
@@ -194,7 +200,7 @@ export default function Raffle({
     resetRef.current = true;
     setIsSpinning(false);
     setCurrentParticipant(null);
-    setCurrentPrize(null);
+    setSelectedPrize(null);
 
     if (drumRoll) {
       drumRoll.pause();
@@ -224,6 +230,12 @@ export default function Raffle({
           <p className="font-semibold uppercase text-[var(--color-grey-600)] text-center leading-[2rem]   text-[1.5rem] w-[25rem]">
             {event.name}
           </p>
+
+          <ModalOpen name="prizes">
+            <Box className="text-[1.6rem] font-semibold mt-[2rem] rounded-2xl bg-[var(--brand-color)] text-white cursor-pointer p-[.5rem] px-[1.8rem]">
+              {selectedPrize ? selectedPrize.name : "Select Prize"}
+            </Box>
+          </ModalOpen>
         </Box>
         <Box className="jack-box">
           {currentParticipant ? (
@@ -238,7 +250,7 @@ export default function Raffle({
         </Box>
         <Box className="flex gap-4">
           <button
-            className="font-semibold w-[15rem] py-[1.2rem] px-[2rem] bg-[var(--brand-color)] text-[var(--color-grey-0)] rounded-2xl"
+            className="font-semibold w-[15rem] py-[1.2rem] px-[2rem] bg-[var(--brand-color)] text-white rounded-2xl"
             onClick={pickWinner}
           >
             Pick a winner
@@ -281,9 +293,31 @@ export default function Raffle({
             <p className=" text-[#333]">Prize Won</p>
 
             <p className="text-[3rem] uppercase font-semibold text-[#333]">
-              {currentPrize?.name}
+              {prizeWon}
             </p>
           </Box>
+        </Box>
+      </ModalWindow>
+
+      <ModalWindow name="prizes">
+        <Box className="bg-[var(--color-grey-0)] rounded-2xl  h-[50rem] border-l border-l-[var(--color-grey-100)] w-[80rem] overflow-y-scroll p-[3rem] space-y-6">
+          <Box className="flex justify-between items-center">
+            <h2>Select a prize</h2>
+
+            <button
+              onClick={() => {
+                close();
+              }}
+              className="absolute right-10 top-10"
+            >
+              <IoCloseOutline className="text-[3rem]" />
+            </button>
+          </Box>
+
+          <RaffelPrizesList
+            prizes={prizes}
+            setSelectedPrize={setSelectedPrize}
+          />
         </Box>
       </ModalWindow>
     </Box>
