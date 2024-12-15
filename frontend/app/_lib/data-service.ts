@@ -350,7 +350,6 @@ export async function getMyEvents(searchParams: {
 }) {
   const token = await getToken();
 
-  console.log(token);
   if (!token) return;
 
   let query = "";
@@ -383,28 +382,34 @@ export async function getMyEvents(searchParams: {
       query += "&sort=-createdAt";
   }
 
-  const res = await fetch(`${URL}/users/me/events${query}`, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  try {
+    const res = await fetch(`${URL}/users/me/events${query}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  const data = await res.json();
+    const data = await res.json();
 
-  if (!res.ok) {
-    throw new Error(data.message);
+    if (!res.ok) {
+      throw new Error(data.message);
+    }
+
+    const {
+      totalCount,
+      results,
+      data: { events },
+    } = data;
+
+    return { events, totalCount, results };
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
   }
-
-  const {
-    totalCount,
-    results,
-    data: { events },
-  } = data;
-
-  console.log(events);
-
-  return { events, totalCount, results };
 }
 
 export async function getUpcomingEvents() {
@@ -412,29 +417,37 @@ export async function getUpcomingEvents() {
 
   if (!token) return;
 
-  const res = await fetch(
-    `${URL}/users/me/events?status=inactive&sort=-startDate`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+  try {
+    const res = await fetch(
+      `${URL}/users/me/events?status=inactive&sort=-startDate`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message);
     }
-  );
 
-  const data = await res.json();
+    const {
+      data: { events },
+    } = data;
 
-  if (!res.ok) {
-    throw new Error(data.message);
+    console.log(events);
+
+    return events;
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
   }
-
-  const {
-    data: { events },
-  } = data;
-
-  console.log(events);
-
-  return events;
 }
 
 export async function getAllEvents() {
@@ -442,29 +455,37 @@ export async function getAllEvents() {
 
   if (!token) return;
 
-  const res = await fetch(
-    `${URL}/users/me/events?sort=startDate&status=active,completed`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+  try {
+    const res = await fetch(
+      `${URL}/users/me/events?sort=startDate&status=active,completed&limit=1000000`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message);
     }
-  );
 
-  const data = await res.json();
+    const {
+      totalCount,
+      results,
+      data: { events },
+    } = data;
 
-  if (!res.ok) {
-    throw new Error(data.message);
+    return { events, totalCount, results };
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", message: err.message };
+    } else {
+      return { status: "error", message: "An unknown error occurred" };
+    }
   }
-
-  const {
-    totalCount,
-    results,
-    data: { events },
-  } = data;
-
-  return { events, totalCount, results };
 }
 
 export async function getEvent(eventId: string) {

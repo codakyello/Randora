@@ -12,6 +12,7 @@ import { Event } from "../_utils/types";
 import { useDarkMode } from "../_contexts/DarkModeProvider";
 
 function ParticipantChart({ events }: { events: Event[] }) {
+  console.log(events);
   const { isDarkMode } = useDarkMode();
 
   const data = events.map((event) => {
