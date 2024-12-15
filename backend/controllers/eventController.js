@@ -72,7 +72,6 @@ module.exports.createEvent = catchAsync(async (req, res) => {
     ? { name, organisationId }
     : { name, userId: req.user.id };
 
-  console.log(filter);
   const existingEvent = await Event.findOne(filter);
   if (existingEvent) {
     throw new AppError("An event with this name already exists.", 400);
