@@ -15,6 +15,7 @@ import {
 } from "../_lib/actions";
 import { useAuth } from "../_contexts/AuthProvider";
 import RaffelPrizesList from "./RaffelPrizesList";
+import { ChevronDown } from "lucide-react";
 
 export default function Raffle({
   organisation,
@@ -37,6 +38,7 @@ export default function Raffle({
   // const [currentPrize, setCurrentPrize] = useState<Prize | null>(null);
   const [selectedPrize, setSelectedPrize] = useState<Prize | null>(null);
   const [prizeWon, setPrizeWon] = useState<string | null>(null);
+  const [winner, setWinner] = useState<Participant | null>(null);
   const [drumRoll, setDrumRoll] = useState<HTMLAudioElement | null>(null);
   const [crash, setCrash] = useState<HTMLAudioElement | null>(null);
   const { open: openModal, close } = useModal();
@@ -166,7 +168,6 @@ export default function Raffle({
       );
 
       setSelectedPrize(null);
-
       setPrizeWon(selectedPrize.name);
 
       assignPrize(
@@ -190,7 +191,9 @@ export default function Raffle({
       });
 
       // Open the modal with the final values
-      setCurrentParticipant(selectedParticipant);
+      setWinner(selectedParticipant);
+      setCurrentParticipant(null);
+
       // setCurrentPrize(selectedPrize);
       openModal("showWinner");
     }
@@ -220,7 +223,7 @@ export default function Raffle({
         {availablePrizeCount}
       </Box>
       <Box className="flex min-h-screen py-[7rem] flex-col gap-4 justify-between items-center">
-        <Box className="flex flex-col mt-[2rem] items-center gap-4">
+        <Box className="flex flex-col mt-[2rem] items-center">
           <img
             src={organisation?.textLogo || "/randora-text.png"}
             alt="logo"
@@ -232,8 +235,9 @@ export default function Raffle({
           </p>
 
           <ModalOpen name="prizes">
-            <Box className="text-[1.6rem] font-semibold mt-[2rem] rounded-2xl bg-[var(--brand-color)] text-white cursor-pointer p-[.5rem] px-[1.8rem]">
+            <Box className="text-[1.6rem] font-semibold mt-[2.5rem] rounded-2xl bg-[var(--brand-color)] text-white cursor-pointer p-[.5rem] px-[1.8rem] flex items-center gap-2">
               {selectedPrize ? selectedPrize.name : "Select Prize"}
+              <ChevronDown className="w-[2rem] h-[2rem]" />
             </Box>
           </ModalOpen>
         </Box>
@@ -266,7 +270,7 @@ export default function Raffle({
       </Box>
 
       <ModalWindow name="showWinner">
-        <Box className="flex relative flex-col w-[50rem] bg-[var(--color-grey-0)] p-[4rem] rounded-xl items-center gap-8">
+        <Box className="flex relative w-full max-w-[50rem] flex-col  bg-[var(--color-grey-0)] p-[4rem] rounded-xl items-center gap-8">
           <button
             onClick={() => {
               close();
@@ -285,7 +289,7 @@ export default function Raffle({
           <Box className="flex flex-col items-center gap-2">
             <p className="font-medium">Winning Ticket</p>
             <h1 className="text-[10rem] text-[var(--color-grey-700)]">
-              {currentParticipant?.ticketNumber}
+              {winner?.ticketNumber}
             </h1>
           </Box>
 
@@ -300,7 +304,7 @@ export default function Raffle({
       </ModalWindow>
 
       <ModalWindow name="prizes">
-        <Box className="bg-[var(--color-grey-0)] rounded-2xl  h-[50rem] border-l border-l-[var(--color-grey-100)] w-[80rem] overflow-y-scroll p-[3rem] space-y-6">
+        <Box className="bg-[var(--color-grey-0)] rounded-2xl  h-[50rem] border-l border-l-[var(--color-grey-100)] w-full overflow-y-scroll p-[3rem] space-y-6">
           <Box className="flex justify-between items-center">
             <h2>Select a prize</h2>
 

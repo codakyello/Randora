@@ -6,7 +6,7 @@ import { ModalOpen } from "./Modal";
 
 export default function LotteryNav() {
   return (
-    <header className="left-0 fixed top-0 w-full border-b border-b-[var(--color-grey-100)] bg-[var(--color-grey-0)] right-0 h-[7rem] flex items-center justify-between gap-10 py-[1.2rem] md:px-[2rem] px-[1.2rem]">
+    <header className="left-0 z-[99] fixed top-0 w-full border-b border-b-[var(--color-grey-100)] bg-[var(--color-grey-0)] right-0 h-[7rem] flex items-center justify-between gap-10 py-[1.2rem] md:px-[2rem] px-[1.2rem]">
       <Logo />
       <Box className="flex items-center gap-10">
         <Link className="font-medium text-[1.8rem]" href="/dashboard">
