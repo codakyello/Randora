@@ -9,14 +9,16 @@ export default function useUpcomingEvents() {
     queryFn: () => getUpcomingEvents(),
   });
 
-  const upcomingEvents = data
-    ?.filter(
-      (event: Event) =>
-        (event.status === "inactive" &&
-          isAfter(new Date(event.startDate), new Date())) ||
-        isSameDay(new Date(event.startDate), new Date())
-    )
-    .reverse();
+  const upcomingEvents =
+    data?.length > 0 &&
+    data
+      ?.filter(
+        (event: Event) =>
+          (event.status === "inactive" &&
+            isAfter(new Date(event.startDate), new Date())) ||
+          isSameDay(new Date(event.startDate), new Date())
+      )
+      .reverse();
 
   return { data: upcomingEvents, error, isLoading };
 }

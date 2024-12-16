@@ -35,7 +35,6 @@ export default function Raffle({
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [currentParticipant, setCurrentParticipant] =
     useState<Participant | null>(null);
-  // const [currentPrize, setCurrentPrize] = useState<Prize | null>(null);
   const [selectedPrize, setSelectedPrize] = useState<Prize | null>(null);
   const [prizeWon, setPrizeWon] = useState<string | null>(null);
   const [winner, setWinner] = useState<Participant | null>(null);
@@ -56,6 +55,10 @@ export default function Raffle({
   useEffect(() => {
     setDrumRoll(new Audio("/effects/drum-roll-sound-effect.mp3"));
     setCrash(new Audio("/effects/crash.mp3"));
+  }, []);
+
+  useEffect(() => {
+    openModal("prizes");
   }, []);
 
   const wait = (seconds: number): Promise<void> =>
@@ -223,7 +226,7 @@ export default function Raffle({
         {availablePrizeCount}
       </Box>
       <Box className="flex min-h-screen py-[7rem] flex-col gap-4 justify-between items-center">
-        <Box className="flex flex-col mt-[2rem] items-center">
+        <Box className="flex flex-col gap-4 mt-[2rem] items-center">
           <img
             src={organisation?.textLogo || "/randora-text.png"}
             alt="logo"
@@ -235,7 +238,7 @@ export default function Raffle({
           </p>
 
           <ModalOpen name="prizes">
-            <Box className="text-[1.6rem] font-semibold mt-[2.5rem] rounded-2xl bg-[var(--brand-color)] text-white cursor-pointer p-[.5rem] px-[1.8rem] flex items-center gap-2">
+            <Box className="text-[1.6rem] font-semibold mt-[2.5rem] rounded-2xl bg-[var(--brand-color)] text-white cursor-pointer p-[.5rem] px-[1rem] flex items-center gap-2">
               {selectedPrize ? selectedPrize.name : "Select Prize"}
               <ChevronDown className="w-[2rem] h-[2rem]" />
             </Box>
