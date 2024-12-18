@@ -1,7 +1,7 @@
 "use client";
 
 import Table, { Body, Footer, Header } from "./Table";
-import { Collaborator } from "../_utils/types";
+import { Collaborator, Organisation } from "../_utils/types";
 import { CollaboratorRow } from "./CollaboratorRow";
 import Pagination from "./Pagination";
 import { RESULTS_PER_PAGE } from "../_utils/constants";
@@ -9,9 +9,11 @@ import Modal from "./Modal";
 import Menus from "./Menu";
 
 export default function CollaboratorTable({
+  organisation,
   collaborators,
   count,
 }: {
+  organisation: Organisation;
   collaborators: Collaborator[];
   count: number;
 }) {
@@ -33,6 +35,7 @@ export default function CollaboratorTable({
             {collaborators.map((collaborator) => (
               <CollaboratorRow
                 collaborator={collaborator}
+                organisation={organisation}
                 key={collaborator._id}
               />
             ))}

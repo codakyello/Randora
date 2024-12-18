@@ -30,6 +30,7 @@ class Email {
         receiverName: body.receiverName,
         inviteUrl: body.inviteUrl,
         organisationName: body.organisationName,
+        daysRemaining: body.daysRemaining,
         trackingUrl: "#",
         supportUrl: "#",
         ownerName: body.ownerName,
@@ -138,6 +139,30 @@ class Email {
         file: "removed",
         subject: "You have been removed from an organization",
         body: { ownerName, organisationName },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async sendSubscriptionReminder(organisationName, daysRemaining) {
+    try {
+      await this.send({
+        file: "subscriptionReminder",
+        subject: "Subscription Reminder",
+        body: { organisationName, daysRemaining },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async sendSubscriptionExpiry(organisationName) {
+    try {
+      await this.send({
+        file: "subscriptionExpiry",
+        subject: "Subscription Expired",
+        body: { organisationName },
       });
     } catch (error) {
       console.log(error);

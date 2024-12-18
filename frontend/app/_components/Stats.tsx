@@ -2,25 +2,25 @@ import Stat from "./Stat";
 import { Event } from "../_utils/types";
 
 export default function Stats({ confirmEvents }: { confirmEvents: Event[] }) {
-  const totalParticipants = confirmEvents.reduce(
-    (acc, event) => acc + event.participantCount,
+  const totalParticipants = confirmEvents?.reduce(
+    (acc, event) => acc + event?.participantCount,
     0
   );
 
-  const totalPrizes = confirmEvents.reduce((acc, event) => {
-    console.log(event.prizeCount);
-    return acc + event.prizeCount;
+  const totalPrizes = confirmEvents?.reduce((acc, event) => {
+    console.log(event?.prizeCount);
+    return acc + event?.prizeCount;
   }, 0);
 
   console.log(totalPrizes);
-  const remainingPrizes = confirmEvents.reduce(
-    (acc, event) => acc + event.remainingPrize,
+  const remainingPrizes = confirmEvents?.reduce(
+    (acc, event) => acc + event?.remainingPrize,
     0
   );
 
   const distributedPrize = totalPrizes - remainingPrizes;
 
-  const totalEvents = confirmEvents.length || 0;
+  const totalEvents = confirmEvents?.length || 0;
 
   const stats = [
     {

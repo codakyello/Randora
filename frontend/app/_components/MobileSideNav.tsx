@@ -5,16 +5,15 @@ import Nav from "./Nav";
 import { useNav } from "../_contexts/NavProvider";
 import LogoutButton from "./LogoutButton";
 import UpgradePlan from "./UpgradePlan";
-import { differenceInDays } from "date-fns";
 import { User } from "../_utils/types";
 import { Box } from "@chakra-ui/react";
 
 export default function MobileSideNav({
   user,
-  subscriptionExpiryDate,
+  daysUntilExpiry,
 }: {
   user: User;
-  subscriptionExpiryDate: string;
+  daysUntilExpiry: number;
 }) {
   const { closeNav } = useNav();
 
@@ -28,11 +27,9 @@ export default function MobileSideNav({
       <Nav closeNav={closeNav} user={user} />
 
       <Box className="flex flex-col gap-16 mt-auto">
-        {subscriptionExpiryDate &&
-          differenceInDays(new Date(subscriptionExpiryDate), new Date()) <
-            7 && (
-            <UpgradePlan subscriptionExpiryDate={subscriptionExpiryDate} />
-          )}
+        {daysUntilExpiry && daysUntilExpiry < 7 && daysUntilExpiry > 0 && (
+          <UpgradePlan daysUntilExpiry={daysUntilExpiry} />
+        )}
 
         <LogoutButton />
       </Box>

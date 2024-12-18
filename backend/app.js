@@ -18,7 +18,7 @@ const organisationRoutes = require("./routes/organisationRoutes");
 const app = express();
 
 //Cron Jobs
-require("./cronJobs/renewSubscription");
+// require("./cronJobs/renewSubscription");
 require("./cronJobs/subscriptionExpiryCleanup");
 require("./cronJobs/subscriptionRemider");
 
@@ -54,6 +54,7 @@ app.use("/api/v1/events", eventRoutes);
 app.use("/api/v1/prizes", prizeRoutes);
 
 app.use("/api/v1/organisations", organisationRoutes);
+
 app.get("/", (_req, res) => {
   res.send("<h1>Deployment Check</h1>");
 });

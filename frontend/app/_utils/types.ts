@@ -21,6 +21,8 @@ export interface User {
   email: string;
   accountType: string;
   image: string;
+  organisationId?: string;
+  subscriptionStatus?: string;
 }
 
 export interface Event {
@@ -50,7 +52,7 @@ export interface Participant {
   email: string;
   ticketNumber: string;
   isWinner: boolean;
-  prize: { name: string; image: string };
+  prize: Prize;
 }
 
 export interface ParticipantForm {
@@ -92,6 +94,7 @@ export interface Organisation {
   brandColor: string;
   textLogo: string;
   coverLogo: string;
+  subscriptionStatus: string;
 }
 
 export type BookingRowProps = {

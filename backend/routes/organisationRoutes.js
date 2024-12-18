@@ -7,7 +7,12 @@ const organisationController = require("../controllers/organisationController");
 router
   .route("/:id")
   .get(organisationController.getOrganisation)
-  .patch(organisationController.updateOrganisation);
+  .patch(
+    authController.authenticate,
+    authController.authorize("user"),
+    authController.checkSubscriptionStatus,
+    organisationController.updateOrganisation
+  );
 
 router
   .route("/:id/collaborators")
@@ -23,6 +28,7 @@ router
   .delete(
     authController.authenticate,
     authController.authorize("user"),
+    authController.checkSubscriptionStatus,
     organisationController.deleteCollaborator
   );
 
@@ -32,6 +38,7 @@ router
   .post(
     authController.authenticate,
     authController.authorize("user"),
+    authController.checkSubscriptionStatus,
     organisationController.sendInvite
   );
 

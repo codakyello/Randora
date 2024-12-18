@@ -1,5 +1,5 @@
 "use client";
-import { Collaborator } from "../_utils/types";
+import { Collaborator, Organisation } from "../_utils/types";
 import { getTagName } from "../_utils/helpers";
 import Tag from "./Tag";
 import Row from "./Row";
@@ -15,8 +15,10 @@ import toast from "react-hot-toast";
 
 export function CollaboratorRow({
   collaborator,
+  organisation,
 }: {
   collaborator: Collaborator;
+  organisation: Organisation;
 }) {
   const {
     user: { _id, userName, email, image },
@@ -58,7 +60,13 @@ export function CollaboratorRow({
         </span>
       </Box>
 
-      <Tag type={getTagName(status)}>{status.replace("-", " ")}</Tag>
+      <Tag
+        type={getTagName(
+          organisation.subscriptionStatus !== "active" ? "inactive" : status
+        )}
+      >
+        {organisation.subscriptionStatus !== "active" ? "Inactive" : status}
+      </Tag>
 
       <Menus.Toogle id={_id} />
 

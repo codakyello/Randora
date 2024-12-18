@@ -4,10 +4,22 @@ import ProtectedRoute from "@/app/_components/ProtectedRoute";
 import SideBar from "@/app/_components/SideBar";
 import { ReactNode } from "react";
 import { NavProvider } from "@/app/_contexts/NavProvider";
+import { getOrganisation, getUser } from "../_lib/data-service";
+import SubscriptionWarning from "../_components/SubscriptionWarning";
 
-function Page({ children }: { children: ReactNode }) {
+async function Page({ children }: { children: ReactNode }) {
+  const user = await getUser();
+  const organisation = await getOrganisation(user?.organisationId);
   return (
     <ProtectedRoute>
+      {user?.accountType === "organisation" &&
+        organisation?.subscriptionStatus === "expired" && (
+          <SubscriptionWarning userType="organisation" />
+        )}
+      {user?.accountType === "individual" &&
+        user?.subscriptionStatus === "expired" && (
+          <SubscriptionWarning userType="individual" />
+        )}
       <Box className="grid relative overflow-x-hidden h-screen grid-cols-[1fr] grid-rows-[auto_1fr] md:grid-cols-[28rem_1fr]">
         <NavProvider>
           <SideBar />

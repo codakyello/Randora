@@ -4,6 +4,7 @@ import Sort from "@/app/_components/Sort";
 import Collaborators from "@/app/_components/Collaborators";
 import SpinnerFull from "@/app/_components/SpinnerFull";
 import { Suspense } from "react";
+import { getOrganisation, getUser } from "@/app/_lib/data-service";
 
 export const metadata = {
   title: "Collaborators",
@@ -20,6 +21,10 @@ export default async function Page({
   // console.log(searchParams.status, searchParams.sortBy);
 
   // const organisationId = user.organisationId;
+
+  const user = await getUser();
+  const organisationId = user?.organisationId;
+  const organisation = await getOrganisation(organisationId);
 
   return (
     <Box className="flex px-[2rem] flex-col gap-[3.2rem]">
@@ -56,7 +61,10 @@ export default async function Page({
         key={`${searchParams.status}${searchParams.sortBy}`}
         fallback={<SpinnerFull />}
       >
-        <Collaborators />
+        <Collaborators
+          organisationId={organisationId}
+          organisation={organisation}
+        />
       </Suspense>
     </Box>
   );

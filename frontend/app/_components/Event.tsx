@@ -16,6 +16,7 @@ import Modal from "./Modal";
 import Button from "./Button";
 import Tag from "./Tag";
 import { getTagName } from "../_utils/helpers";
+import { Participant } from "../_utils/types";
 
 export default function Event({ params }: { params: { eventId: string } }) {
   const { user } = useAuth();
@@ -31,7 +32,15 @@ export default function Event({ params }: { params: { eventId: string } }) {
     useEventPrizes(eventId);
 
   const event = data?.event;
-  const participants = participantsData?.participants;
+
+  const participants = participantsData?.participants.sort(
+    (a: Participant, b: Participant) => {
+      const aWon = Number(a.isWinner);
+      const bWon = Number(b.isWinner);
+      return bWon - aWon;
+    }
+  );
+
   const prizes = prizesData?.prizes;
 
   if (isLoading || isParticipantsLoading || isPrizesLoading)

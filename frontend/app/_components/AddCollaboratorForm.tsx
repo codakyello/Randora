@@ -5,22 +5,25 @@ import Button from "./Button";
 import Input from "./Input";
 import { useEffect, useState } from "react";
 import SpinnerMini from "./SpinnerMini";
-import { Collaborator, User } from "../_utils/types";
+import { Collaborator, Organisation, User } from "../_utils/types";
 import { useAuth } from "../_contexts/AuthProvider";
 import { sendInvite as sendInviteApi } from "../_lib/actions";
 import toast from "react-hot-toast";
 import useCustomMutation from "../_hooks/useCustomMutation";
 
 const URL = "https://mega-draw.vercel.app/api/v1";
-// const URL = "http://localhost:5000/api/v1";
+// const DEV_URL = "http://localhost:5000/api/v1";
 
 export default function AddCollaboratorForm({
   onClose,
   collaborators,
+  organisation,
 }: {
   onClose?: () => void;
   collaborators: Collaborator[];
+  organisation: Organisation;
 }) {
+  console.log(organisation);
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -191,6 +194,37 @@ export default function AddCollaboratorForm({
                 const collaborator = collaborators.find(
                   (collab) => collab.user.email === user.email
                 );
+
+                //check if user has organisation Id and if the organisation Id is not my organisation Id
+                const belongsToOrganisation =
+                  user.organisationId &&
+                  user.organisationId !== organisation._id;
+
+                if (belongsToOrganisation)
+                  return (
+                    <Box
+                      key={index}
+                      className={`grid px-[2rem] opacity-50 py-[1.5rem] items-center gap-[3rem] grid-cols-[3rem_1fr]`}
+                    >
+                      <Box
+                        className="flex w-[4.5rem] aspect-square relative items-center rounded-full"
+                        style={{
+                          backgroundImage: `url(${user.image})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }}
+                      />
+
+                      <Box>
+                        <p className="font-semibold text-[var(--color-primary)]">
+                          {user.userName}
+                        </p>
+                        <p className="text-[var(--color-grey-500)]">
+                          Already belongs to another organisation
+                        </p>
+                      </Box>
+                    </Box>
+                  );
 
                 if (collaborator)
                   console.log("is existing collab", collaborator);

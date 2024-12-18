@@ -98,7 +98,7 @@ module.exports.getMyEvents = catchAsync(async (req, res) => {
 module.exports.searchUsers = catchAsync(async (req, res) => {
   console.log("searching users");
   const query = req.query.search;
-  // dont find users that have accountType set to organisation
+  // dont find users that have accountType set to organisation and user
   const results = await User.find(
     {
       accountType: { $ne: "organisation" },
@@ -107,7 +107,7 @@ module.exports.searchUsers = catchAsync(async (req, res) => {
         { email: { $regex: query, $options: "i" } },
       ],
     },
-    "id email userName image"
+    "id email userName image organisationId"
   );
 
   sendSuccessResponseData(res, "users", results);

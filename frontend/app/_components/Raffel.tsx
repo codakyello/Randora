@@ -214,12 +214,17 @@ export default function Raffle({
     }
   };
 
+  console.log(organisation.brandColor);
+
   return (
     <Box
       className="bg-[var(--color-grey-50)] min-h-screen lottery-app flex flex-col gap-4 justify-between items-center"
       style={{
         ["--brand-color" as string]:
-          organisation?.brandColor || "var(--color-primary)",
+          organisation?.brandColor &&
+          organisation.subscriptionStatus !== "expired"
+            ? organisation?.brandColor
+            : "var(--color-primary)",
       }}
     >
       <Box className="text-[1.6rem] top-[12rem] left-[5rem] absolute">
@@ -228,7 +233,12 @@ export default function Raffle({
       <Box className="flex min-h-screen py-[7rem] flex-col gap-4 justify-between items-center">
         <Box className="flex flex-col gap-4 mt-[2rem] items-center">
           <img
-            src={organisation?.textLogo || "/randora-text.png"}
+            src={
+              organisation?.textLogo &&
+              organisation.subscriptionStatus !== "expired"
+                ? organisation?.textLogo
+                : "/randora-text.png"
+            }
             alt="logo"
             className="h-[7.5rem]"
           />
@@ -238,7 +248,7 @@ export default function Raffle({
           </p>
 
           <ModalOpen name="prizes">
-            <Box className="text-[1.6rem] font-semibold mt-[2.5rem] rounded-2xl bg-[var(--brand-color)] text-white cursor-pointer p-[.5rem] px-[1rem] flex items-center gap-2">
+            <Box className="text-[1.6rem] font-semibold mt-[2.5rem] rounded-2xl bg-[var(--brand-color)] text-[var(--color-grey-50)] cursor-pointer p-[.5rem] px-[1rem] flex items-center gap-2">
               {selectedPrize ? selectedPrize.name : "Select Prize"}
               <ChevronDown className="w-[2rem] h-[2rem]" />
             </Box>
@@ -250,14 +260,19 @@ export default function Raffle({
           ) : (
             <img
               className="jack h-[27rem]"
-              src={organisation?.coverLogo || "/randora-cover.png"}
+              src={
+                organisation?.coverLogo &&
+                organisation.subscriptionStatus !== "expired"
+                  ? organisation?.coverLogo
+                  : "/randora-cover.png"
+              }
               alt="Jackpot"
             />
           )}
         </Box>
         <Box className="flex gap-4">
           <button
-            className="font-semibold w-[15rem] py-[1.2rem] px-[2rem] bg-[var(--brand-color)] text-white rounded-2xl"
+            className="font-semibold text-[var(--color-grey-50)] w-[15rem] py-[1.2rem] px-[2rem] bg-[var(--brand-color)]  rounded-2xl"
             onClick={pickWinner}
           >
             Pick a winner

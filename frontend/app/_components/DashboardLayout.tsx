@@ -10,14 +10,13 @@ import useUpcomingEvents from "../_hooks/useUpcomingEvents";
 
 export default function DashboardLayout() {
   const { data, isLoading } = useAllEvents();
+
   const { data: upcomingEvents, isLoading: upcomingIsLoading } =
     useUpcomingEvents();
 
   const events = data?.events;
 
   if (isLoading || upcomingIsLoading) return <SpinnerFull />;
-
-  if (!events?.length || !upcomingEvents?.length) return null;
 
   return (
     <>

@@ -9,12 +9,16 @@ import useCollaborators from "../_hooks/useCollaborators";
 import SpinnerFull from "./SpinnerFull";
 import AddCollaboratorForm from "./AddCollaboratorForm";
 import { useSearchParams } from "next/navigation";
-import { Collaborator } from "../_utils/types";
-import { useAuth } from "../_contexts/AuthProvider";
+import { Collaborator, Organisation } from "../_utils/types";
 
-export default function Collaborators() {
-  const { user } = useAuth();
-  const { isLoading, data } = useCollaborators(user?.organisationId);
+export default function Collaborators({
+  organisationId,
+  organisation,
+}: {
+  organisationId: string;
+  organisation: Organisation;
+}) {
+  const { isLoading, data } = useCollaborators(organisationId);
 
   const searchParams = useSearchParams();
 
@@ -57,6 +61,7 @@ export default function Collaborators() {
         <Box className="gap-10 min-h-[65vh] md:min-h-[63.5vh] xl:min-h-[72vh] flex flex-col justify-between">
           {derivedCollabs?.length ? (
             <CollaboratorTable
+              organisation={organisation}
               collaborators={derivedCollabs}
               count={totalCount}
             />
@@ -70,7 +75,10 @@ export default function Collaborators() {
           </Box>
 
           <ModalWindow name="add-collaborator" listenCapturing={true}>
-            <AddCollaboratorForm collaborators={collaborators} />
+            <AddCollaboratorForm
+              organisation={organisation}
+              collaborators={collaborators}
+            />
           </ModalWindow>
         </Box>
       </Modal>

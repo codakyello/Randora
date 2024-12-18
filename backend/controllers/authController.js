@@ -139,6 +139,44 @@ exports.authorizeRootAdmin = catchAsync(async (req, _res, next) => {
   next();
 });
 
+//(protect collaborator feature, settings feature, )
+exports.checkSubscriptionStatus = catchAsync(async (req, res, next) => {
+  const user = req.user; // Assumes req.user is populated by authentication middleware
+
+  if (!user) {
+    return next(new AppError("User not authenticated", 401));
+  }
+
+  let isSubscriptionActive = false;
+
+  // Case 1: User is part of an organisation
+  if (user.organisationId) {
+    const organisation = await Organisation.findById(user.organisationId);
+
+    if (!organisation) {
+      return next(new AppError("Organisation not found", 404));
+    }
+
+    if (organisation.subscriptionStatus === "active") {
+      isSubscriptionActive = true;
+    }
+  }
+  // Case 2: Individual subscription status
+  else if (user.subscriptionStatus === "active") {
+    isSubscriptionActive = true;
+  }
+
+  // Subscription check failed
+  if (!isSubscriptionActive) {
+    return next(
+      new AppError("Your subscription has expired. Please upgrade.", 403)
+    );
+  }
+
+  // Subscription is active, proceed to the next middleware/controller
+  next();
+});
+
 exports.getUser = catchAsync(async (req, res) => {
   if (!req.body.email) throw new AppError("Please provide an email", 400);
   const user = await User.findOne({ email: req.body.email });
