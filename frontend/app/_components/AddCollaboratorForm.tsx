@@ -220,7 +220,7 @@ export default function AddCollaboratorForm({
                           {user.userName}
                         </p>
                         <p className="text-[var(--color-grey-500)]">
-                          Already belongs to another organisation
+                          Belongs to another organisation
                         </p>
                       </Box>
                     </Box>
