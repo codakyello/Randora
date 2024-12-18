@@ -49,35 +49,10 @@ export default function CreatePrizeForm({
         name: String(name),
         quantity: Number(quantities[i]),
         eventId: eventId || String(params.eventId),
-        image:
-          "https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/cabin-images/public/Xbox.jpg-1733051950535",
       };
     });
 
     const prizeForm = prizes;
-
-    // if (prizeFile instanceof File) {
-    //   const fileName = `${prizeFile.name}-${Date.now()}`;
-
-    //   if (prizeFile.name) {
-    //     setUploading(true);
-
-    //     const { data, error } = await supabase.storage
-    //       .from("cabin-images")
-    //       .upload(`public/${fileName}`, prizeFile, {
-    //         cacheControl: "3600",
-    //         upsert: false,
-    //       });
-
-    //     if (error) {
-    //       toast.error("Prize image could not be uploaded");
-    //       return;
-    //     } else {
-    //       prizeForm.image = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
-    //     }
-    //   }
-    // }
-    // setUploading(false);
 
     createPrize(
       { prizeForm, token },

@@ -8,7 +8,6 @@ const prizeSchema = new mongoose.Schema({
   },
   image: {
     type: String,
-    required: true,
   },
   quantity: {
     type: Number,

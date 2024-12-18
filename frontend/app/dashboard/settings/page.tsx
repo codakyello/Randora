@@ -1,6 +1,11 @@
 import SettingsForm from "@/app/_components/SettingsForm";
 import Modal from "@/app/_components/Modal";
 import { getOrganisation, getUser } from "@/app/_lib/data-service";
+
+export const metadata = {
+  title: "Settings",
+};
+
 export default async function SettingsPage() {
   const user = await getUser();
   const organisation = await getOrganisation(user?.organisationId);

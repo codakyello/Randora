@@ -114,6 +114,7 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
     );
   }
 
+  // we also want to generate prize images using AI.
   const newPrizes = await Prize.insertMany(prizes);
 
   // Update event prize counts
