@@ -20,7 +20,7 @@ cron.schedule("0 0 * * *", async () => {
 
     const organisations = await Organisation.find({
       subscriptionExpiryDate: {
-        $lt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 2 days from now
+        $lt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
       },
       subscriptionStatus: "active",
     }).exec();
