@@ -37,6 +37,7 @@ export interface Event {
   prizeCount: number;
   remainingPrize: number;
   organisationId?: string;
+  userId?: string;
 }
 
 export interface EventForm {

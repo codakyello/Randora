@@ -48,7 +48,7 @@ export default async function SideBar() {
         {/*  render this when the subscription expiry date is less than 7 days but greater than 0 */}
 
         <Box className="flex flex-col gap-16 mt-auto">
-          {daysUntilExpiry && daysUntilExpiry < 7 && daysUntilExpiry > 0 && (
+          {daysUntilExpiry < 7 && daysUntilExpiry > 0 && (
             <UpgradePlan daysUntilExpiry={daysUntilExpiry} />
           )}
 

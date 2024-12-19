@@ -68,9 +68,10 @@ module.exports.createEvent = catchAsync(async (req, res) => {
 
   // Check if an event with the same name already exists for the user
 
+  // Case-insensitive match
   const filter = organisationId
-    ? { name, organisationId }
-    : { name, userId: req.user.id };
+    ? { name: { $regex: new RegExp(`^${name}$`, "i") }, organisationId }
+    : { name: { $regex: new RegExp(`^${name}$`, "i") }, userId: req.user.id };
 
   const existingEvent = await Event.findOne(filter);
   if (existingEvent) {

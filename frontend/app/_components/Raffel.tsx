@@ -57,10 +57,6 @@ export default function Raffle({
     setCrash(new Audio("/effects/crash.mp3"));
   }, []);
 
-  useEffect(() => {
-    openModal("prizes");
-  }, []);
-
   const wait = (seconds: number): Promise<void> =>
     new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 

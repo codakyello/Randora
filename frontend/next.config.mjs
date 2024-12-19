@@ -7,16 +7,17 @@ const nextConfig = {
         hostname: "asvhruseebznfswjyxmx.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
-
-      //   {
-      //     protocol: "https",
-      //     hostname: "lh3.googleusercontent.com",
-      //     pathname: "/a/**",
-      //   },
+      {
+        protocol: "https",
+        hostname: "oaidalleapiprodscus.blob.core.windows.net", // Add this
+        pathname: "/private/**", // Matches the path for DALL-E image URLs
+      },
     ],
-    domains: ["unsplash.it"],
+    domains: [
+      "unsplash.it",
+      "oaidalleapiprodscus.blob.core.windows.net", // Add this
+    ],
   },
-  // output: "export",
 };
 
 export default nextConfig;

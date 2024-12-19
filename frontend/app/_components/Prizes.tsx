@@ -7,15 +7,20 @@ import PrizeTable from "./PrizeTable";
 import useEventPrizes from "../_hooks/useEventPrizes";
 import Menus from "./Menu";
 import CreatePrizeForm from "./CreatePrizeForm";
+import useEvent from "../_hooks/useEvent";
 
 export default function Prizes({ eventId }: { eventId: string }) {
+  const { data: eventData, isLoading: isLoadingEvent } = useEvent(eventId);
+
+  const event = eventData?.event;
+
   const { data, isLoading } = useEventPrizes(eventId);
 
   const prizes = data?.prizes;
 
   const count = data?.totalCount;
 
-  if (isLoading) return <SpinnerFull />;
+  if (isLoading || isLoadingEvent) return <SpinnerFull />;
 
   return (
     <Modal>
@@ -35,7 +40,7 @@ export default function Prizes({ eventId }: { eventId: string }) {
             </ModalOpen>
 
             <ModalWindow listenCapturing={false} name="create-prize">
-              <CreatePrizeForm />
+              <CreatePrizeForm event={event} />
             </ModalWindow>
           </Box>
         </Box>

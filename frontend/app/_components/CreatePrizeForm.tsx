@@ -6,40 +6,36 @@ import Button from "./Button";
 import { FormEvent, useState } from "react";
 import { createPrizes as createPrizeApi } from "../_lib/actions";
 import { useAuth } from "../_contexts/AuthProvider";
-// import supabase from "../supabase";
 import { IoCloseOutline } from "react-icons/io5";
-import { Prize } from "../_utils/types";
 import toast from "react-hot-toast";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import { useParams } from "next/navigation";
 import { useMenu } from "./Menu";
 import { FaTrash } from "react-icons/fa";
+import { Event } from "../_utils/types";
 
 export default function CreatePrizeForm({
-  prizeToEdit,
+  event,
   onClose,
   eventId,
 }: {
-  prizeToEdit?: Prize;
+  event: Event;
   onClose?: () => void;
   eventId?: string;
 }) {
-  const { _id: editId, ...editValues } = prizeToEdit ?? ({} as Prize);
-  const isEditSession = Boolean(editId);
   const { getToken } = useAuth();
   const token = getToken();
 
   const params = useParams();
 
   const { close: closeMenu } = useMenu();
-  // const [uploading, setUploading] = useState(false);
 
   const { mutate: createPrize, isPending: isCreating } =
     useCustomMutation(createPrizeApi);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
 
     const names = formData.getAll("name");
     const quantities = formData.getAll("quantity");
@@ -49,6 +45,9 @@ export default function CreatePrizeForm({
         name: String(name),
         quantity: Number(quantities[i]),
         eventId: eventId || String(params.eventId),
+        ...(event?.hasOwnProperty("organisationId")
+          ? { organisationId: event?.organisationId }
+          : { userId: event?.userId }),
       };
     });
 
@@ -98,7 +97,7 @@ export default function CreatePrizeForm({
       className="px-[3rem] py-[3rem] rounded-[var(--border-radius-lg)] shadow-lg z-50 bg-[var(--color-grey-0)] w-full"
     >
       <Box className="flex justify-between">
-        <h2 className="mb-[2rem]">{isEditSession ? "Edit" : "Create"} Prize</h2>
+        <h2 className="mb-[2rem]">Create Prize</h2>
         <button onClick={onClose}>
           <IoCloseOutline size="2.5rem" />
         </button>
@@ -124,7 +123,6 @@ export default function CreatePrizeForm({
             <Input
               className="h-[4.5rem]"
               key={index}
-              defaultValue={editValues?.name}
               name="name"
               value={name}
               id="name"
@@ -135,7 +133,6 @@ export default function CreatePrizeForm({
             <Box className="flex gap-5">
               <Input
                 className="h-[4.5rem]"
-                defaultValue={editValues?.quantity}
                 value={quantity}
                 name="quantity"
                 id="prize_quantity"

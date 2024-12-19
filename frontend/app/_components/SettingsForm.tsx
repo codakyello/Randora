@@ -144,10 +144,8 @@ export default function SettingsForm({
 
           if (error) {
             throw new Error(error.message);
-          } else {
-            console.log("updloaded");
-            formInputs.textLogo = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
           }
+          formInputs.textLogo = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
         } catch (error) {
           if (error instanceof Error) {
             toast.error(error.message);
@@ -172,10 +170,8 @@ export default function SettingsForm({
 
           if (error) {
             throw new Error(error.message);
-          } else {
-            console.log("updloaded");
-            formInputs.coverLogo = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
           }
+          formInputs.coverLogo = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
         } catch (error) {
           if (error instanceof Error) {
             toast.error(error.message);

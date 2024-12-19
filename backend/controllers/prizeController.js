@@ -3,8 +3,10 @@ const Participant = require("../models/ParticipantsModel");
 const Prize = require("../models/PrizesModel");
 const APIFEATURES = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
+const OpenAI = require("openai");
 
 const { sendSuccessResponseData, catchAsync } = require("../utils/helpers");
+const supabase = require("../supabase");
 
 module.exports.getAllPrizes = catchAsync(async (req, res) => {
   const apiFeatures = APIFEATURES(Prize, req.query)
@@ -80,10 +82,13 @@ module.exports.assignPrize = catchAsync(async (req, res) => {
 });
 
 module.exports.createPrizes = catchAsync(async (req, res) => {
-  console.log(req.body);
+  const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
   const prizes = req.body;
   const eventId = prizes.at(0).eventId;
 
+  console.log(prizes);
   // Validate event existence
   const event = await Event.findById(eventId);
   if (!event) {
@@ -99,10 +104,12 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
 
   // Check for duplicate prize names within the event
   const existingPrizes = await Prize.find({ eventId });
-  const existingPrizeNames = existingPrizes.map((prize) => prize.name);
+  const existingPrizeNames = existingPrizes.map((prize) =>
+    prize.name.toLowerCase()
+  );
 
   const duplicateNames = prizes
-    .map((prize) => prize.name)
+    .map((prize) => prize.name.toLowerCase())
     .filter((name) => existingPrizeNames.includes(name));
 
   if (duplicateNames.length > 0) {
@@ -114,8 +121,72 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
     );
   }
 
+  const newPrizes = await Promise.all(
+    prizes.map(async (prize) => {
+      const existingPrizeImage = await Prize.findOne({
+        $and: [
+          prize.hasOwnProperty("organisationId")
+            ? {
+                organisationId: prize.organisationId,
+                name: { $regex: new RegExp(`^${prize.name}$`, "i") }, // Case-insensitive match
+              }
+            : {
+                userId: prize.userId,
+                name: { $regex: new RegExp(`^${prize.name}$`, "i") }, // Case-insensitive match
+              },
+        ],
+      });
+
+      if (existingPrizeImage) {
+        return { ...prize, image: existingPrizeImage.image };
+      }
+
+      try {
+        const response = await openai.images.generate({
+          model: "dall-e-3",
+          prompt: `Generate a realistic image of an ${prize.name} with a premium and real life design`,
+          size: "1024x1024",
+          quality: "standard",
+          n: 1,
+        });
+
+        const imageUrl = response.data[0].url;
+        const imageResponse = await fetch(imageUrl);
+
+        if (!imageResponse.ok) {
+          throw new Error("Failed to fetch the generated image");
+        }
+
+        const imageBlob = await imageResponse.blob();
+        const fileName = `${prize.name}-${Date.now()}-${Math.random()
+          .toString(36)
+          .substring(2, 8)}.png`;
+
+        // Upload to Supabase
+        const { data, error } = await supabase.storage
+          .from("prize-images")
+          .upload(`public/${fileName}`, imageBlob, {
+            contentType: "image/png",
+          });
+
+        if (error) {
+          console.error("Supabase upload error:", error);
+          throw new Error("Failed to upload image to Supabase");
+        }
+
+        const imageUrlSupabase = `https://${process.env.SUPABASE_PROJECT_ID}.supabase.co/storage/v1/object/public/${data.fullPath}`;
+
+        return { ...prize, image: imageUrlSupabase };
+      } catch (error) {
+        console.error("Error generating or saving prize image:", error);
+        return prize;
+      }
+    })
+  );
+
   // we also want to generate prize images using AI.
-  const newPrizes = await Prize.insertMany(prizes);
+
+  const createdPrizes = await Prize.insertMany(newPrizes);
 
   // Update event prize counts
   await Promise.all([
@@ -123,7 +194,7 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
     Event.updateRemainingPrizeCount(eventId),
   ]);
 
-  sendSuccessResponseData(res, "prizes", newPrizes);
+  sendSuccessResponseData(res, "prizes", createdPrizes);
 });
 
 module.exports.updatePrize = catchAsync(async (req, res) => {

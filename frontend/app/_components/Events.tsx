@@ -10,6 +10,7 @@ import Menus from "./Menu";
 import CreatePrizeForm from "./CreatePrizeForm";
 import UploadParticipants from "./UploadParticipants";
 import { useState } from "react";
+import { Event } from "../_utils/types";
 
 export default function Events() {
   const { data, isLoading } = useEvents();
@@ -17,6 +18,9 @@ export default function Events() {
   const [eventId, setEventId] = useState("");
 
   const events = data?.events;
+
+  const event = events.find((event: Event) => event._id === eventId);
+
   const count = data?.totalCount;
 
   if (isLoading) return <SpinnerFull />;
@@ -45,7 +49,7 @@ export default function Events() {
           </ModalWindow>
 
           <ModalWindow name="add-prize" listenCapturing={true}>
-            <CreatePrizeForm eventId={eventId} />
+            <CreatePrizeForm event={event} eventId={eventId} />
           </ModalWindow>
         </Box>
       </Modal>

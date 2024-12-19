@@ -20,6 +20,14 @@ const prizeSchema = new mongoose.Schema({
     ref: "Event",
     required: true,
   },
+  organisationId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Organisation",
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   createdAt: {
     type: Date,
     default: Date.now,
