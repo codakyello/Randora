@@ -103,7 +103,7 @@ export default function CreatePrizeForm({
         </button>
       </Box>
 
-      <Box className="grid grid-cols-[8fr_2fr] max-h-[50vh] overflow-auto no-scrollbar gap-5">
+      <Box className="grid grid-cols-[8fr_2fr] max-h-[50vh] overflow-auto gap-5">
         <FormRow
           className="!pb-0 border-none"
           htmlFor="name"

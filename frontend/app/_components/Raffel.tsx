@@ -36,7 +36,7 @@ export default function Raffle({
   const [currentParticipant, setCurrentParticipant] =
     useState<Participant | null>(null);
   const [selectedPrize, setSelectedPrize] = useState<Prize | null>(null);
-  const [prizeWon, setPrizeWon] = useState<string | null>(null);
+  const [prizeWon, setPrizeWon] = useState<Prize>();
   const [winner, setWinner] = useState<Participant | null>(null);
   const [drumRoll, setDrumRoll] = useState<HTMLAudioElement | null>(null);
   const [crash, setCrash] = useState<HTMLAudioElement | null>(null);
@@ -167,7 +167,7 @@ export default function Raffle({
       );
 
       setSelectedPrize(null);
-      setPrizeWon(selectedPrize.name);
+      setPrizeWon(selectedPrize);
 
       assignPrize(
         {
@@ -209,6 +209,11 @@ export default function Raffle({
       drumRoll.currentTime = 0;
     }
   };
+
+  useEffect(() => {
+    const img = document.createElement("img");
+    img.src = selectedPrize?.image || "";
+  }, [selectedPrize]);
 
   console.log(organisation.brandColor);
 
@@ -307,11 +312,24 @@ export default function Raffle({
             </h1>
           </Box>
 
+          {/* <img src={prizeWon?.image} alt="image" className="w-full" /> */}
+
+          {prizeWon && (
+            <Box className="overflow-hidden rounded-2xl">
+              <img
+                src={prizeWon?.image || "/placeholder.png"}
+                alt="Prize Image"
+                height={200}
+                width={200}
+              />
+            </Box>
+          )}
+
           <Box className="flex flex-col items-center gap-2 bg-[#f8f9ff] p-6 rounded-lg w-full">
             <p className=" text-[#333]">Prize Won</p>
 
             <p className="text-[3rem] uppercase font-semibold text-[#333]">
-              {prizeWon}
+              {prizeWon?.name}
             </p>
           </Box>
         </Box>

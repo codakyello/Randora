@@ -67,7 +67,6 @@ export default function EditPrizeForm({
           return;
         }
 
-        console.log("image uploaded");
         prizeForm.image = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
       }
     }
@@ -132,7 +131,7 @@ export default function EditPrizeForm({
           loading={isUploading}
           name="image"
           id="image"
-          required={true}
+          required={false}
         />
       </FormRow>
 

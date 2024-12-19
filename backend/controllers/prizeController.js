@@ -88,7 +88,6 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
   const prizes = req.body;
   const eventId = prizes.at(0).eventId;
 
-  console.log(prizes);
   // Validate event existence
   const event = await Event.findById(eventId);
   if (!event) {
@@ -137,6 +136,8 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
         ],
       });
 
+      console.log(existingPrizeImage);
+
       if (existingPrizeImage) {
         return { ...prize, image: existingPrizeImage.image };
       }
@@ -144,7 +145,7 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
       try {
         const response = await openai.images.generate({
           model: "dall-e-3",
-          prompt: `Generate a realistic image of an ${prize.name} with a premium and real life design`,
+          prompt: `Generate a realistic image of a ${prize.name} with a premium and real life design`,
           size: "1024x1024",
           quality: "standard",
           n: 1,
