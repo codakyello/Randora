@@ -1,5 +1,4 @@
 import { Prize } from "../_utils/types";
-import Image from "next/image";
 import { useModal } from "./Modal";
 
 export default function RaffelPrizeRow({
@@ -21,12 +20,10 @@ export default function RaffelPrizeRow({
         close();
       }}
     >
-      <Image
-        className={`rounded-2xl ${prize.quantity < 1 && "opacity-50"}`}
+      <img
+        className={`rounded-2xl w-[8rem] ${prize.quantity < 1 && "opacity-50"}`}
         src={prize.image}
         alt={prize.name}
-        width={80}
-        height={80}
       />
       <p className="font-medium">{prize.name}</p>
     </button>

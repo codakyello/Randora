@@ -145,7 +145,7 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
       try {
         const response = await openai.images.generate({
           model: "dall-e-3",
-          prompt: `Generate a realistic image of a ${prize.name} with a premium and real life design`,
+          prompt: `Generate a realistic image of a ${prize.name} with a premium and real life design. Prioritize on making the image look as real as possible. Generate images that people are used to seeing in their every day life`,
           size: "1024x1024",
           quality: "standard",
           n: 1,

@@ -185,9 +185,25 @@ export default function Raffle({
       if (crash) crash.play();
 
       const jsConfetti = new JSConfetti();
-      jsConfetti.addConfetti({
-        confettiColors: ["#0634f0", "#5171f5", "#ff7096", "#fb8500", "#f9bec7"],
-      });
+      function launchConfetti(duration = 3000) {
+        const interval = setInterval(() => {
+          jsConfetti.addConfetti({
+            confettiColors: [
+              "#0634f0",
+              "#5171f5",
+              "#ff7096",
+              "#fb8500",
+              "#f9bec7",
+            ],
+          });
+        }, 250); // Add confetti every 500ms
+
+        setTimeout(() => {
+          clearInterval(interval); // Stop adding confetti after the duration
+        }, duration);
+      }
+
+      launchConfetti(4000);
 
       // Open the modal with the final values
       setWinner(selectedParticipant);
@@ -319,8 +335,7 @@ export default function Raffle({
               <img
                 src={prizeWon?.image || "/placeholder.png"}
                 alt="Prize Image"
-                height={200}
-                width={200}
+                className="w-[25rem]"
               />
             </Box>
           )}
