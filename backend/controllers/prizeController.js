@@ -4,6 +4,7 @@ const Prize = require("../models/PrizesModel");
 const APIFEATURES = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
 const OpenAI = require("openai");
+const fs = require("fs");
 
 const { sendSuccessResponseData, catchAsync } = require("../utils/helpers");
 const supabase = require("../supabase");
@@ -82,9 +83,13 @@ module.exports.assignPrize = catchAsync(async (req, res) => {
 });
 
 module.exports.createPrizes = catchAsync(async (req, res) => {
-  const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
+  // const openai = new OpenAI({
+  //   apiKey: process.env.OPENAI_API_KEY,
+  // });
+
+  const Replicate = require("replicate");
+  const replicate = new Replicate();
+
   const prizes = req.body;
   const eventId = prizes.at(0).eventId;
 
@@ -136,29 +141,47 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
         ],
       });
 
-      console.log(existingPrizeImage);
-
       if (existingPrizeImage) {
         return { ...prize, image: existingPrizeImage.image };
       }
 
       try {
-        const response = await openai.images.generate({
-          model: "dall-e-3",
-          prompt: `Generate a realistic image of a ${prize.name} with a premium and real life design. Prioritize on making the image look as real as possible. Generate images that people are used to seeing in their every day life`,
-          size: "1024x1024",
-          quality: "standard",
-          n: 1,
+        // const response = await openai.images.generate({
+        //   model: "dall-e-3",
+        //   prompt: `Generate a realistic image of a ${prize.name} with a premium and real life design. Prioritize on making the image look as real as possible. Generate images that people are used to seeing in their every day life`,
+        //   size: "1024x1024",
+        //   quality: "standard",
+        //   n: 1,
+        // });
+
+        const input = {
+          steps: 25,
+          width: 1024,
+          height: 1024,
+          prompt: `Generate a realistic image of a ${prize.name} with a premium and real life design. Prioritize on making the image look as real as possible.`,
+          guidance: 3,
+          interval: 2,
+          aspect_ratio: "1:1",
+          output_format: "webp",
+          output_quality: 80,
+          safety_tolerance: 2,
+          prompt_upsampling: false,
+        };
+
+        // Generate image using Replicate
+        const output = await replicate.run("black-forest-labs/flux-pro", {
+          input,
         });
 
-        const imageUrl = response.data[0].url;
-        const imageResponse = await fetch(imageUrl);
-
-        if (!imageResponse.ok) {
-          throw new Error("Failed to fetch the generated image");
+        // Fetch the generated image
+        const response = await fetch(output);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch the image: ${response.statusText}`);
         }
 
-        const imageBlob = await imageResponse.blob();
+        const arrayBuffer = await response.arrayBuffer();
+        const imageBuffer = Buffer.from(arrayBuffer);
+
         const fileName = `${prize.name}-${Date.now()}-${Math.random()
           .toString(36)
           .substring(2, 8)}.png`;
@@ -166,7 +189,7 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
         // Upload to Supabase
         const { data, error } = await supabase.storage
           .from("prize-images")
-          .upload(`public/${fileName}`, imageBlob, {
+          .upload(`public/${fileName}`, imageBuffer, {
             contentType: "image/png",
           });
 
