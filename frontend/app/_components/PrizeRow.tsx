@@ -25,9 +25,10 @@ export default function PrizeRow({
   const imageRef = useRef<HTMLImageElement>(null);
 
   const { getToken } = useAuth();
+
   const token = getToken();
 
-  const { close: closeModal, open } = useModal();
+  const { close: closeModal } = useModal();
   const { close: closeMenu } = useMenu();
 
   const { mutate: deletePrize, isPending: isDeleting } =
