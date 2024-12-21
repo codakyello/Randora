@@ -6,7 +6,7 @@ import { Prize } from "../_utils/types";
 import Menus, { useMenu } from "./Menu";
 import { HiPencil, HiTrash } from "react-icons/hi2";
 import { deletePrize as deletePrizeApi } from "../_lib/actions";
-import Modal, { ModalOpen, ModalWindow, useModal } from "./Modal";
+import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import ConfirmDelete from "./ConfirmDelete";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import toast from "react-hot-toast";
