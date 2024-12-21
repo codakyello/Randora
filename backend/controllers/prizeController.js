@@ -127,19 +127,24 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
 
   const newPrizes = await Promise.all(
     prizes.map(async (prize) => {
-      const existingPrizeImage = await Prize.findOne({
-        $and: [
-          prize.hasOwnProperty("organisationId")
-            ? {
-                organisationId: prize.organisationId,
-                name: { $regex: new RegExp(`^${prize.name}$`, "i") }, // Case-insensitive match
-              }
-            : {
-                userId: prize.userId,
-                name: { $regex: new RegExp(`^${prize.name}$`, "i") }, // Case-insensitive match
-              },
-        ],
-      });
+      let existingPrizeImage;
+      try {
+        existingPrizeImage = await Prize.findOne({
+          $and: [
+            prize.hasOwnProperty("organisationId")
+              ? {
+                  organisationId: prize.organisationId,
+                  name: { $regex: new RegExp(`^${prize.name}$`, "i") }, // Case-insensitive match
+                }
+              : {
+                  userId: prize.userId,
+                  name: { $regex: new RegExp(`^${prize.name}$`, "i") }, // Case-insensitive match
+                },
+          ],
+        });
+      } catch (err) {
+        throw new AppError("Invalid Prize name", 400);
+      }
 
       if (existingPrizeImage) {
         return { ...prize, image: existingPrizeImage.image };

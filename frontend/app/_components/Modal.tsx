@@ -6,6 +6,7 @@ import {
   ReactElement,
   ReactNode,
   useContext,
+  useEffect,
   useState,
 } from "react";
 import useOutsideClick from "../_hooks/useOutsideClick";
@@ -18,6 +19,7 @@ const ModalContext = createContext<
 export default function Modal({ children }: { children: ReactNode }) {
   const [isOpen, setOpen] = useState("");
   const open = setOpen;
+
   const close = () => setOpen("");
 
   return (

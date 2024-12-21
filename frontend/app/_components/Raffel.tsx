@@ -231,8 +231,6 @@ export default function Raffle({
     img.src = selectedPrize?.image || "";
   }, [selectedPrize]);
 
-  console.log(organisation.brandColor);
-
   return (
     <Box
       className="bg-[var(--color-grey-50)] min-h-screen lottery-app flex flex-col gap-4 justify-between items-center"
@@ -257,7 +255,7 @@ export default function Raffle({
                 : "/randora-text.png"
             }
             alt="logo"
-            className="h-[7.5rem]"
+            className="h-[10rem]"
           />
 
           <p className="font-semibold uppercase text-[var(--color-grey-600)] text-center leading-[2rem]   text-[1.5rem] w-[25rem]">
@@ -265,7 +263,7 @@ export default function Raffle({
           </p>
 
           <ModalOpen name="prizes">
-            <Box className="text-[1.6rem] font-semibold mt-[2.5rem] rounded-2xl bg-[var(--brand-color)] text-[var(--color-grey-50)] cursor-pointer p-[.5rem] px-[1rem] flex items-center gap-2">
+            <Box className="text-[1.6rem] font-semibold mt-[1.5rem] rounded-2xl bg-[var(--brand-color)] text-[var(--color-grey-50)] cursor-pointer p-[.5rem] px-[1rem] flex items-center gap-2">
               {selectedPrize ? selectedPrize.name : "Select Prize"}
               <ChevronDown className="w-[2rem] h-[2rem]" />
             </Box>
@@ -343,7 +341,7 @@ export default function Raffle({
           <Box className="flex flex-col items-center gap-2 bg-[#f8f9ff] p-6 rounded-lg w-full">
             <p className=" text-[#333]">Prize Won</p>
 
-            <p className="text-[3rem] uppercase font-semibold text-[#333]">
+            <p className="text-[3rem] text-center uppercase font-semibold text-[#333]">
               {prizeWon?.name}
             </p>
           </Box>

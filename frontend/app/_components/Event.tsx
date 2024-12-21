@@ -33,7 +33,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
 
   const event = data?.event;
 
-  const participants = participantsData?.participants.sort(
+  const participants = participantsData?.participants?.sort(
     (a: Participant, b: Participant) => {
       const aWon = Number(a.isWinner);
       const bWon = Number(b.isWinner);
