@@ -6,7 +6,6 @@ import {
   ReactElement,
   ReactNode,
   useContext,
-  useEffect,
   useState,
 } from "react";
 import useOutsideClick from "../_hooks/useOutsideClick";
