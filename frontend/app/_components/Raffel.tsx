@@ -653,7 +653,7 @@ export default function Raffle({
                 </Box>
               ))
             ) : (
-              <Box className="flex justify-center items-center">
+              <Box className="flex text-[2rem] h-[32rem] justify-center items-center">
                 No winners yet.
               </Box>
             )}
@@ -759,7 +759,7 @@ export default function Raffle({
               </Box>
             </>
           ) : (
-            <Box className="flex justify-center items-center">
+            <Box className="flex text-[2rem] h-[32rem] justify-center items-center">
               No winners yet.
             </Box>
           )}
