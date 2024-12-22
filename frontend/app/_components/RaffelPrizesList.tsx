@@ -10,7 +10,7 @@ export default function RaffelPrizesList({
   setSelectedPrize: (prize: Prize) => void;
 }) {
   console.log(prizes);
-  const sortedPrizes = prizes.sort((a, b) => b.quantity - a.quantity);
+  const sortedPrizes = prizes.sort((a, b) => b?.quantity - a?.quantity);
   return (
     <Box className="flex flex-col gap-5">
       {sortedPrizes.map((prize) => (

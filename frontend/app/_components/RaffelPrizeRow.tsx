@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import { Prize } from "../_utils/types";
 import { useModal } from "./Modal";
 
@@ -25,7 +26,10 @@ export default function RaffelPrizeRow({
         src={prize.image}
         alt={prize.name}
       />
-      <p className="font-medium">{prize.name}</p>
+      <Box className="flex flex-col gap-[2rem] items-start">
+        <p className="font-medium">{prize.name}</p>
+        <p className="text-[var(--color-grey-500)]"> x{prize.quantity}</p>
+      </Box>
     </button>
   );
 }

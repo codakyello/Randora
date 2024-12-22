@@ -55,6 +55,11 @@ export interface Participant {
   isWinner: boolean;
   prize: Prize;
 }
+export interface Winner {
+  ticketNumber: string;
+  prize: string;
+  image: string;
+}
 
 export interface ParticipantForm {
   name?: string | undefined;

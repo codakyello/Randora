@@ -5,7 +5,13 @@ import JSConfetti from "js-confetti";
 import { Box } from "@chakra-ui/react";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import { IoCloseOutline } from "react-icons/io5";
-import { Event, Organisation, Participant, Prize } from "../_utils/types";
+import {
+  Event,
+  Organisation,
+  Participant,
+  Prize,
+  Winner,
+} from "../_utils/types";
 import toast from "react-hot-toast";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import {
@@ -16,6 +22,9 @@ import {
 import { useAuth } from "../_contexts/AuthProvider";
 import RaffelPrizesList from "./RaffelPrizesList";
 import { ChevronDown } from "lucide-react";
+import Image from "next/image";
+import { DownloadIcon } from "@chakra-ui/icons";
+import LotteryNav from "./LotteryNav";
 
 export default function Raffle({
   organisation,
@@ -28,6 +37,7 @@ export default function Raffle({
   event: Event;
   participantData: Participant[];
 }) {
+  console.log(event);
   const [participants, setParticipants] = useState<Participant[]>(() =>
     participantData.filter((participant) => !participant.isWinner)
   );
@@ -38,6 +48,16 @@ export default function Raffle({
   const [selectedPrize, setSelectedPrize] = useState<Prize | null>(null);
   const [prizeWon, setPrizeWon] = useState<Prize>();
   const [winner, setWinner] = useState<Participant | null>(null);
+  const [prizeWinners, setprizeWinners] = useState<Participant[]>([]);
+  const [allWinners, setAllWinners] = useState<Winner[]>(() =>
+    participantData
+      .filter((participant) => participant.isWinner)
+      .map((participant) => ({
+        ticketNumber: participant.ticketNumber,
+        prize: participant.prize?.name,
+        image: participant.prize?.image,
+      }))
+  );
   const [drumRoll, setDrumRoll] = useState<HTMLAudioElement | null>(null);
   const [crash, setCrash] = useState<HTMLAudioElement | null>(null);
   const { open: openModal, close } = useModal();
@@ -57,6 +77,21 @@ export default function Raffle({
     setCrash(new Audio("/effects/crash.mp3"));
   }, []);
 
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
+
+    return () => {
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
+    };
+  }, []);
+
   const wait = (seconds: number): Promise<void> =>
     new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 
@@ -65,17 +100,20 @@ export default function Raffle({
     0
   );
 
-  const pickWinner = async () => {
-    console.log(selectedPrize);
+  const canStart = () => {
+    if (!isOnline) {
+      toast.error("You are offline. Please check your network connection.");
+      return;
+    }
     // send a post request to server to set event to active
     if (!selectedPrize) {
       toast.error("Please select a prize");
-      return;
+      return false;
     }
 
     if (selectedPrize.quantity < 1) {
       toast.error("Choose a different prize!");
-      return;
+      return false;
     }
 
     if (!active) {
@@ -96,18 +134,24 @@ export default function Raffle({
         }
       );
     }
-    // send a request to update prize
 
     // send a request to update participant by setting isWinner to true
-    if (isSpinning) return;
+    if (isSpinning) return false;
 
     if (availablePrizeCount === 0 || participants.length === 0) {
       toast.error("No more slots available!");
-      return;
+      return false;
     }
 
     setIsSpinning(true);
     resetRef.current = false;
+
+    return true;
+  };
+
+  const pickWinner = async () => {
+    console.log(allWinners);
+    if (!canStart()) return;
 
     if (drumRoll) drumRoll.play();
 
@@ -116,7 +160,6 @@ export default function Raffle({
     for (let i = 0; i < 55; i++) {
       if (resetRef.current) {
         resetGame();
-        console.log("resetGame"); // Handle early reset
         return;
       }
 
@@ -131,6 +174,16 @@ export default function Raffle({
     }
 
     setIsSpinning(false);
+
+    if (selectedParticipant && selectedPrize)
+      setAllWinners((prevWinners) => [
+        ...prevWinners,
+        {
+          ticketNumber: selectedParticipant.ticketNumber,
+          prize: selectedPrize.name,
+          image: selectedPrize.image,
+        },
+      ]);
 
     if (selectedParticipant && selectedPrize) {
       // Update participant state to remove the winner
@@ -185,7 +238,7 @@ export default function Raffle({
       if (crash) crash.play();
 
       const jsConfetti = new JSConfetti();
-      function launchConfetti(duration = 3000) {
+      function launchConfetti(duration = 2000) {
         const interval = setInterval(() => {
           jsConfetti.addConfetti({
             confettiColors: [
@@ -203,7 +256,7 @@ export default function Raffle({
         }, duration);
       }
 
-      launchConfetti(4000);
+      launchConfetti(1500);
 
       // Open the modal with the final values
       setWinner(selectedParticipant);
@@ -214,16 +267,200 @@ export default function Raffle({
     }
   };
 
-  const resetGame = () => {
-    resetRef.current = true;
-    setIsSpinning(false);
-    setCurrentParticipant(null);
-    setSelectedPrize(null);
+  const pickAllWinners = async () => {
+    // Check if the user is online
 
+    if (!canStart()) return;
+
+    // Start by emptying the winners
+    setprizeWinners([]);
+
+    resetRef.current = false;
+
+    // Create local copies of state variables
+    let localParticipants = [...participants];
+    const localPrize = selectedPrize ? { ...selectedPrize } : null;
+    const localWinners = [...prizeWinners];
+
+    while (
+      localPrize &&
+      localPrize.quantity > 0 &&
+      localParticipants.length > 0
+    ) {
+      if (drumRoll) drumRoll.play();
+      if (resetRef.current) {
+        resetGame();
+        console.log("Game reset");
+        return;
+      }
+
+      setIsSpinning(true);
+
+      let selectedParticipant: Participant | null = null;
+
+      // Simulate the spinning effect
+      for (let i = 0; i < 8; i++) {
+        if (resetRef.current) {
+          resetGame();
+          return;
+        }
+
+        const randomParticipant =
+          localParticipants[
+            Math.floor(Math.random() * localParticipants.length)
+          ];
+        setCurrentParticipant(randomParticipant);
+        selectedParticipant = randomParticipant;
+        await wait(0.05);
+      }
+
+      resetDrumRoll();
+
+      if (selectedParticipant && localPrize) {
+        // Remove the winner from local participants
+        localParticipants = localParticipants.filter(
+          (participant) => participant._id !== selectedParticipant?._id
+        );
+
+        // Update the participant in the database
+        updateParticipant(
+          {
+            participantId: selectedParticipant._id,
+            participantForm: {
+              isWinner: true,
+              prizeId: localPrize._id,
+            },
+            token,
+          },
+          {
+            onError: (err) => {
+              toast.error(err.message);
+            },
+          }
+        );
+
+        setPrizes((prevPrizes) =>
+          prevPrizes.map((prize) =>
+            prize._id === selectedPrize?._id
+              ? { ...prize, quantity: prize.quantity - 1 }
+              : prize
+          )
+        );
+
+        // Add the winner to the winners list
+        if (selectedParticipant && selectedPrize?.name && selectedPrize?._id) {
+          setprizeWinners((prevprizeWinners) => [
+            ...prevprizeWinners,
+            {
+              ...selectedParticipant,
+              prize: {
+                _id: selectedPrize._id,
+                name: selectedPrize.name,
+                image: selectedPrize.image,
+                quantity: selectedPrize.quantity || 0, // Default quantity if missing
+              },
+            },
+          ]);
+
+          setAllWinners((prevWinners) => [
+            ...prevWinners,
+            {
+              ticketNumber: selectedParticipant.ticketNumber,
+              prize: selectedPrize.name,
+              image: selectedPrize.image,
+            },
+          ]);
+        }
+
+        // Update the prize quantity locally
+        localPrize.quantity -= 1;
+
+        // Add the winner to the local winners list
+        localWinners.push(selectedParticipant);
+
+        // Assign the prize to the participant in the database
+        assignPrize(
+          {
+            prizeId: localPrize._id,
+            participantId: selectedParticipant._id,
+            token,
+          },
+          {
+            onError: (err) => {
+              toast.error(err.message);
+            },
+          }
+        );
+
+        // Reflect changes in React state
+        setParticipants(localParticipants);
+        setSelectedPrize(localPrize);
+
+        // Add a delay between winners
+        await wait(1); // Adjust this for a better user experience
+      }
+    }
+    setSelectedPrize(null);
+    setCurrentParticipant(null);
+
+    // Final cleanup or message
+    setIsSpinning(false);
+
+    if (localPrize?.quantity === 0) {
+      toast.success("All prizes have been allocated!");
+    } else if (localParticipants.length === 0) {
+      toast.error("No more participants available.");
+    }
+
+    // Display the results
+    openModal("showprizeWinners");
+  };
+
+  const resetDrumRoll = function () {
     if (drumRoll) {
       drumRoll.pause();
       drumRoll.currentTime = 0;
     }
+  };
+
+  const resetGame = () => {
+    resetRef.current = true;
+    setIsSpinning(false);
+    setCurrentParticipant(null);
+    setprizeWinners([]);
+    setSelectedPrize(null);
+    resetDrumRoll();
+  };
+
+  const downloadCSV = () => {
+    // Convert participants to CSV
+    const headers = ["Ticket Number", "Prize"];
+    const rows = allWinners.map((winner) => [
+      winner.ticketNumber,
+      winner.prize,
+    ]);
+
+    // Combine headers and rows into a CSV string
+    const csvContent = [headers, ...rows]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    // Create a Blob from the CSV content
+    const blob = new Blob([csvContent], { type: "text/csv" });
+
+    // Create a URL for the Blob
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary link element
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${event.name}-${event.type.toLowerCase()}-winners.csv`;
+
+    // Trigger the download
+    a.click();
+
+    // Cleanup the URL object
+    URL.revokeObjectURL(url);
   };
 
   useEffect(() => {
@@ -242,6 +479,8 @@ export default function Raffle({
             : "var(--color-primary)",
       }}
     >
+      <LotteryNav numberOfWinners={allWinners.length} />
+
       <Box className="text-[1.6rem] top-[12rem] left-[5rem] absolute">
         {availablePrizeCount}
       </Box>
@@ -295,6 +534,13 @@ export default function Raffle({
 
           <button
             className="py-[1rem] px-[2rem] font-semibold border-2 border-[var(--brand-color)] text-[var(--brand-color)] rounded-2xl"
+            onClick={pickAllWinners}
+          >
+            Pick all winners
+          </button>
+
+          <button
+            className="py-[1rem] px-[2rem] font-semibold border-2 border-[var(--brand-color)] text-[var(--brand-color)] rounded-2xl"
             onClick={resetGame}
           >
             Reset
@@ -331,7 +577,7 @@ export default function Raffle({
           {prizeWon && (
             <Box className="overflow-hidden rounded-2xl">
               <img
-                src={prizeWon?.image || "/placeholder.png"}
+                src={prizeWon?.image}
                 alt="Prize Image"
                 className="w-[25rem]"
               />
@@ -344,6 +590,73 @@ export default function Raffle({
             <p className="text-[3rem] text-center uppercase font-semibold text-[#333]">
               {prizeWon?.name}
             </p>
+          </Box>
+        </Box>
+      </ModalWindow>
+
+      <ModalWindow name="showprizeWinners">
+        <Box className="bg-[var(--color-grey-0)] rounded-2xl  h-[50rem] border-l border-l-[var(--color-grey-100)] w-full  p-[3rem]">
+          <Box className="flex justify-between">
+            <h2>All Winners for {prizeWinners[0]?.prize?.name}</h2>
+
+            <button
+              onClick={() => {
+                close();
+                resetGame();
+              }}
+              className="absolute right-10 top-10"
+            >
+              <IoCloseOutline className="text-[3rem]" />
+            </button>
+          </Box>
+          <p className="mt-[1rem] text-[var(--color-grey-500)]">
+            A total of {prizeWinners.length} participants were chosen at random
+          </p>
+
+          <Box className=" grid grid-cols-[repeat(3,1fr)] py-[1.2rem] gap-[2.4rem] mt-[1.8rem]">
+            <Box>Ticket Number</Box>
+            <Box className="text-center">Prize</Box>
+            <Box className="text-center">Prize Image</Box>
+          </Box>
+
+          <Box className="h-[32rem] overflow-y-scroll">
+            {prizeWinners && prizeWinners.length > 0 ? (
+              prizeWinners.map((winner, index) => (
+                <Box
+                  key={index}
+                  className="border-b border-[var(--color-grey-100)] grid grid-cols-[repeat(3,1fr)] h-[7rem] items-center gap-[2.4rem]"
+                >
+                  {/* Ticket Number */}
+                  <Box className="flex font-semibold">
+                    {winner.ticketNumber}
+                  </Box>
+
+                  {/* Prize Name */}
+                  <Box className="flex text-center justify-center flex-col gap-[.2rem]">
+                    {winner.prize.name || <span>&mdash;</span>}
+                  </Box>
+
+                  {/* Prize Image */}
+                  {winner.prize.image ? (
+                    <Box className="relative rounded-lg overflow-hidden mx-auto w-[8rem] aspect-[3/2]">
+                      <Image
+                        fill
+                        src={winner.prize.image}
+                        alt={`${winner.prize.name || "prize"} image`}
+                      />
+                    </Box>
+                  ) : (
+                    <Box className="flex justify-center items-center flex-col gap-[.2rem]">
+                      &mdash;
+                    </Box>
+                  )}
+                </Box>
+              ))
+            ) : (
+              <Box className="flex justify-center items-center">
+                No winners yet.
+              </Box>
+            )}
           </Box>
         </Box>
       </ModalWindow>
@@ -367,6 +680,89 @@ export default function Raffle({
             prizes={prizes}
             setSelectedPrize={setSelectedPrize}
           />
+        </Box>
+      </ModalWindow>
+
+      <ModalWindow name="show-winners">
+        <Box className="bg-[var(--color-grey-0)] rounded-2xl h-[55rem] border-l border-l-[var(--color-grey-100)] w-full p-[3rem]">
+          <Box className="flex justify-between">
+            <h2>
+              All Winners for {event.name} by {organisation.name}
+            </h2>
+
+            <button
+              onClick={() => {
+                close();
+                resetGame();
+              }}
+              className="absolute right-10 top-10"
+            >
+              <IoCloseOutline className="text-[3rem]" />
+            </button>
+          </Box>
+
+          {allWinners && allWinners.length > 0 ? (
+            <>
+              <Box className="flex justify-between">
+                <p className="mt-[1rem] text-[var(--color-grey-500)]">
+                  A total of {allWinners.length} participants were chosen at
+                  random
+                </p>
+                <button
+                  onClick={downloadCSV}
+                  className={`mr-[2rem] text-white py-[1.2rem] rounded-2xl px-[1.5rem] bg-[var(--brand-color)] flex items-center gap-1`}
+                >
+                  Export
+                  <DownloadIcon />
+                </button>
+              </Box>
+
+              <Box className="grid grid-cols-[repeat(3,1fr)] py-[1.2rem] gap-[2.4rem] mt-[1.8rem]">
+                <Box className="font-semibold">Ticket Number</Box>
+                <Box className="text-center font-semibold">Prize</Box>
+                <Box className="text-center font-semibold">Prize Image</Box>
+              </Box>
+
+              {/* Apply overflow scrolling and height to this container */}
+              <Box className="overflow-y-scroll h-[35rem]">
+                {allWinners.map((winner, index) => (
+                  <Box
+                    key={index}
+                    className="border-b border-[var(--color-grey-100)] grid grid-cols-[repeat(3,1fr)] h-[7rem] items-center gap-[2.4rem]"
+                  >
+                    {/* Ticket Number */}
+                    <Box className="flex font-semibold">
+                      {winner.ticketNumber}
+                    </Box>
+
+                    {/* Prize Name */}
+                    <Box className="flex text-center justify-center flex-col gap-[.2rem]">
+                      {winner.prize || <span>&mdash;</span>}
+                    </Box>
+
+                    {/* Prize Image */}
+                    {winner.image ? (
+                      <Box className="relative rounded-xl overflow-hidden mx-auto w-[9rem] aspect-[3/2]">
+                        <Image
+                          fill
+                          src={winner.image}
+                          alt={`${winner.prize || "prize"} image`}
+                        />
+                      </Box>
+                    ) : (
+                      <Box className="flex justify-center items-center flex-col gap-[.2rem]">
+                        &mdash;
+                      </Box>
+                    )}
+                  </Box>
+                ))}
+              </Box>
+            </>
+          ) : (
+            <Box className="flex justify-center items-center">
+              No winners yet.
+            </Box>
+          )}
         </Box>
       </ModalWindow>
     </Box>

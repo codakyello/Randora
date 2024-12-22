@@ -1,4 +1,3 @@
-import LotteryNav from "@/app/_components/LotteryNav";
 import Modal from "@/app/_components/Modal";
 import Raffle from "@/app/_components/Raffel";
 import {
@@ -35,12 +34,12 @@ export default async function Page({
 
   if (!event)
     return (
-      <Box className="h-screen flex items-center justify-center text-center text-[1.5rem] font-semibold">
+      <Box className="h-screen bg-[var(--color-grey-50)] flex items-center justify-center text-center text-[1.5rem] font-semibold">
         <h1 className="text-[4rem]">Event not Found</h1>
 
         <Link
           className="absolute flex items-center left-5 top-[4rem] text-[1.6rem] font-semibold"
-          href={`/dashboard/events/${event._id}`}
+          href={`/dashboard/events/${event?._id}`}
         >
           <ChevronLeftIcon className="text-[2rem]" />
           <p className="text-[var(--brand-color)]">Go Back</p>
@@ -65,32 +64,9 @@ export default async function Page({
       </Box>
     );
 
-  // Make it available for the rest of the day
-  if (
-    new Date(event.startDate) < new Date() &&
-    new Date(event.startDate).toDateString() !== new Date().toDateString()
-  )
-    return (
-      <Box className="h-screen bg-[var(--color-grey-50)] flex items-center justify-center text-center text-[1.5rem] font-semibold">
-        <h1 className="text-[3rem]">
-          Event has passed {formatDistanceToNow(new Date(event.startDate))} ago
-        </h1>
-
-        <Link
-          className="absolute flex items-center left-5 top-[4rem] text-[#0634f0] text-[1.6rem] font-semibold"
-          href={`/dashboard/events/${event._id}`}
-        >
-          <ChevronLeftIcon className="text-[2rem]" />
-          <p className="text-[var(--brand-color)]">Go Back</p>
-        </Link>
-      </Box>
-    );
-
   return (
     <Modal>
       <Box className="bg-[var(--color-grey-0)]">
-        <LotteryNav />
-
         {participants?.length === 0 && (
           <Box className="h-screen bg-[var(--color-grey-50)] flex items-center justify-center text-center text-[1.5rem] font-semibold">
             <h1 className="text-[3rem]">

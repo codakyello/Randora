@@ -163,7 +163,7 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
           steps: 25,
           width: 1024,
           height: 1024,
-          prompt: `Generate a realistic image of a ${prize.name} with a premium and real life design. Prioritize on making the image look as real as possible.`,
+          prompt: `Generate a realistic image of a ${prize.name} with a premium and real life design. Prioritize on making the image look as real as possible. Show nothing else other than the ${prize.name}`,
           guidance: 3,
           interval: 2,
           aspect_ratio: "1:1",
