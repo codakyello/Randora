@@ -482,9 +482,6 @@ export default function Raffle({
     >
       <LotteryNav numberOfWinners={allWinners.length} />
 
-      <Box className="text-[1.6rem] top-[12rem] left-[5rem] absolute">
-        {availablePrizeCount}
-      </Box>
       <Box className="flex min-h-screen py-[7rem] flex-col gap-4 justify-between items-center">
         <Box className="flex flex-col gap-4 mt-[2rem] items-center">
           <img

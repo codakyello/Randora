@@ -25,7 +25,7 @@ export default function LotteryNav({
           <Box className="relative">
             <button className="font-medium text-[1.8rem]">Winners</button>
 
-            <Box className="absolute text-[1.4rem] p-[.5rem] right-[-18px] text-white flex items-center justify-center top-[-3px] z-10 bg-[var(--brand-color)] rounded-full w-[2.5rem] h-[2.5rem]">
+            <Box className="absolute text-[1.4rem] p-[.5rem] right-[-18px] text-white flex items-center justify-center top-[-3px] z-10 bg-[var(--brand-color)] rounded-full w-[2rem] h-[2rem]">
               {numberOfWinners || 0}
             </Box>
           </Box>
