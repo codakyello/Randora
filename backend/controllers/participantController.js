@@ -23,6 +23,7 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
   const csvBuffer = req.file?.buffer; // Access the uploaded CSV file as a buffer
   const eventId = req.body.eventId;
 
+  console.log("in here");
   try {
     if (!csvBuffer) throw new AppError("No CSV File uploaded", 400);
 
@@ -92,7 +93,9 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
     const processedParticipants = participants.map((participant, index) => {
       const email = participant.email;
       const name = participant.name;
-      const ticketNumber = Number(participant.ticketnumber);
+      // const ticketNumber = Number(participant.ticketnumber);
+      const ticketNumber = participant.ticketnumber;
+
       const rowNumber = index + 2;
 
       if (!ticketNumber) {
@@ -110,7 +113,7 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
         throw new AppError(`Name at row ${rowNumber} is missing`, 400);
       }
 
-      console.log("the participant", participant);
+      // console.log("the participant", participant);
 
       existingParticipants.forEach((participant) => {
         if (participant.ticketNumber === ticketNumber) {
@@ -147,8 +150,10 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
 
         if (
           hasTicketNumber &&
-          Number(participants[i].ticketnumber) === ticketNumber
+          participants[i].ticketnumber === ticketNumber
+          // Number(participants[i].ticketnumber) === ticketNumber
         ) {
+          console.log("inside here");
           throw new AppError(
             `Duplicate ticket number: Ticket Number: ${ticketNumber}, at row ${rowNumber} and at row ${
               i + 2
@@ -187,6 +192,7 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
 module.exports.createParticipant = catchAsync(async (req, res) => {
   const { ticketNumber, eventId } = req.body;
 
+  console.log(req.body);
   const event = await Event.findById(eventId);
 
   if (!event) throw new AppError("The Event with this ID does not exist", 404);
@@ -214,7 +220,6 @@ module.exports.createParticipant = catchAsync(async (req, res) => {
     );
   }
 
-  console.log(req.body.email);
   if (req.body.email) {
     const existingEmail = await Participant.findOne({
       eventId,

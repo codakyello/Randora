@@ -16,7 +16,7 @@ const participantSchema = new mongoose.Schema({
     default: null,
   },
   ticketNumber: {
-    type: Number,
+    type: String,
     required: true,
   },
   eventId: {

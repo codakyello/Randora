@@ -24,7 +24,7 @@ export default function ParticipantTable({
             "Name",
             "Email",
             <div key={"Ticket Number"} className="text-center">
-              Ticket Number
+              Ticket
             </div>,
             <div key={"Prize"} className="text-center">
               Prize

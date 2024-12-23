@@ -64,7 +64,7 @@ export interface Winner {
 export interface ParticipantForm {
   name?: string | undefined;
   email?: string | undefined;
-  ticketNumber?: number;
+  ticketNumber?: string;
   eventId?: string;
   isWinner?: boolean;
   prizeId?: string;

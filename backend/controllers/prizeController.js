@@ -83,10 +83,6 @@ module.exports.assignPrize = catchAsync(async (req, res) => {
 });
 
 module.exports.createPrizes = catchAsync(async (req, res) => {
-  // const openai = new OpenAI({
-  //   apiKey: process.env.OPENAI_API_KEY,
-  // });
-
   const Replicate = require("replicate");
   const replicate = new Replicate();
 

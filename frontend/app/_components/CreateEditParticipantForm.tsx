@@ -49,7 +49,7 @@ export default function CreateEditParticipantForm({
     const formData = new FormData(event.currentTarget);
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
-    const ticketNumber = Number(formData.get("ticketNumber"));
+    const ticketNumber = formData.get("ticketNumber") as string;
 
     const participantForm: ParticipantForm = {
       ticketNumber,
@@ -139,7 +139,7 @@ export default function CreateEditParticipantForm({
       >
         <Input
           name="ticketNumber"
-          type="number"
+          type="text"
           id="ticket_number"
           required={true}
           defaultValue={editValues.ticketNumber}

@@ -38,6 +38,7 @@ export default function Raffle({
   participantData: Participant[];
 }) {
   console.log(event);
+  console.log(participantData);
   const [participants, setParticipants] = useState<Participant[]>(() =>
     participantData.filter((participant) => !participant.isWinner)
   );
@@ -614,7 +615,7 @@ export default function Raffle({
           </p>
 
           <Box className=" grid grid-cols-[repeat(3,1fr)] py-[1.2rem] gap-[2.4rem] mt-[1.8rem]">
-            <Box>Ticket Number</Box>
+            <Box>Ticket</Box>
             <Box className="text-center">Prize</Box>
             <Box className="text-center">Prize Image</Box>
           </Box>
@@ -718,7 +719,7 @@ export default function Raffle({
               </Box>
 
               <Box className="grid grid-cols-[repeat(3,1fr)] py-[1.2rem] gap-[2.4rem] mt-[1.8rem]">
-                <Box className="font-semibold">Ticket Number</Box>
+                <Box className="font-semibold">Ticket</Box>
                 <Box className="text-center font-semibold">Prize</Box>
                 <Box className="text-center font-semibold">Prize Image</Box>
               </Box>
