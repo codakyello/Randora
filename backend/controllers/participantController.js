@@ -70,8 +70,8 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
         );
     });
 
-    if (participants.length > 10000) {
-      throw new AppError("The uploaded file exceeds the 10,000-row limit.");
+    if (participants.length > 50000) {
+      throw new AppError("The uploaded file exceeds the 50,000-row limit.");
     }
 
     if (participants.length === 0) {
