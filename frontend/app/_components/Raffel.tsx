@@ -506,9 +506,17 @@ export default function Raffle({
             </Box>
           </ModalOpen>
         </Box>
-        <Box className="jack-box">
+        <Box className="jack-box max-w-[50rem]">
           {currentParticipant ? (
-            <h1 className="text-[15rem]">{currentParticipant.ticketNumber}</h1>
+            <h1
+              className={`${
+                Boolean(Number(currentParticipant.ticketNumber))
+                  ? "text-[15rem]"
+                  : "text-[5rem]"
+              } leading-none`}
+            >
+              {currentParticipant.ticketNumber}
+            </h1>
           ) : (
             <img
               className="jack h-[27rem]"
@@ -565,7 +573,13 @@ export default function Raffle({
 
           <Box className="flex flex-col items-center gap-2">
             <p className="font-medium">Winning Ticket</p>
-            <h1 className="text-[10rem] text-[var(--color-grey-700)]">
+            <h1
+              className={`${
+                Boolean(Number(winner?.ticketNumber))
+                  ? "text-[10rem] "
+                  : "text-[5rem] "
+              }text-center w-[45rem] leading-none text-[var(--color-grey-700)]`}
+            >
               {winner?.ticketNumber}
             </h1>
           </Box>
