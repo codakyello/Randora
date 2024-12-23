@@ -529,8 +529,6 @@ export async function getEvent(eventId: string) {
   }
 }
 
-export const maxDuration = 30;
-
 export async function getEventParticipants(
   eventId: string,
   searchParams: {
