@@ -269,19 +269,19 @@ module.exports.updatePrize = catchAsync(async (req, res) => {
 });
 
 module.exports.deletePrize = catchAsync(async (req, res) => {
-  const prize = await Prize.findByIdAndDelete(req.params.id);
-
+  // Fetch the prize
+  const prize = await Prize.findById(req.params.id);
   if (!prize) {
     throw new AppError("Prize not found.", 404);
   }
 
-  const eventId = prize.eventId;
-
-  const event = await Event.findById(eventId);
+  // Fetch the related event
+  const event = await Event.findById(prize.eventId);
   if (!event) {
     throw new AppError("Event does not exist.", 404);
   }
 
+  // Ensure the event is inactive
   if (event.status !== "inactive") {
     throw new AppError(
       "Prizes can only be deleted when the event is inactive.",
@@ -289,10 +289,15 @@ module.exports.deletePrize = catchAsync(async (req, res) => {
     );
   }
 
+  // Delete the prize after all validations
+  await prize.remove();
+
+  // Update the event counts
   await Promise.all([
     Event.updatePrizeCount(prize.eventId),
     Event.updateRemainingPrizeCount(prize.eventId),
   ]);
 
-  sendSuccessResponseData(res, "prize");
+  // Send response
+  sendSuccessResponseData(res, "Prize deleted successfully.");
 });
