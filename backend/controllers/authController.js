@@ -243,7 +243,7 @@ exports.userLogin = catchAsync(async (req, res) => {
     throw new AppError("Incorrect email or password", 401);
 
   const otp = await user.generateOtp();
-  // console.log(otp);
+  console.log(otp);
 
   await new Email(user).sendOTP(otp);
 
