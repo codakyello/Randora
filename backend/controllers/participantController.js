@@ -32,7 +32,7 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
 
     if (!event) throw new AppError("No Event with this ID exists", 404);
 
-    if (event.status !== "inactive") {
+    if (event.status === "completed") {
       throw new AppError(
         `You cannot upload CSV for an event that is ${event.status}`,
         400
@@ -153,7 +153,6 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
           participants[i].ticketnumber === ticketNumber
           // Number(participants[i].ticketnumber) === ticketNumber
         ) {
-          console.log("inside here");
           throw new AppError(
             `Duplicate ticket number: Ticket Number: ${ticketNumber}, at row ${rowNumber} and at row ${
               i + 2
@@ -197,9 +196,9 @@ module.exports.createParticipant = catchAsync(async (req, res) => {
 
   if (!event) throw new AppError("The Event with this ID does not exist", 404);
 
-  if (event.status !== "inactive")
+  if (event.status === "completed")
     throw new AppError(
-      `You cannot create more participants for and event that is ${event.status} `,
+      `You cannot create more participants for an event that is ${event.status} `,
       400
     );
 
