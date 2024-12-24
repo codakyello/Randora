@@ -95,7 +95,7 @@ module.exports.createPrizes = catchAsync(async (req, res) => {
     throw new AppError("Event does not exist.", 404);
   }
 
-  if (event.status !== "inactive") {
+  if (event.status === "completed") {
     throw new AppError(
       "Prizes can only be created when an event is inactive",
       400
