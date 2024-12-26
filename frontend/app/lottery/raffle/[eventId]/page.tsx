@@ -1,7 +1,7 @@
 import Modal from "@/app/_components/Modal";
 import Raffle from "@/app/_components/Raffel";
 import {
-  getAllEventParticipants,
+  getEventAllParticipants,
   getAllEventPrizes,
   getEvent,
   getOrganisation,
@@ -19,7 +19,7 @@ export default async function Page({
 }) {
   const [eventData, participantData, prizesData] = await Promise.all([
     getEvent(params.eventId),
-    getAllEventParticipants(params.eventId),
+    getEventAllParticipants(params.eventId),
     getAllEventPrizes(params.eventId),
   ]);
 
