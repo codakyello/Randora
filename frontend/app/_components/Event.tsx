@@ -9,14 +9,13 @@ import { MdArrowOutward } from "react-icons/md";
 import useEvent from "@/app/_hooks/useEvent";
 import SpinnerFull from "./SpinnerFull";
 import useEventPrizes from "../_hooks/useEventPrizes";
-import useEventAllParticipants from "../_hooks/useEventAllParticipants";
 import { useAuth } from "../_contexts/AuthProvider";
 import PrizeTable from "./PrizeTable";
 import Modal from "./Modal";
 import Button from "./Button";
 import Tag from "./Tag";
 import { getTagName } from "../_utils/helpers";
-import { Participant } from "../_utils/types";
+import useEventWinners from "../_hooks/useEventWinners";
 
 export default function Event({ params }: { params: { eventId: string } }) {
   const { user } = useAuth();
@@ -26,20 +25,14 @@ export default function Event({ params }: { params: { eventId: string } }) {
   const { data, isLoading } = useEvent(eventId);
 
   const { data: participantsData, isLoading: isParticipantsLoading } =
-    useEventAllParticipants(eventId);
+    useEventWinners(eventId);
 
   const { data: prizesData, isLoading: isPrizesLoading } =
     useEventPrizes(eventId);
 
   const event = data?.event;
 
-  const participants = participantsData?.participants?.sort(
-    (a: Participant, b: Participant) => {
-      const aWon = Number(a.isWinner);
-      const bWon = Number(b.isWinner);
-      return bWon - aWon;
-    }
-  );
+  const participants = participantsData?.participants;
 
   const prizes = prizesData?.prizes;
 
@@ -104,7 +97,7 @@ export default function Event({ params }: { params: { eventId: string } }) {
               </div>
               <ParticipantTable
                 actions={false}
-                participants={participants?.slice(0, 5)}
+                participants={participants}
                 count={5}
               />
             </Box>

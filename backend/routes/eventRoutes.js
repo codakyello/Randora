@@ -18,7 +18,6 @@ router
     eventController.deleteEvent
   );
 
-// get all event participants
 router
   .route("/:id/participants")
   .get(
@@ -39,7 +38,14 @@ router
     authorize("user", "admin"),
     eventController.getEventAllParticipants
   );
-// get all event prizes
+
+router
+  .route("/:id/winners")
+  .get(
+    authenticate,
+    authorize("user", "admin"),
+    eventController.getEventWinners
+  );
 router
   .route("/:id/prizes")
   .get(

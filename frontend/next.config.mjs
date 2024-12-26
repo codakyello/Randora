@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    runtime: "nodejs", // Use Node.js runtime instead of Edge runtime
-  },
   images: {
     remotePatterns: [
       {

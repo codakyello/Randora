@@ -604,7 +604,7 @@ export async function getEventParticipants(
   }
 }
 
-export async function getAllEventParticipants(eventId: string) {
+export async function getEventAllParticipants(eventId: string) {
   let statusCode;
 
   const token = await getToken();
@@ -612,6 +612,45 @@ export async function getAllEventParticipants(eventId: string) {
 
   try {
     const res = await fetch(`${URL}/events/${eventId}/all-participants`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    statusCode = res.status;
+    if (!res.ok) throw new Error(data.message);
+
+    const {
+      totalCount,
+      results,
+      data: { participants },
+    } = data;
+
+    return { participants, totalCount, results };
+  } catch (err) {
+    if (err instanceof Error) {
+      return { status: "error", statusCode, message: err.message };
+    } else {
+      return {
+        status: "error",
+        statusCode,
+        message: "An unknown error occurred",
+      };
+    }
+  }
+}
+
+export async function getEventWinners(eventId: string) {
+  let statusCode;
+
+  const token = await getToken();
+  if (!token) return;
+
+  try {
+    const res = await fetch(`${URL}/events/${eventId}/winners`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,

@@ -23,7 +23,6 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
   const csvBuffer = req.file?.buffer; // Access the uploaded CSV file as a buffer
   const eventId = req.body.eventId;
 
-  console.log("in here");
   try {
     if (!csvBuffer) throw new AppError("No CSV File uploaded", 400);
 

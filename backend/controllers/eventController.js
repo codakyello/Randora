@@ -201,6 +201,29 @@ module.exports.getEventAllParticipants = catchAsync(async (req, res) => {
   sendSuccessResponseData(res, "participants", participants, totalCount);
 });
 
+module.exports.getEventWinners = catchAsync(async (req, res) => {
+  const eventId = req.params.id;
+  const totalCount = await Participant.find({
+    eventId,
+  }).countDocuments();
+
+  // Check if event has winners
+  const eventWinners = await Participant.find({ eventId, isWinner: true });
+  if (eventWinners.length) {
+    return sendSuccessResponseData(
+      res,
+      "participants",
+      eventWinners,
+      totalCount
+    );
+  }
+
+  const participants = await Participant.find({ eventId }).limit(10);
+
+  // Send response with participants
+  sendSuccessResponseData(res, "participants", participants, totalCount);
+});
+
 module.exports.getEventPrizes = catchAsync(async (req, res) => {
   const event = await Event.findById(req.params.id);
 

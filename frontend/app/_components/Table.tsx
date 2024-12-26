@@ -17,7 +17,7 @@ export default function Table({
 }) {
   return (
     <TableContext.Provider value={{ columns }}>
-      <div className="overflow-y-hidden">
+      <div className="overflow-hidden">
         <Box className="overflow-x-scroll no-scrollbar rounded-[var(--border-radius-md)] border border-[var(--color-grey-200)] bg-[var(--color-grey-0)] text-[1.4rem]">
           {children}
         </Box>
