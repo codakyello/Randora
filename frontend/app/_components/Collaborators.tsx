@@ -46,10 +46,10 @@ export default function Collaborators({
   if (sortBy) {
     derivedCollabs = [...derivedCollabs].sort((a, b) => {
       if (sortBy === "username-asc") {
-        return a.user.userName.localeCompare(b.user.userName);
+        return a.user?.userName.localeCompare(b.user.userName);
       }
       if (sortBy === "username-desc") {
-        return b.user.userName.localeCompare(a.user.userName);
+        return b.user?.userName.localeCompare(a.user.userName);
       }
       return 0;
     });

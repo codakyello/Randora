@@ -126,7 +126,7 @@ module.exports.sendInvite = catchAsync(async (req, res) => {
 
   try {
     const email = new Email(user);
-    await email.sendInvite(inviteUrl, inviter.userName);
+    await email.sendInvite(inviteUrl, inviter.userName, organisation.name);
   } catch (err) {
     throw new AppError("There was a problem sending the invite", 500);
   }
@@ -164,9 +164,7 @@ module.exports.respondToInvite = catchAsync(async (req, res) => {
   const user = await User.findById(collaborator.user);
   if (!user) throw new AppError("User not found", 404);
 
-  console.log("in respond to invite");
   if (accept) {
-    console.log("trying to accept invite");
     // Accept invite
     try {
       const email = new Email(owner);
@@ -179,10 +177,14 @@ module.exports.respondToInvite = catchAsync(async (req, res) => {
     organisation.collaborators[collaboratorIndex].expiresAt = undefined;
 
     // Setting organisationId is the cheese
+
     user.organisationId = organisation._id;
+    user.accounts.push({
+      organisation: organisation._id,
+      organisationImage: owner._id,
+    });
     await user.save({ validateBeforeSave: false });
 
-    console.log("invite accepted");
     await organisation.save();
     return res.status(200).json({ message: "Invite accepted successfully" });
   } else {
@@ -249,6 +251,16 @@ module.exports.deleteCollaborator = catchAsync(async (req, res) => {
   const status = collaborator.status;
   const owner = await User.findById(organisation.owner);
 
+  await User.updateOne(
+    { _id: organisation.collaborators[collaboratorIndex].user },
+    {
+      $set: { organisationId: undefined },
+      $pull: { accounts: { organisation: organisation._id } },
+    }
+  );
+
+  organisation.collaborators.splice(collaboratorIndex, 1);
+
   if (status === "accepted") {
     try {
       const email = new Email(user);
@@ -257,12 +269,6 @@ module.exports.deleteCollaborator = catchAsync(async (req, res) => {
       console.log(err);
     }
   }
-
-  await User.updateOne(
-    { _id: organisation.collaborators[collaboratorIndex].user },
-    { $set: { organisationId: undefined } }
-  );
-  organisation.collaborators.splice(collaboratorIndex, 1);
   await organisation.save();
 
   res.status(200).json({ status: "success", message: "Collaborator removed" });

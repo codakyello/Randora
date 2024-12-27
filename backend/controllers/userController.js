@@ -20,20 +20,31 @@ module.exports.getAllUser = catchAsync(async function (req, res) {
 });
 
 module.exports.updateMe = catchAsync(async (req, res, _next) => {
-  // 1) Throw error if user Post password data
-  if (req.body.password || req.body.passwordConfirm)
+  // 1) Throw error if user posts password data
+  if (req.body.password || req.body.passwordConfirm) {
     throw new AppError(
       "This route is not for password updates. Please use /update-my-password",
       400
     );
+  }
 
-  // 2) We dont want to update the email and name and other sensitive info
+  // 2) We don't want to update sensitive info like email and name
   const filteredBody = filterObj(req.body, "logo", "image", "userName");
 
+  // 3) Handle organisationId logic
+  if (req.body.organisationId !== "undefined") {
+    filteredBody.organisationId = req.body.organisationId;
+  } else {
+    filteredBody.organisationId = undefined; // To remove the field if it's "undefined"
+  }
+
+  // 4) Update the user
   const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
     new: true,
     runValidators: true,
   });
+
+  // 5) Send success response
   sendSuccessResponseData(res, "user", updatedUser);
 });
 
@@ -47,6 +58,8 @@ module.exports.deleteMe = catchAsync(async (req, res) => {
 
 module.exports.getUser = catchAsync(async function (req, res) {
   const user = await User.findById(req.params.id);
+
+  console.log(user);
   if (!user) throw new AppError("No user was found", 404);
 
   sendSuccessResponseData(res, "user", user);
@@ -61,7 +74,16 @@ module.exports.getUserByEmail = catchAsync(async function (req, res) {
 });
 
 module.exports.Me = catchAsync(async function (req, res) {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.id)
+    .populate({
+      path: "accounts.organisation",
+      select: "name _id",
+    })
+    .populate({
+      path: "accounts.organisationImage",
+      select: "image",
+    });
+
   if (!user) throw new AppError("No user was found", 404);
 
   sendSuccessResponseData(res, "user", user);
@@ -71,7 +93,7 @@ module.exports.getMyEvents = catchAsync(async (req, res) => {
   // if he is part of an organisation , get all events of that organisation
   // else check by just user id
   const queryConditions = req.user.organisationId
-    ? [{ userId: req.user.id }, { organisationId: req.user.organisationId }]
+    ? [{ organisationId: req.user.organisationId }]
     : [{ userId: req.user.id }];
 
   const apiFeatures = new APIFEATURES(

@@ -23,6 +23,23 @@ export interface User {
   image: string;
   organisationId?: string;
   subscriptionStatus?: string;
+  accounts: Array<OrgAccount>;
+}
+
+export interface AccountUser {
+  _id: string;
+  image: string;
+  userName: string;
+}
+
+export interface OrgAccount {
+  _id: string;
+  organisation: Organisation;
+  organisationImage: OrgImage;
+}
+
+export interface OrgImage {
+  image: string;
 }
 
 export interface Event {

@@ -21,12 +21,12 @@ export default function UpdateUserForm({ user }: { user: User }) {
 
     const formData = new FormData(event.currentTarget);
     const avatarFile = formData.get("image");
-    const email = formData.get("email");
-    const userName = formData.get("userName");
+    const email = formData.get("email") as string;
+    const userName = formData.get("userName") as string;
 
     const formInputs: {
-      email: FormDataEntryValue;
-      userName: FormDataEntryValue;
+      email: string;
+      userName: string;
       image?: string;
     } = {
       email: email || "",

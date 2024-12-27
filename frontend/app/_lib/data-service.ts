@@ -37,12 +37,16 @@ export async function getOrganisation(organisationId: string | undefined) {
 }
 
 export async function getUser() {
+  console.log("in get user");
   const token = await getToken();
   try {
     const res = await fetch(`${URL}/users/me`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+      },
+      next: {
+        revalidate: 0,
       },
     });
 
@@ -202,7 +206,6 @@ export async function resetPassword({
 }
 
 export async function authenticate(token: string) {
-  console.log("in authorize");
   try {
     if (!token) return false;
 
@@ -219,17 +222,14 @@ export async function authenticate(token: string) {
     if (!res.ok) throw new Error("");
     const data = await res.json();
     console.log(data);
-    console.log("returned true");
     return true;
   } catch (err) {
     console.log(err);
-    console.log("returned false");
     return false;
   }
 }
 
 export async function verifyResetToken(token: string) {
-  console.log("in verify reset");
   try {
     if (!token) return false;
 
@@ -242,9 +242,7 @@ export async function verifyResetToken(token: string) {
       },
     });
     if (!res.ok) throw new Error("");
-    const data = await res.json();
 
-    console.log(data);
     return true;
   } catch (err) {
     console.log(err);
@@ -298,9 +296,10 @@ export async function resendOtp(email: string) {
 }
 
 export async function updateUser(formData: {
-  email: FormDataEntryValue;
-  userName: FormDataEntryValue;
+  email?: string;
+  userName?: string;
   image?: string | undefined;
+  organisationId?: string;
 }) {
   let statusCode;
 
@@ -312,6 +311,8 @@ export async function updateUser(formData: {
         "Content-Type": "application/json",
         authorization: `Bearer ${token}`,
       },
+      next: { revalidate: 0 },
+
       body: JSON.stringify(formData),
     });
 
@@ -326,7 +327,9 @@ export async function updateUser(formData: {
       data: { user },
     } = data;
 
-    revalidatePath("/dashboard/account");
+    console.log(user);
+
+    revalidatePath("/dashboard");
     return user;
   } catch (err: unknown) {
     console.log(err);

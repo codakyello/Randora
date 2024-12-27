@@ -21,10 +21,16 @@ export function CollaboratorRow({
   organisation: Organisation;
 }) {
   const {
-    user: { _id, userName, email, image },
+    // user: { _id, userName, email, image },
+    user,
     status,
     _id: collaboratorId,
   } = collaborator;
+
+  const _id = user?._id;
+  const userName = user?.userName;
+  const email = user?.email;
+  const image = user?.image;
 
   console.log(collaborator);
 

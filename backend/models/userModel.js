@@ -82,6 +82,19 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Organisation", // The organization the user belongs to
     },
+    accounts: [
+      {
+        organisation: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Organisation",
+        },
+        organisationImage: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+      },
+    ],
+
     accountType: {
       type: String,
       enum: {

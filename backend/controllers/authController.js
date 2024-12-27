@@ -497,7 +497,6 @@ module.exports.verifyResetToken = catchAsync(async (req, res) => {
   if (!token) throw new AppError("No token found", 404);
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
-  console.log(token);
   const user = await User.findOne({
     passwordResetToken: hashedToken,
     passwordResetTokenExpires: { $gt: Date.now() },
