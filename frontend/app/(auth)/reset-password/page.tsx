@@ -1,7 +1,12 @@
 import ResetPassword from "@/app/_components/ResetPassword";
 
-function Page({ searchParams }: { searchParams: { token: string } }) {
-  const { token } = searchParams;
+function Page({
+  searchParams: { token },
+}: {
+  searchParams: { token: string };
+}) {
+  // validate the token first
+
   return <ResetPassword token={token} />;
 }
 

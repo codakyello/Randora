@@ -18,14 +18,11 @@ exports.authenticate = catchAsync(async (req, _res, next) => {
       ? req.headers.cookie.split("=")[1]
       : undefined);
 
-  console.log(token);
-
   if (token === "null" || !token)
     throw new AppError("You are not logged in! Please log in", 401);
 
   const decoded = await verifyJwt(token);
 
-  console.log("decoded", decoded.id);
   const freshUser =
     (await User.findById(decoded.id).select("+role")) ||
     (await Admin.findById(decoded.id).select("+role"));
@@ -33,16 +30,11 @@ exports.authenticate = catchAsync(async (req, _res, next) => {
   if (!freshUser)
     throw new AppError("The user belonging to this token does not exist.", 401);
 
-  console.log(decoded.iat);
-  console.log(new Date(decoded.iat));
-  console.log(freshUser.passwordChangedAt);
   if (freshUser.changePasswordAfter(decoded.iat))
     throw new AppError(
       "User recently changed password! Please log in again",
       401
     );
-
-  console.log(freshUser);
 
   req.user = freshUser;
 
@@ -81,7 +73,6 @@ exports.authenicateAdmin = catchAsync(async (req, res) => {
 
   const decoded = await verifyJwt(token);
 
-  console.log("decoded", decoded.id);
   const freshUser = await Admin.findById(decoded.id);
 
   if (!freshUser)
@@ -202,8 +193,6 @@ module.exports.userSignIn = catchAsync(async function (req, res) {
   user = await User.findOne({
     email: req.body.email,
   }).select("+new");
-
-  console.log(user, req.body.email);
 
   if (!user) {
     user = await new User(req.body).save({
@@ -486,10 +475,9 @@ module.exports.forgotUserPassword = catchAsync(async function (req, res) {
 
   const resetToken = user.createPasswordResetToken();
 
-  console.log(resetToken);
   await user.save({ validateBeforeSave: false });
 
-  const resetURL = `${FRONTEND_URL}/auth/user/reset-password?token=${resetToken}`;
+  const resetURL = `${FRONTEND_URL}/reset-password?token=${resetToken}`;
 
   await new Email(user).sendResetToken(resetURL);
 
@@ -536,12 +524,9 @@ exports.resetUserPassword = catchAsync(async (req, res) => {
 module.exports.forgotAdminPassword = catchAsync(async function (req, res) {
   // find the userId based on email
   const { email } = req.body;
-  console.log(email);
   if (!email) throw new AppError("Please provide an email", 400);
 
   const admin = await Admin.findOne({ email });
-
-  console.log(admin);
 
   if (admin && admin.authType !== "credentials") {
     throw new AppError(
@@ -564,7 +549,6 @@ module.exports.forgotAdminPassword = catchAsync(async function (req, res) {
 
   const message = `Forgot your password? Submit a PATCH request with your new password and passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email!`;
 
-  console.log(resetURL);
   // try {
   //   await sendEmail({
   //     email: guest.email,
@@ -626,7 +610,6 @@ exports.resetAdminPassword = catchAsync(async (req, res) => {
 
 exports.updateMyPassword = catchAsync(async (req, res) => {
   let user;
-  console.log("i am here");
   if (req.user.role === "user") {
     user = await User.findById(req.user.id).select("+password");
   } else if (req.user.role === "admin") {
