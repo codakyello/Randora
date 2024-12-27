@@ -12,11 +12,19 @@ router.post("/signIn", authController.userSignIn);
 
 router.post("/forgot-password", authController.forgotUserPassword);
 
+router.get(
+  "/verify-auth-token",
+  authController.authenticate,
+  authController.sendVerifiedTokenResponse
+);
+
+router.get("/verify-reset-token", authController.verifyResetToken);
+
 router.patch("/reset-password", authController.resetUserPassword);
 
 router.get("/authenticate", authController.authenticateUser);
 
-router.post("/verify-otp", authController.verityUserOTP);
+router.post("/verify-otp", authController.verifyUserOTP);
 
 router.post("/resend-otp", authController.resendUserOTP);
 

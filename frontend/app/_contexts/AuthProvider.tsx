@@ -7,7 +7,7 @@ import React, {
   useReducer,
 } from "react";
 import { useRouter } from "next/navigation";
-import { authorize } from "@/app/_lib/data-service";
+import { authenticate as authenticateApi } from "@/app/_lib/data-service";
 import Cookies from "js-cookie";
 
 type User = {
@@ -137,8 +137,9 @@ function AuthProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "authenticating/start" });
 
       try {
-        await authorize(token);
-        // setAuthenticated(true);
+        const isAuthenticated = await authenticateApi(token);
+
+        if (!isAuthenticated) throw new Error("Not authenticated");
         dispatch({ type: "authenticated" });
       } catch {
         logout();

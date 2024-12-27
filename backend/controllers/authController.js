@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const User = require("../models/userModel");
 const Admin = require("../models/adminModel.js");
-const { catchAsync } = require("../utils/helpers");
+const { catchAsync, sendSuccessResponseData } = require("../utils/helpers");
 const AppError = require("../utils/appError");
 const { verifyJwt } = require("../utils/jwt.js");
 const Email = require("../utils/email");
@@ -52,7 +52,8 @@ exports.authorize = (...roles) =>
     next();
   });
 
-exports.verifyToken = (_req, res) => {
+exports.sendVerifiedTokenResponse = (_req, res) => {
+  console.log("successfully authenticated");
   res.status(200).json({
     status: "success",
     message: "Successfully authenticated",
@@ -213,6 +214,7 @@ module.exports.userSignIn = catchAsync(async function (req, res) {
 });
 
 exports.userLogin = catchAsync(async (req, res) => {
+  console.log("inside login");
   const { email, password } = req.body;
   if (!email || !password)
     throw new AppError("Please provide email and password", 400);
@@ -365,7 +367,7 @@ exports.adminLogin = catchAsync(async (req, res) => {
   }
 });
 
-module.exports.verityUserOTP = catchAsync(async (req, res) => {
+module.exports.verifyUserOTP = catchAsync(async (req, res) => {
   const { email, otp } = req.body;
   if (!email) throw new AppError("Include an email", 401);
   if (!otp) throw new AppError("Please provide your One time password", 401);
@@ -479,12 +481,31 @@ module.exports.forgotUserPassword = catchAsync(async function (req, res) {
 
   const resetURL = `${FRONTEND_URL}/reset-password?token=${resetToken}`;
 
+  console.log(user);
+
   await new Email(user).sendResetToken(resetURL);
 
   res.status(200).json({
     status: "success",
     message: "Reset token sent to your email!",
   });
+});
+
+module.exports.verifyResetToken = catchAsync(async (req, res) => {
+  console.log("verify token");
+  const token = req.query.token;
+  if (!token) throw new AppError("No token found", 404);
+  const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+  console.log(token);
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetTokenExpires: { $gt: Date.now() },
+  });
+
+  if (!user) throw new AppError("Token is invalid or has expired!", 404);
+
+  sendSuccessResponseData(res, "user", {});
 });
 
 exports.resetUserPassword = catchAsync(async (req, res) => {

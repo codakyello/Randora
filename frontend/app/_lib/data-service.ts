@@ -201,20 +201,53 @@ export async function resetPassword({
   }
 }
 
-export async function authorize(token: string) {
+export async function authenticate(token: string) {
+  console.log("in authorize");
   try {
     if (!token) return false;
 
-    const res = await fetch(`${URL}/verifyToken`, {
-      method: "POST",
+    const res = await fetch(`${URL}/users/verify-auth-token`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+
+      next: {
+        revalidate: 0,
+      },
     });
     if (!res.ok) throw new Error("");
+    const data = await res.json();
+    console.log(data);
+    console.log("returned true");
     return true;
-  } catch {
+  } catch (err) {
+    console.log(err);
+    console.log("returned false");
+    return false;
+  }
+}
+
+export async function verifyResetToken(token: string) {
+  console.log("in verify reset");
+  try {
+    if (!token) return false;
+
+    const res = await fetch(`${URL}/users/verify-reset-token?token=${token}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      next: {
+        revalidate: 0,
+      },
+    });
+    if (!res.ok) throw new Error("");
+    const data = await res.json();
+
+    console.log(data);
+    return true;
+  } catch (err) {
+    console.log(err);
     return false;
   }
 }
@@ -438,8 +471,6 @@ export async function getUpcomingEvents() {
       data: { events },
     } = data;
 
-    console.log(events);
-
     return events;
   } catch (err) {
     if (err instanceof Error) {
@@ -493,7 +524,6 @@ export async function getEvent(eventId: string) {
   try {
     const token = await getToken();
 
-    console.log(token);
     if (!token) return;
 
     const res = await fetch(`${URL}/events/${eventId}`, {
@@ -722,8 +752,6 @@ export async function getEventPrizes(
       break;
   }
 
-  console.log(query);
-
   try {
     const res = await fetch(`${URL}/events/${eventId}/prizes${query}`, {
       headers: {
@@ -824,7 +852,6 @@ export async function getAllCollaborators(organisationId: string | undefined) {
   const token = await getToken();
   if (!token) return;
 
-  console.log(organisationId);
   try {
     const res = await fetch(
       `${URL}/organisations/${organisationId}/collaborators`,
@@ -837,8 +864,6 @@ export async function getAllCollaborators(organisationId: string | undefined) {
     );
 
     const data = await res.json();
-
-    console.log("The data", data);
 
     if (!res.ok) throw new Error(data.message);
 
@@ -901,9 +926,7 @@ export async function respondToInvite(
   token: string,
   accept: boolean
 ) {
-  console.log(token);
   try {
-    console.log("in respond to invite");
     const res = await fetch(
       `${URL}/organisations/${organisationId}/collaborators/respond?token=${token}`,
       {
@@ -916,7 +939,6 @@ export async function respondToInvite(
     );
 
     const data = await res.json();
-    console.log("DAta", data);
 
     if (!res.ok) throw new Error(data.message);
     return data;
@@ -937,7 +959,6 @@ export async function updateOrganisation(
   settings: SettingsRandora,
   organisationId: string
 ) {
-  console.log(organisationId, "this is organisationId at update organisation");
   try {
     const token = await getToken();
     if (!token) return;

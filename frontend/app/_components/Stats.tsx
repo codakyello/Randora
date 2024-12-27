@@ -8,11 +8,9 @@ export default function Stats({ confirmEvents }: { confirmEvents: Event[] }) {
   );
 
   const totalPrizes = confirmEvents?.reduce((acc, event) => {
-    console.log(event?.prizeCount);
     return acc + event?.prizeCount;
   }, 0);
 
-  console.log(totalPrizes);
   const remainingPrizes = confirmEvents?.reduce(
     (acc, event) => acc + event?.remainingPrize,
     0
