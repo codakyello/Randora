@@ -27,9 +27,11 @@ export default function MobileSideNav({
       <Nav closeNav={closeNav} user={user} />
 
       <Box className="flex flex-col gap-16 mt-auto">
-        {daysUntilExpiry && daysUntilExpiry < 7 && daysUntilExpiry > 0 && (
-          <UpgradePlan daysUntilExpiry={daysUntilExpiry} />
-        )}
+        {Number.isFinite(daysUntilExpiry) &&
+          daysUntilExpiry < 7 &&
+          daysUntilExpiry > 0 && (
+            <UpgradePlan daysUntilExpiry={daysUntilExpiry} />
+          )}
 
         <LogoutButton />
       </Box>
