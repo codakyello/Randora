@@ -1,4 +1,5 @@
 const Event = require("../models/EventModel");
+const Organisation = require("../models/organisationModel");
 const User = require("../models/userModel");
 const APIFEATURES = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
@@ -34,13 +35,32 @@ module.exports.updateMe = catchAsync(async (req, res, _next) => {
   // 3) Handle organisationId logic
   if (req.body.organisationId) {
     if (req.body.organisationId !== "undefined") {
+      // Check if the user still belongs to the organisation
+      const organisation = await Organisation.findById(req.body.organisationId);
+
+      console.log(organisation);
+
+      if (!organisation) {
+        throw new AppError("Organisation not found", 404); // Handle invalid organisation ID
+      }
+
+      // Check if the user is in the collaborators array
+      const isCollaborator = organisation.collaborators.some(
+        (collaborator) =>
+          collaborator.user._id.toString() === req.user._id.toString()
+      );
+
+      if (!isCollaborator) {
+        throw new AppError("You are no longer part of this organisation", 403);
+      }
+
+      // If valid, set the organisationId in the filtered body
       filteredBody.organisationId = req.body.organisationId;
     } else {
-      filteredBody.organisationId = undefined; // To remove the field if it's "undefined"
+      // Remove the field if it's "undefined"
+      filteredBody.organisationId = undefined;
     }
   }
-
-  // check if there is organisationId
 
   // 4) Update the user
   const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {

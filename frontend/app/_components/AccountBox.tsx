@@ -1,18 +1,34 @@
 "use client";
 import { Box } from "@chakra-ui/react";
 import { LuArrowDownUp } from "react-icons/lu";
-import { AccountUser, User } from "../_utils/types";
+import { AccountUser, OrgAccount } from "../_utils/types";
 import { useEffect, useState } from "react";
 import useOutsideClick from "../_hooks/useOutsideClick";
-import { updateUser } from "../_lib/data-service";
+import { getUser, updateUser } from "../_lib/data-service";
 import { FaCheck } from "react-icons/fa6";
 import toast from "react-hot-toast";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
 
 function capitalizeFirstLetter(word: string) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
 
-export default function AccountBox({ user }: { user: User }) {
+export default function AccountBox() {
+  const pathname = usePathname();
+  const queryClient = useQueryClient();
+
+  const {
+    isLoading,
+    data: user,
+    error,
+  } = useQuery({
+    queryKey: ["user"],
+    queryFn: () => getUser(),
+  });
+
+  console.log(user);
+
   const [open, setOpen] = useState(false);
   const [switching, setSwitching] = useState(false);
   const [activeAccount, setActiveAccount] = useState<AccountUser>();
@@ -21,20 +37,30 @@ export default function AccountBox({ user }: { user: User }) {
   });
 
   useEffect(() => {
-    if (user.organisationId) {
-      const account = user?.accounts?.find(
-        (account) => user.organisationId === account?.organisation._id
-      );
+    if (user) {
+      if (user.organisationId) {
+        const account = user?.accounts?.find(
+          (account: OrgAccount) =>
+            user.organisationId === account?.organisation._id
+        );
 
-      setActiveAccount({
-        _id: account?._id || "",
-        image: account?.organisationImage.image || "", // Default to an empty string if undefined
-        userName: account?.organisation?.name || "", // Default to an empty string if undefined
-      });
-    } else {
-      setActiveAccount(user);
+        setActiveAccount({
+          _id: account?._id || "",
+          image: account?.organisationImage.image || "", // Default to an empty string if undefined
+          userName: account?.organisation?.name || "", // Default to an empty string if undefined
+        });
+      } else {
+        setActiveAccount(user);
+      }
     }
-  }, [setActiveAccount, user]);
+  }, [user]);
+
+  // Listen for route changes and refetch user data
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["user"] });
+
+    console.log("route change");
+  }, [pathname, queryClient]);
 
   async function handleAccountSwitch(id: string, organisationId?: string) {
     if (activeAccount?._id === id) {
@@ -48,11 +74,18 @@ export default function AccountBox({ user }: { user: User }) {
     } else {
       res = await updateUser({ organisationId: "undefined" });
     }
-    if (res?.status === "error") toast.error("Error switching accounts");
-    else {
-      window.location.href = "/dashboard";
+
+    if (res?.status === "error") {
+      if (res.message) toast.error(res.message);
+      else toast.error("Error switching account");
+    } else {
+      window.location.href = "/dashboard"; // Navigate to the dashboard
     }
+
+    setSwitching(false);
   }
+
+  if (isLoading || error) return null;
   return (
     <Box
       onClick={() => {
@@ -111,7 +144,7 @@ export default function AccountBox({ user }: { user: User }) {
             )}
           </Box>
 
-          {user?.accounts.map((account) => (
+          {user?.accounts.map((account: OrgAccount) => (
             <Box
               onClick={async () => {
                 if (!switching) {
