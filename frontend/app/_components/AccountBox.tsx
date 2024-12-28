@@ -64,7 +64,9 @@ export default function AccountBox({ user }: { user: User }) {
         <Box className="rounded-[10px] overflow-hidden">
           <img className="w-[4.2rem]  h-[4.2rem]" src={activeAccount?.image} />
         </Box>
-        <span>{capitalizeFirstLetter(activeAccount?.userName || "")}</span>
+        <p className="font-medium">
+          {capitalizeFirstLetter(activeAccount?.userName || "")}
+        </p>
       </Box>
 
       <Box className="absolute top-[1rem] right-[1.5rem]  flex flex-col items-center ">
