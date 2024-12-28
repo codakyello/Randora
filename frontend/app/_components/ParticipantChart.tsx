@@ -14,7 +14,7 @@ import { useDarkMode } from "../_contexts/DarkModeProvider";
 function ParticipantChart({ events }: { events: Event[] }) {
   const { isDarkMode } = useDarkMode();
 
-  const data = events.map((event) => {
+  const data = events?.map((event) => {
     return {
       label: event.name,
       participants: event.participantCount,

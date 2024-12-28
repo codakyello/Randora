@@ -5,6 +5,7 @@ import { AccountUser, User } from "../_utils/types";
 import { useEffect, useState } from "react";
 import useOutsideClick from "../_hooks/useOutsideClick";
 import { updateUser } from "../_lib/data-service";
+import { FaCheck } from "react-icons/fa6";
 import toast from "react-hot-toast";
 
 function capitalizeFirstLetter(word: string) {
@@ -63,7 +64,7 @@ export default function AccountBox({ user }: { user: User }) {
         <Box className="rounded-[10px] overflow-hidden">
           <img className="w-[4.2rem]  h-[4.2rem]" src={activeAccount?.image} />
         </Box>
-        <span>{activeAccount?.userName}</span>
+        <span>{capitalizeFirstLetter(activeAccount?.userName || "")}</span>
       </Box>
 
       <Box className="absolute top-[1rem] right-[1.5rem]  flex flex-col items-center ">
@@ -73,7 +74,7 @@ export default function AccountBox({ user }: { user: User }) {
       {open && (
         <Box
           ref={ref}
-          className="absolute p-5 translate-x-[100%] z-[999] rounded-2xl shadow-2xl max-h-[25rem] top-0 right-[-1rem] w-[25rem] bg-[var(--color-grey-0)] space-y-6"
+          className="absolute p-5 translate-x-[100%] z-[999] rounded-2xl shadow-2xl max-h-[25rem] top-0 right-[-1rem] w-[30rem] bg-[var(--color-grey-0)] space-y-6"
         >
           <Box
             onClick={async () => {
@@ -86,12 +87,15 @@ export default function AccountBox({ user }: { user: User }) {
               switching
                 ? "opacity-50 cursor-not-allowed"
                 : "hover:bg-[var(--color-grey-100)]"
+            } ${
+              activeAccount?._id === user._id
+                ? "bg-[var(--color-grey-100)]"
+                : ""
             }`}
           >
             <Box className=" rounded-[10px] overflow-hidden">
               <img className="w-[4.2rem]  h-[4.2rem]" src={user?.image} />
             </Box>
-
             <Box>
               <p className="font-medium">
                 {capitalizeFirstLetter(user?.userName)}
@@ -100,6 +104,9 @@ export default function AccountBox({ user }: { user: User }) {
                 Individual
               </p>
             </Box>
+            {activeAccount?._id === user._id && (
+              <FaCheck className="ml-auto text-[1.8rem] text-[var(--color-grey-500)]" />
+            )}
           </Box>
 
           {user?.accounts.map((account) => (
@@ -117,6 +124,10 @@ export default function AccountBox({ user }: { user: User }) {
                 switching
                   ? "opacity-50 cursor-not-allowed"
                   : "hover:bg-[var(--color-grey-100)]"
+              } ${
+                activeAccount?._id === account._id
+                  ? "bg-[var(--color-grey-100)]"
+                  : ""
               }`}
               key={account?._id}
             >
@@ -126,7 +137,6 @@ export default function AccountBox({ user }: { user: User }) {
                   src={account?.organisationImage.image}
                 />
               </Box>
-
               <Box>
                 <p className="font-medium">
                   {capitalizeFirstLetter(account?.organisation?.name)}
@@ -135,6 +145,9 @@ export default function AccountBox({ user }: { user: User }) {
                   Organisation
                 </p>
               </Box>
+              {activeAccount?._id === account._id && (
+                <FaCheck className="ml-auto text-[1.8rem] text-[var(--color-grey-500)]" />
+              )}
             </Box>
           ))}
         </Box>
