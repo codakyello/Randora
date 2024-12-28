@@ -40,11 +40,11 @@ function ParticipantChart({ events }: { events: Event[] }) {
     <Box className="bg-[var(--color-grey-0)] flex flex-col gap-10 p-[1.6rem] rounded-2xl ">
       <h2>Total number of participants per event</h2>
       <ResponsiveContainer
-        className={events.length > 1 ? "ml-[-2.5rem]" : ""}
+        className={events?.length > 1 ? "ml-[-2.5rem]" : ""}
         height={350}
         width="100%"
       >
-        {events.length ? (
+        {events?.length ? (
           <AreaChart data={data}>
             <XAxis
               dataKey="label"
