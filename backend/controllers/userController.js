@@ -32,11 +32,15 @@ module.exports.updateMe = catchAsync(async (req, res, _next) => {
   const filteredBody = filterObj(req.body, "logo", "image", "userName");
 
   // 3) Handle organisationId logic
-  if (req.body.organisationId !== "undefined") {
-    filteredBody.organisationId = req.body.organisationId;
-  } else {
-    filteredBody.organisationId = undefined; // To remove the field if it's "undefined"
+  if (req.body.organisationId) {
+    if (req.body.organisationId !== "undefined") {
+      filteredBody.organisationId = req.body.organisationId;
+    } else {
+      filteredBody.organisationId = undefined; // To remove the field if it's "undefined"
+    }
   }
+
+  // check if there is organisationId
 
   // 4) Update the user
   const updatedUser = await User.findByIdAndUpdate(req.user._id, filteredBody, {
