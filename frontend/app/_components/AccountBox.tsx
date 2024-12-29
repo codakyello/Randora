@@ -54,8 +54,6 @@ export default function AccountBox() {
   // Listen for route changes and refetch user data
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ["user"] });
-
-    console.log("route change");
   }, [pathname, queryClient]);
 
   async function handleAccountSwitch(id: string, organisationId?: string) {
