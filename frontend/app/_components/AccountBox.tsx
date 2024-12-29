@@ -27,8 +27,6 @@ export default function AccountBox() {
     queryFn: () => getUser(),
   });
 
-  console.log(user);
-
   const [open, setOpen] = useState(false);
   const [switching, setSwitching] = useState(false);
   const [activeAccount, setActiveAccount] = useState<AccountUser>();
@@ -37,21 +35,19 @@ export default function AccountBox() {
   });
 
   useEffect(() => {
-    if (user) {
-      if (user.organisationId) {
-        const account = user?.accounts?.find(
-          (account: OrgAccount) =>
-            user.organisationId === account?.organisation._id
-        );
+    if (user && user.organisationId) {
+      const account = user?.accounts?.find(
+        (account: OrgAccount) =>
+          user.organisationId === account?.organisation._id
+      );
 
-        setActiveAccount({
-          _id: account?._id || "",
-          image: account?.organisationImage.image || "", // Default to an empty string if undefined
-          userName: account?.organisation?.name || "", // Default to an empty string if undefined
-        });
-      } else {
-        setActiveAccount(user);
-      }
+      setActiveAccount({
+        _id: account?._id || "",
+        image: account?.organisationImage.image || "",
+        userName: account?.organisation?.name || "",
+      });
+    } else {
+      setActiveAccount(user);
     }
   }, [user]);
 
