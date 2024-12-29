@@ -47,11 +47,7 @@ export default async function SideBar() {
       {/*Desktop Nav*/}
       <aside className="hidden bg-[var(--color-grey-0)] border-r border-r-[var(--color-grey-100)] top-0 left-0 h-full md:flex py-[1.2rem] md:pt-[3rem] md:pb-[1.5rem] md:px-[2.4rem]  flex-col gap-10 row-span-2">
         {/* <Logo /> */}
-        {user.accountType === "individual" && user.accounts?.length ? (
-          <AccountBox />
-        ) : (
-          <Logo />
-        )}
+        {user.accountType === "individual" ? <AccountBox /> : <Logo />}
         <Nav user={user} />
 
         {/*  render this when the subscription expiry date is less than 7 days but greater than 0 */}

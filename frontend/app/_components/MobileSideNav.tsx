@@ -24,11 +24,7 @@ export default function MobileSideNav({
       ref={ref}
       className="mobile-nav md:hidden bg-[var(--color-grey-0)] w-[28rem] fixed border-r border-r-[var(--color-grey-100)] top-0 left-0 h-full flex px-[1rem] pt-[3.2rem] pb-[1.5rem] flex-col gap-10 row-span-2 z-[9999]"
     >
-      {user.accountType === "individual" && user.accounts?.length ? (
-        <AccountBox />
-      ) : (
-        <Logo />
-      )}
+      {user.accountType === "individual" ? <AccountBox /> : <Logo />}
       <Nav closeNav={closeNav} user={user} />
       <Box className="flex flex-col gap-16 mt-auto">
         {Number.isFinite(daysUntilExpiry) &&
