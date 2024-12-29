@@ -45,7 +45,7 @@ export default async function SideBar() {
       {/*Mobile Nav*/}
       <MobileSideNav user={user} daysUntilExpiry={daysUntilExpiry} />
       {/*Desktop Nav*/}
-      <aside className="hidden bg-[var(--color-grey-0)] border-r border-r-[var(--color-grey-100)] top-0 left-0 h-full md:flex py-[1.2rem] md:pt-[3rem] md:pb-[1.5rem] md:px-[2.4rem]  flex-col gap-10 row-span-2">
+      <aside className="hidden bg-[var(--color-grey-0)] border-r border-r-[var(--color-grey-100)] top-0 left-0 h-full md:flex py-[1.2rem] md:pt-[3rem] md:pb-[1.5rem] md:px-[2.4rem]  flex-col gap-12 row-span-2">
         {/* <Logo /> */}
         {user.accountType === "individual" ? <AccountBox /> : <Logo />}
         <Nav user={user} />
