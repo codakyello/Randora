@@ -7,12 +7,18 @@ import FileInput from "./FileInput";
 import { Box } from "@chakra-ui/react";
 import supabase from "@/app/supabase";
 import toast from "react-hot-toast";
-import { updateUser } from "../_lib/data-service";
+import { updateOrganisation, updateUser } from "../_lib/data-service";
 import { useAuth } from "../_contexts/AuthProvider";
-import { User } from "../_utils/types";
+import { Organisation, User } from "../_utils/types";
 import { showToastMessage } from "../_utils/utils";
 
-export default function UpdateUserForm({ user }: { user: User }) {
+export default function UpdateAccountForm({
+  user,
+  organisation,
+}: {
+  user: User;
+  organisation: Organisation;
+}) {
   const { getToken, login } = useAuth();
   const [loading, setLoading] = useState(false);
 
@@ -23,6 +29,7 @@ export default function UpdateUserForm({ user }: { user: User }) {
     const avatarFile = formData.get("image");
     const email = formData.get("email") as string;
     const userName = formData.get("userName") as string;
+    const organisationName = formData.get("organisationName") as string;
 
     const formInputs: {
       email: string;
@@ -65,23 +72,21 @@ export default function UpdateUserForm({ user }: { user: User }) {
       }
     }
 
-    const res = await updateUser(formInputs);
+    const [res, res2] = await Promise.all([
+      updateUser(formInputs),
+      updateOrganisation({ name: organisationName }, organisation._id),
+    ]);
+
     if (res?.status !== "error") {
       login(res);
     }
 
-    // useHandleUnAuthorisedResponse(res?.statusCode);
+    showToastMessage(
+      res?.status || res2?.status,
+      "Failed to update profile",
+      "Profile updated successfully"
+    );
 
-    showToastMessage(res?.status, res?.message, "Profile updated successfully");
-    // updateUser(formInputs, {
-    //   onSuccess: (data) => {
-    //     login(data);
-    //     toast.success("Profile updated successfully");
-    //   },
-    //   onError: () => {
-    //     toast.error("Failed to update profile");
-    //   },
-    // });
     setLoading(false);
   }
 
@@ -114,6 +119,22 @@ export default function UpdateUserForm({ user }: { user: User }) {
           defaultValue={user?.userName}
         />
       </FormRow>
+
+      {organisation && (
+        <FormRow
+          orientation="horizontal"
+          label="Organisation name"
+          htmlFor="my-organisation-name"
+        >
+          <Input
+            required={true}
+            type="text"
+            name="organisationName"
+            id="my-organisation-name"
+            defaultValue={organisation?.name}
+          />
+        </FormRow>
+      )}
 
       <FormRow orientation="horizontal" label="Avatar image" htmlFor="my-image">
         <FileInput

@@ -320,7 +320,7 @@ export async function updateUser(formData: {
 
     statusCode = res.status;
     // Check if the response was successful
-    if (!res.ok) throw new Error(data.message || "Signup failed");
+    if (!res.ok) throw new Error(data.message);
 
     // Destructure token and user from response
     const {
@@ -984,7 +984,7 @@ export async function updateOrganisation(
   } catch (error) {
     return {
       status: "error",
-      data:
+      message:
         error instanceof Error ? error.message : "Failed to update settings",
     };
   }

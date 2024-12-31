@@ -130,4 +130,5 @@ export interface SettingsRandora {
   brandColor?: string;
   textLogo?: string;
   coverLogo?: string;
+  name?: string;
 }

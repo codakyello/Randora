@@ -1,7 +1,7 @@
 import { Box } from "@chakra-ui/react";
-import UpdateUserForm from "@/app/_components/UpdateUserForm";
 import UpdatePasswordForm from "@/app/_components/UpdatePasswordForm";
-import { getUser } from "@/app/_lib/data-service";
+import { getOrganisation, getUser } from "@/app/_lib/data-service";
+import UpdateAccountForm from "@/app/_components/UpdateAccountForm";
 
 export const metadata = {
   title: "Account",
@@ -10,12 +10,16 @@ export const metadata = {
 export default async function Page() {
   const user = await getUser();
 
+  const organisation =
+    user.accountType === "organisation" &&
+    (await getOrganisation(user?.organisationId));
+
   return (
     <Box className="flex flex-col gap-[2rem] px-[2rem] md:gap-[3.2rem]">
       <h1>Account</h1>
 
-      <h2>Update user data</h2>
-      <UpdateUserForm user={user} />
+      <h2>{organisation ? "Update Organisation data" : "Update User data"}</h2>
+      <UpdateAccountForm user={user} organisation={organisation} />
 
       <h2>Update password</h2>
       <UpdatePasswordForm />
