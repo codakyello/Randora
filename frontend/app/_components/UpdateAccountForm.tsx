@@ -74,7 +74,8 @@ export default function UpdateAccountForm({
 
     const [res, res2] = await Promise.all([
       updateUser(formInputs),
-      updateOrganisation({ name: organisationName }, organisation._id),
+      organisation &&
+        updateOrganisation({ name: organisationName }, organisation._id),
     ]);
 
     if (res?.status !== "error") {
