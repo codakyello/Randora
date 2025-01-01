@@ -22,7 +22,7 @@ export default function MobileSideNav({
   return (
     <aside
       ref={ref}
-      className="mobile-nav md:hidden bg-[var(--color-grey-0)] w-[28rem] fixed border-r border-r-[var(--color-grey-100)] top-0 left-0 h-full flex px-[1rem] pt-[3.2rem] pb-[1.5rem] flex-col gap-12 row-span-2 z-[9999]"
+      className="mobile-nav md:hidden  bg-[var(--color-grey-0)] w-[24rem] sm:w-[28rem] fixed border-r border-r-[var(--color-grey-100)] top-0 left-0 h-full flex px-[1rem] pt-[3.2rem] pb-[1.5rem] flex-col gap-12 row-span-2 z-[9999]"
     >
       {user.accountType === "individual" ? <AccountBox /> : <Logo />}
       <Nav closeNav={closeNav} user={user} />

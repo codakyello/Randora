@@ -108,7 +108,7 @@ export default function AccountBox() {
         {open && (
           <Box
             ref={ref}
-            className="absolute p-5 translate-x-[100%] z-[999] rounded-2xl shadow-2xl max-h-[25rem] top-0 right-[-1rem] w-[30rem] bg-[var(--color-grey-0)] space-y-6"
+            className="absolute p-5 translate-x-[100%] z-[999] rounded-2xl shadow-2xl max-h-[25rem] top-0 right-[-1rem] w-[23rem] sm:w-[30rem] bg-[var(--color-grey-0)] space-y-6"
           >
             <Box
               onClick={async () => {
@@ -188,8 +188,7 @@ export default function AccountBox() {
         )}
       </Box>
     );
-
   else {
-    return <Logo/>
+    return <Logo />;
   }
 }
