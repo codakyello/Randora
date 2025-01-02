@@ -37,8 +37,6 @@ export default function Raffle({
   event: Event;
   participantData: Participant[];
 }) {
-  console.log(event);
-  console.log(participantData);
   const [participants, setParticipants] = useState<Participant[]>(() =>
     participantData.filter((participant) => !participant.isWinner)
   );
@@ -102,10 +100,14 @@ export default function Raffle({
   );
 
   const canStart = () => {
-    if (!isOnline) {
-      toast.error("You are offline. Please check your network connection.");
-      return;
-    }
+    console.log(event.remainingPrize);
+    if (event.remainingPrize < 1)
+      return toast.error("No Prizes left to distribute");
+    if (!isOnline)
+      return toast.error(
+        "You are offline. Please check your network connection."
+      );
+
     // send a post request to server to set event to active
     if (!selectedPrize) {
       toast.error("Please select a prize");

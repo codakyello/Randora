@@ -3,8 +3,6 @@ const Participant = require("../models/ParticipantsModel");
 const Prize = require("../models/PrizesModel");
 const APIFEATURES = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
-const OpenAI = require("openai");
-const fs = require("fs");
 
 const { sendSuccessResponseData, catchAsync } = require("../utils/helpers");
 const supabase = require("../supabase");
@@ -53,16 +51,18 @@ module.exports.assignPrize = catchAsync(async (req, res) => {
   if (prize.quantity <= 0) {
     throw new AppError("Prize is out of stock", 400); // Ensure there are available prizes
   }
-
-  prize.quantity -= 1;
-
-  await prize.save();
+  await Prize.findByIdAndUpdate(
+    prizeId,
+    { $inc: { quantity: -1 } },
+    { new: true }
+  );
 
   if (event.remainingPrize <= 0) {
     throw new AppError("No prizes remaining", 400); // Prevent updating if no remaining prizes
   }
 
   // Reduce the remaining price on the event
+  // This one is perfect it reduces the quantity everytime
   await Event.findByIdAndUpdate(eventId, {
     $inc: { remainingPrize: -1 },
     status: "active",

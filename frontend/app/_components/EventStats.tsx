@@ -1,22 +1,17 @@
 import Stat from "./Stat";
-import { Event, Participant, Prize } from "../_utils/types";
+import { Event, Participant } from "../_utils/types";
 
 export default function EventStats({
   event,
   totalParticipants,
-  prizes,
   participants,
 }: {
   event: Event;
   totalParticipants: number;
-  prizes: Prize[];
   participants: Participant[];
 }) {
   const winners = participants?.filter((participant) => participant.isWinner);
-  const remainingPrizes = prizes?.reduce(
-    (acc, prize) => acc + prize.quantity,
-    0
-  );
+  const remainingPrizes = event?.remainingPrize;
 
   const stats = [
     {

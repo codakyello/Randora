@@ -78,7 +78,6 @@ export default function Event({ params }: { params: { eventId: string } }) {
               event={event}
               participants={participants}
               totalParticipants={totalCount}
-              prizes={prizes}
             />
           </Box>
           {participants?.length > 0 ? (
