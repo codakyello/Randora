@@ -101,12 +101,14 @@ export default function Raffle({
 
   const canStart = () => {
     console.log(event.remainingPrize);
-    if (event.remainingPrize < 1)
-      return toast.error("No Prizes left to distribute");
-    if (!isOnline)
-      return toast.error(
-        "You are offline. Please check your network connection."
-      );
+    if (event.remainingPrize < 1) {
+      toast.error("No Prizes left to distribute");
+      return false;
+    }
+    if (!isOnline) {
+      toast.error("You are offline. Please check your network connection.");
+      return false;
+    }
 
     // send a post request to server to set event to active
     if (!selectedPrize) {
