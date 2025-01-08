@@ -25,7 +25,22 @@ cron.schedule("0 0 * * *", async () => {
       subscriptionStatus: "active",
     }).exec();
 
-    for (const organisation of organisations) {
+    const users = await User.find({
+      subscriptionExpiryDate: {
+        $lt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
+      },
+      subscriptionStatus: "active",
+    }).exec();
+
+    users.forEach(async (user) => {
+      const daysRemaining = Math.ceil(
+        (user.subscriptionExpiryDate - new Date()) / (1000 * 60 * 60 * 24)
+      );
+      const email = new Email(user);
+      await email.sendSubscriptionReminderU(daysRemaining);
+    });
+
+    organisations.forEach(async (organisation) => {
       const owner = await User.findById(organisation.owner);
       if (owner) {
         // Calculate the number of days remaining
@@ -39,7 +54,7 @@ cron.schedule("0 0 * * *", async () => {
         console.log(owner.email);
         await email.sendSubscriptionReminder(organisation.name, daysRemaining);
       }
-    }
+    });
   } catch (error) {
     console.error("Error sending subscription reminders:", error);
     // Log more detailed error information

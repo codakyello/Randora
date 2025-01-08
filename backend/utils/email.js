@@ -156,6 +156,18 @@ class Email {
     }
   }
 
+  async sendSubscriptionReminderU(daysRemaining) {
+    try {
+      await this.send({
+        file: "subscriptionReminderU",
+        subject: "Subscription Reminder",
+        body: { daysRemaining },
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   async sendSubscriptionExpiry(organisationName) {
     try {
       await this.send({
