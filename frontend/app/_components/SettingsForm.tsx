@@ -2,7 +2,7 @@
 
 import { SettingsRandora } from "@/app/_utils/types";
 import { updateOrganisation } from "@/app/_lib/data-service";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { Upload, X } from "lucide-react";
@@ -35,20 +35,7 @@ export default function SettingsForm({
   );
   const [tempColor, setTempColor] = useState(settings.brandColor);
   const [isLoading, setIsLoading] = useState(false);
-  const textLogoPreviewUrl = useRef<string | null>(null);
-  const coverLogoPreviewUrl = useRef<string | null>(null);
   const { close: closeModal } = useModal();
-
-  useEffect(() => {
-    return () => {
-      if (textLogoPreviewUrl.current) {
-        URL.revokeObjectURL(textLogoPreviewUrl.current);
-      }
-      if (coverLogoPreviewUrl.current) {
-        URL.revokeObjectURL(coverLogoPreviewUrl.current);
-      }
-    };
-  }, []);
 
   const handleLogoUpload =
     (type: "text" | "cover") => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,37 +44,22 @@ export default function SettingsForm({
         const previewUrl = URL.createObjectURL(file);
 
         if (type === "text") {
-          if (textLogoPreviewUrl.current) {
-            URL.revokeObjectURL(textLogoPreviewUrl.current);
-          }
-          textLogoPreviewUrl.current = previewUrl;
           setSettings((prev) => ({ ...prev, textLogo: previewUrl }));
         } else {
-          if (coverLogoPreviewUrl.current) {
-            URL.revokeObjectURL(coverLogoPreviewUrl.current);
-          }
-          coverLogoPreviewUrl.current = previewUrl;
           setSettings((prev) => ({ ...prev, coverLogo: previewUrl }));
         }
       }
     };
 
   const clearLogo = (type: "text" | "cover") => {
+    console.log("logo cleared");
     if (type === "text") {
-      if (textLogoPreviewUrl.current) {
-        URL.revokeObjectURL(textLogoPreviewUrl.current);
-        textLogoPreviewUrl.current = null;
-      }
       setSettings((prev) => ({ ...prev, textLogo: "" }));
       const fileInput = document.getElementById(
         "text-logo-upload"
       ) as HTMLInputElement;
       if (fileInput) fileInput.value = "";
     } else {
-      if (coverLogoPreviewUrl.current) {
-        URL.revokeObjectURL(coverLogoPreviewUrl.current);
-        coverLogoPreviewUrl.current = null;
-      }
       setSettings((prev) => ({ ...prev, coverLogo: "" }));
       const fileInput = document.getElementById(
         "cover-logo-upload"
@@ -112,6 +84,8 @@ export default function SettingsForm({
     event.preventDefault();
 
     const formData = new FormData(event.target as HTMLFormElement);
+
+    // now no textlogo or coverlogo input
     const textLogoFile = formData.get("textLogo");
     const coverLogoFile = formData.get("coverLogo");
 
@@ -151,6 +125,8 @@ export default function SettingsForm({
       }
     }
 
+    if (!settings.textLogo) formInputs.textLogo = "";
+
     if (coverLogoFile instanceof File) {
       const fileName = `${coverLogoFile.name}-${Date.now()}`;
 
@@ -177,9 +153,8 @@ export default function SettingsForm({
       }
     }
 
-    console.log(formInputs);
+    if (!settings?.coverLogo) formInputs.coverLogo = "";
 
-    console.log(organisation);
     if (!organisation?._id) {
       toast.error("Organisation not found here");
       setIsLoading(false);
