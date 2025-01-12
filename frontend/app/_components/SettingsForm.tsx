@@ -34,14 +34,10 @@ export default function SettingsForm({
     }
   );
   const [tempColor, setTempColor] = useState(settings.brandColor);
-  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const textLogoPreviewUrl = useRef<string | null>(null);
   const coverLogoPreviewUrl = useRef<string | null>(null);
   const { close: closeModal } = useModal();
-
-  console.log(isColorPickerOpen);
-  console.log(tempColor);
 
   useEffect(() => {
     return () => {
@@ -109,7 +105,6 @@ export default function SettingsForm({
       ...prev,
       brandColor: tempColor,
     }));
-    setIsColorPickerOpen(false);
     closeModal();
   };
 
@@ -362,12 +357,12 @@ export default function SettingsForm({
                   )}
                 </Box>
               </Box>
-
-              <p className="mt-4 text-[1.4rem]">
-                Note: Make sure your logos looks good on both light and dark
-                backgrounds
-              </p>
             </Box>
+
+            <p className="mt-4 text-[1.4rem]">
+              Note: Make sure your logos looks good on both light and dark
+              backgrounds
+            </p>
           </Box>
         </Box>
 
@@ -433,7 +428,7 @@ export default function SettingsForm({
 
                       <Button
                         type="cancel"
-                        onClick={() => setIsColorPickerOpen(false)}
+                        onClick={closeModal}
                         className="px-4 py-2 font-medium rounded-md "
                       >
                         Cancel
