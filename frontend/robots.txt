@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /dashboard/  # Example: Block private pages
+Allow: /
