@@ -570,8 +570,8 @@ export default function Raffle({
             <IoCloseOutline className="text-[3rem]" />
           </button>
           <Box className="flex flex-col items-center">
-            <h2 className="text-[2.4rem] font-bold text-[var(--brand-color)]">
-              Congratulations!
+            <h2 className="text-[2.4rem] text-center font-bold text-[var(--brand-color)]">
+              Congratulations {winner?.name || ""}🎉🎉
             </h2>
           </Box>
 
