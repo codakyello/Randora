@@ -32,13 +32,11 @@ module.exports.updateMe = catchAsync(async (req, res, _next) => {
   // 2) We don't want to update sensitive info like email and name
   const filteredBody = filterObj(req.body, "logo", "image", "userName");
 
-  // 3) Handle organisationId logic
+  // 3) Handle setting organisationId logic
   if (req.body.organisationId) {
     if (req.body.organisationId !== "undefined") {
       // Check if the user still belongs to the organisation
       const organisation = await Organisation.findById(req.body.organisationId);
-
-      console.log(organisation);
 
       if (!organisation) {
         throw new AppError("Organisation not found", 404); // Handle invalid organisation ID
@@ -158,3 +156,7 @@ module.exports.searchUsers = catchAsync(async (req, res) => {
 
   sendSuccessResponseData(res, "users", results);
 });
+
+// Remove the organisation id from the users accounts list when organisation has expired
+
+// Set it back when the organisation renews

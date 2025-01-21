@@ -8,12 +8,16 @@ const Email = require("../utils/email");
 const removeOrganisationFromUsers = async (organisationId) => {
   // update only individual accounts
   try {
+    // For people that are on the account set organisation Id to ""
+    // Then remove the organisation Id from the user's list of accounts
+    await User.updateMany(
+      { "accounts.organisation": organisationId },
+      { $pull: { accounts: { organisation: organisationId } } }
+    );
+
     await User.updateMany(
       { organisationId, accountType: "individual" },
-      { $unset: { organisationId: "" } }
-    );
-    console.log(
-      `Removed organisationId from all users in organisation ${organisationId}`
+      { $set: { organisationId: undefined } }
     );
 
     // send email to owner
@@ -38,6 +42,7 @@ const isDatabaseConnected = () => {
 // Cron job to run every day and check for expired subscriptions
 cron.schedule("0 0 * * *", async () => {
   // Runs every day at midnight
+  console.log("Random cron job running every 5 minutes");
   try {
     if (!isDatabaseConnected()) {
       console.log("Database not connected. Skipping subscription cleanup.");

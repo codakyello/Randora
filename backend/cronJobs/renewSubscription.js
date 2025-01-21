@@ -1,42 +1,75 @@
-// const cron = require("node-cron");
-// const Organisation = require("../models/organisationModel");
-// const mongoose = require("mongoose");
+const cron = require("node-cron");
+const Organisation = require("../models/organisationModel");
+const mongoose = require("mongoose");
+const User = require("../models/userModel");
 
-// // Helper function to check DB connection
-// const isDatabaseConnected = () => {
-//   return mongoose.connection.readyState === 1;
-// };
+// Helper function to check DB connection
+const isDatabaseConnected = () => {
+  return mongoose.connection.readyState === 1;
+};
 
-// // Cron job for subscription renewal checks
-// cron.schedule("0 0 * * *", async () => {
-//   try {
-//     if (!isDatabaseConnected()) {
-//       console.log(
-//         "Database not connected. Skipping subscription renewal checks."
-//       );
-//       return;
-//     }
+const handleOrganisationSubscription = async (organisationId) => {
+  try {
+    // Fetch the organisation and ensure it exists
+    const organisation = await Organisation.findById(organisationId).populate(
+      "collaborators"
+    );
+    if (!organisation) {
+      throw new Error(`Organisation with ID ${organisationId} not found`);
+    }
 
-//     // Your subscription renewal logic here
-//     const organisationsToRenew = await Organisation.find({
-//       subscriptionExpiryDate: {
-//         $gte: new Date(),
-//         $lte: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Next 7 days
-//       },
-//       subscriptionStatus: "active",
-//       autoRenew: true,
-//     });
+    const owner = await User.findById(organisation.owner);
+    if (!owner) throw new AppError("Owner not found", 404);
 
-//     for (const organisation of organisationsToRenew) {
-//       // Add your renewal logic here
-//       console.log(`Processing renewal for organisation ${organisation._id}`);
-//     }
-//   } catch (err) {
-//     console.error("Error processing subscription renewals:", err);
-//   }
-// });
+    // Update the subscription status to "active"
+    organisation.subscriptionStatus = "active";
+    await organisation.save();
 
-// // Debug cron job
-// cron.schedule("*/1 * * * *", async () => {
-//   console.log(`Cron job running at ${new Date().toLocaleString()}`);
-// });
+    console.log(`Organisation ${organisationId} subscription activated`);
+
+    // Add the organisation back to collaborators' accounts
+    const collaborators = organisation.collaborators;
+    const updatePromises = collaborators?.map(async (collaborator) => {
+      await User.updateOne(
+        { _id: collaborator.user._id },
+        {
+          $addToSet: {
+            accounts: {
+              organisation: organisationId,
+              organisationImage: owner.id,
+            },
+          }, // Ensures no duplicates
+          $set: { organisationId: organisationId },
+        }
+      );
+      console.log(
+        `Added organisation ${organisationId} to user ${collaborator.user.email}'s accounts`
+      );
+    });
+
+    await Promise.all(updatePromises);
+
+    console.log(
+      `Organisation ${organisationId} added back to all collaborators' accounts`
+    );
+  } catch (err) {
+    console.error(
+      "Error adding organisation back to collaborators' accounts:",
+      err
+    );
+  }
+};
+// Cron job for subscription renewal checks
+cron.schedule("0 0 * * *", async () => {
+  console.log("Random cron job running every 1 minute");
+  try {
+    if (!isDatabaseConnected())
+      return console.log(
+        "Database not connected. Skipping subscription renewal checks."
+      );
+
+    handleOrganisationSubscription("6751a3130e6aec46803b74f1");
+  } catch (err) {
+    console.error("Error processing subscription renewals:", err);
+  }
+});

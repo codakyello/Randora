@@ -33,8 +33,6 @@ module.exports.updateOrganisation = catchAsync(async (req, res) => {
 module.exports.validateInvite = catchAsync(async (req, res) => {
   const { token } = req.query;
 
-  console.log(token, "this is token");
-
   if (!token) return res.status(400).json({ error: "Token is required" });
 
   // Find organisation and match the invite by token and expiry
