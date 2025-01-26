@@ -5,7 +5,7 @@ import { RESULTS_PER_PAGE } from "../_utils/constants";
 import { getToken } from "../_utils/serverUtils";
 import { SettingsRandora } from "../_utils/types";
 
-const URL = "https://mega-draw.vercel.app/api/v1";
+const URL = "https://randora-11b23c2bb02d.herokuapp.com/api/v1";
 // const DEV_URL = "http://localhost:5000/api/v1";
 
 export async function getOrganisation(organisationId: string | undefined) {

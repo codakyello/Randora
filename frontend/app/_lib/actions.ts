@@ -2,7 +2,7 @@
 
 import { EventForm, ParticipantForm, PrizeForm, User } from "../_utils/types";
 
-const URL = "https://mega-draw.vercel.app/api/v1";
+const URL = "https://randora-11b23c2bb02d.herokuapp.com/api/v1";
 // const DEV_URL = "http://localhost:5000/api/v1";
 
 export async function createParticipant({
