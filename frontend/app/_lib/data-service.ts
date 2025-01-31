@@ -802,7 +802,11 @@ export async function getEventOrganisation(organisationId: string | undefined) {
 
     if (!res.ok) throw new Error(data.message);
 
-    return data;
+    const {
+      data: { organisation },
+    } = data;
+
+    return organisation;
   } catch (err) {
     if (err instanceof Error) {
       return { status: "error", message: err.message };

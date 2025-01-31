@@ -9,15 +9,17 @@ import useCollaborators from "../_hooks/useCollaborators";
 import SpinnerFull from "./SpinnerFull";
 import AddCollaboratorForm from "./AddCollaboratorForm";
 import { useSearchParams } from "next/navigation";
-import { Collaborator, Organisation } from "../_utils/types";
+import { Collaborator } from "../_utils/types";
+import useOrganisation from "../_hooks/useOrganisation";
 
 export default function Collaborators({
   organisationId,
-  organisation,
 }: {
   organisationId: string;
-  organisation: Organisation;
 }) {
+  const { isLoading: isLoadingOrganisation, data: organisation } =
+    useOrganisation();
+
   const { isLoading, data } = useCollaborators(organisationId);
 
   const searchParams = useSearchParams();
@@ -25,7 +27,7 @@ export default function Collaborators({
   const status = searchParams.get("status") || "all";
   const sortBy = searchParams.get("sortBy") || "username-asc";
 
-  if (isLoading) return <SpinnerFull />;
+  if (isLoading || isLoadingOrganisation) return <SpinnerFull />;
 
   const collaborators = data?.collaborators;
   console.log(collaborators);
