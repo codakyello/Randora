@@ -20,9 +20,11 @@ export default function NavBar() {
   ];
 
   return (
-    <Box className="h-[7rem] p-[4rem] flex items-center justify-between">
-      <Logo />
-      <ul className="flex text-[2rem] font-medium gap-6 list-none">
+    <Box className="h-[10rem] px-[4rem] flex items-center justify-between">
+      <Link href={"/"}>
+        <Logo />
+      </Link>
+      <ul className="flex text-[2rem] font-medium gap-10 list-none">
         {navLinks.map((link, index) => (
           <li key={index}>
             <Link
@@ -37,7 +39,10 @@ export default function NavBar() {
         ))}
       </ul>
       <Box className="flex items-center">
-        <Link className="text-[1.8rem] font-medium" href={"/login"}>
+        <Link
+          className="border px-10 py-3 border-[#333] rounded-full font-medium"
+          href={"/login"}
+        >
           Login
         </Link>
       </Box>

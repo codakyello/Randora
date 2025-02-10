@@ -35,8 +35,6 @@ export default function Collaborators({
 
   if (!collaborators) return <h2>No collaborators yet</h2>;
 
-  console.log(collaborators);
-
   let derivedCollabs = collaborators;
 
   if (status !== "all") {

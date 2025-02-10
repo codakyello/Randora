@@ -481,7 +481,7 @@ export default function Raffle({
                   : "/randora-text.png"
               }
               alt="logo"
-              className="h-[10rem]"
+              className="h-[9rem]"
             />
 
             <p className="font-semibold uppercase text-[var(--color-grey-600)] text-center leading-[2rem]   text-[1.5rem] w-[25rem]">
