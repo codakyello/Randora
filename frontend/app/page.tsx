@@ -230,7 +230,7 @@ export default function Home() {
 
         <Box className=" w-[107rem] flex gap-[1.6rem] items-start overflow-x-scroll no-scrollbar">
           <Box className="flex gap-[1.6rem]">
-            {testimonials.map(({ image, name, title, message }, index) => (
+            {testimonials.map(({ name, title, message }, index) => (
               <Box
                 key={index}
                 className="bg-[#bab9ff22] border-[.1px] border-[#c6c6c645] backdrop-blur-lg rounded-[20px] py-[2.4rem] px-[1.5rem] w-[30rem] flex flex-col gap-6"
