@@ -70,7 +70,8 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
     setOtp("");
     setLoading(true);
     const res = await resendOtp(email);
-    if (res.status !== "error") {
+    if (res?.status !== "error") {
+      toast.success(res.message);
       setTimer(OTP_EXPIRES);
     } else {
       toast.error(res.message);

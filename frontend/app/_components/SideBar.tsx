@@ -31,8 +31,6 @@ export default async function SideBar() {
   if (user && user.accountType === "organisation") {
     const organisation = await getOrganisation(user.organisationId);
     subscriptionExpiryDate = organisation.subscriptionExpiryDate.trim();
-
-    console.log(organisation);
   }
 
   const daysUntilExpiry = differenceInDays(

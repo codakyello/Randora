@@ -204,8 +204,6 @@ export default function Home() {
         <Image src={Canonball} alt="Canonball" />
       </section>
 
-      {/* <AccordionSection /> */}
-
       <section className="w-[107rem] flex flex-col  items-center mx-auto  gap-[10rem]">
         <Box className="flex items-center gap-[10rem]">
           <Box className="flex w-[40%] flex-col gap-[2.4rem] items-start">
@@ -227,8 +225,6 @@ export default function Home() {
               <Button type="primary">Join the Community</Button>
             </Link>
           </Box>
-
-          {/* <Box className="bg-red-500 w-[40%] justify-self-end h-[40rem] flex"></Box> */}
 
           <img src="/img/big_gift.png" alt="Love" className="ml-auto" />
         </Box>
@@ -268,7 +264,7 @@ export default function Home() {
       <footer className="mx-[5rem] p-[4.8rem] rounded-[5rem] bg-[#F3F4F6] h-[40rem]">
         <Box className="flex flex-col gap-[2rem]">
           <Link href={"/"}>
-            <img src="img/logo/Randora.svg" alt="logo" />
+            <img src="img/logo/randora.svg" alt="logo" />
           </Link>
           <p>8, Adunni street, Ilaje, Bariga, Yaba, Lagos</p>
         </Box>

@@ -10,7 +10,9 @@ function Logo({
   height?: number;
 }) {
   return (
-    <h2 className={`font-semibold flex items-center gap-5 ${className}`}>
+    <h2
+      className={`font-normal text-[2.5rem] flex items-center gap-5 ${className}`}
+    >
       <Image src="/logo.png" alt="logo" width={width} height={height} />
       <span>Randora</span>
     </h2>
