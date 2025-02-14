@@ -21,7 +21,7 @@ export default function NavBar() {
   return (
     <Box className="h-[10rem] px-[4rem] flex items-center justify-between">
       <Link href={"/"}>
-        <img src="img/logo/Randora.svg" alt="logo" />
+        <img src="img/logo/randora.svg" alt="logo" />
       </Link>
       <ul className="flex text-[1.8rem] font-medium gap-8 list-none">
         {navLinks.map((link, index) => (
