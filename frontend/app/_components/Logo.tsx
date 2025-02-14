@@ -1,9 +1,17 @@
 import Image from "next/image";
 
-function Logo({ className }: { className?: string }) {
+function Logo({
+  className,
+  width = 30,
+  height = 30,
+}: {
+  className?: string;
+  width?: number;
+  height?: number;
+}) {
   return (
     <h2 className={`font-semibold flex items-center gap-5 ${className}`}>
-      <Image src="/logo.png" alt="logo" width={30} height={30} />
+      <Image src="/logo.png" alt="logo" width={width} height={height} />
       <span>Randora</span>
     </h2>
   );

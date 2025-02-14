@@ -1,6 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { Box } from "@chakra-ui/react";
-import Logo from "./Logo";
 import Link from "next/link";
 import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
@@ -16,15 +16,14 @@ export default function NavBar() {
     { name: "Home", path: "/" },
     { name: "Features", path: "#features" },
     { name: "Pricing", path: "/pricing" },
-    { name: "Support", path: "/support" },
   ];
 
   return (
     <Box className="h-[10rem] px-[4rem] flex items-center justify-between">
       <Link href={"/"}>
-        <Logo />
+        <img src="img/logo/Randora.svg" alt="logo" />
       </Link>
-      <ul className="flex text-[2rem] font-medium gap-10 list-none">
+      <ul className="flex text-[1.8rem] font-medium gap-8 list-none">
         {navLinks.map((link, index) => (
           <li key={index}>
             <Link
@@ -38,12 +37,16 @@ export default function NavBar() {
           </li>
         ))}
       </ul>
-      <Box className="flex items-center">
-        <Link
-          className="border px-10 py-3 border-[#333] rounded-full font-medium"
-          href={"/login"}
-        >
+      <Box className="flex items-center gap-8">
+        <Link className="font-medium text-[1.8rem] " href={"/login"}>
           Login
+        </Link>
+
+        <Link
+          className="font-medium rounded-[8px] px-[2rem] py-[.8rem] border border-[#000] [#000] text-[#000]"
+          href={"/signup"}
+        >
+          Sign Up
         </Link>
       </Box>
     </Box>
