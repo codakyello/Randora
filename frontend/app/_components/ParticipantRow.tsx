@@ -2,7 +2,7 @@
 import { Participant } from "../_utils/types";
 import Row from "./Row";
 import Menus, { useMenu } from "./Menu";
-import { HiPencil, HiTrash } from "react-icons/hi2";
+import { HiEllipsisVertical, HiPencil, HiTrash } from "react-icons/hi2";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import ConfirmDelete from "./ConfirmDelete";
 import { Box } from "@chakra-ui/react";
@@ -72,7 +72,9 @@ export default function ParticipantRow({
 
       {actions && (
         <>
-          <Menus.Toogle id={participantId} />
+          <Menus.Toogle id={participantId}>
+            <HiEllipsisVertical className="self-end h-10 w-10" />
+          </Menus.Toogle>
 
           <Menus.Menu id={participantId}>
             <ModalOpen name="edit-participant">

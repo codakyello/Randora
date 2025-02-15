@@ -10,7 +10,7 @@ import { useAuth } from "../_contexts/AuthProvider";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import ConfirmDelete from "./ConfirmDelete";
 import Menus from "./Menu";
-import { HiTrash } from "react-icons/hi2";
+import { HiEllipsisVertical, HiTrash } from "react-icons/hi2";
 import toast from "react-hot-toast";
 
 export function CollaboratorRow({
@@ -74,7 +74,9 @@ export function CollaboratorRow({
         {organisation.subscriptionStatus !== "active" ? "Inactive" : status}
       </Tag>
 
-      <Menus.Toogle id={_id} />
+      <Menus.Toogle id={_id}>
+        <HiEllipsisVertical className="self-end h-10 w-10" />
+      </Menus.Toogle>
 
       <Menus.Menu id={_id}>
         <ModalOpen name="delete-collaborator">

@@ -19,11 +19,11 @@ export interface User {
   _id: string;
   userName: string;
   email: string;
-  accountType: string;
+  accountType?: string;
   image: string;
   organisationId?: string;
   subscriptionStatus?: string;
-  accounts: Array<OrgAccount>;
+  accounts?: Array<OrgAccount>;
 }
 
 export interface AccountUser {

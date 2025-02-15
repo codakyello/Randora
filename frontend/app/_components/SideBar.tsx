@@ -13,7 +13,6 @@ export default async function SideBar() {
   // for individual account expiry date is on the user object
   const user = await getUser();
 
-  console.log(user.accounts);
   // if its organisation account, check if the user owns the organisation, if so get the subscription expiry date from the organisation object
   // if its individual account, get the subscription expiry date from the user object
   let subscriptionExpiryDate = "";
@@ -24,19 +23,25 @@ export default async function SideBar() {
     user.accountType === "individual" &&
     user.subscriptionExpiryDate
   ) {
-    subscriptionExpiryDate = user.subscriptionExpiryDate.trim();
+    subscriptionExpiryDate = user.subscriptionExpiryDate?.trim();
   }
 
   // organisation account
   if (user && user.accountType === "organisation") {
     const organisation = await getOrganisation(user.organisationId);
-    subscriptionExpiryDate = organisation.subscriptionExpiryDate.trim();
+    subscriptionExpiryDate = organisation.subscriptionExpiryDate?.trim();
+
+    console.log(organisation);
   }
+
+  console.log(subscriptionExpiryDate);
 
   const daysUntilExpiry = differenceInDays(
     new Date(subscriptionExpiryDate),
     new Date()
   );
+
+  console.log(daysUntilExpiry);
 
   return (
     <>

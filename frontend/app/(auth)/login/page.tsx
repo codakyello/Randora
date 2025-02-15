@@ -1,5 +1,10 @@
+import Modal from "@/app/_components/Modal";
 import Login from "../../_components/Login";
 
 export default function Page() {
-  return <Login />;
+  return (
+    <Modal>
+      <Login />
+    </Modal>
+  );
 }

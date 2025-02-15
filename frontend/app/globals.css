@@ -6,10 +6,7 @@
   --color-brand-50: #f0efff; /* Lightest tint */
   --color-brand-100: #dedcff; /* Lighter tint */
   --color-brand-200: #bab9ff; /* Light tint */
-  --color-brand-300: #6664ff;
-  --color-brand-400: #5350ff;
-  --color-brand-500: #403dff; /* Base color */
-  --color-brand-600: #3635e0; /* Darker shade */
+  --color-brand-600: #403dff; /* Darker shade */
   --color-brand-700: #2d2dba; /* Dark shade */
   --color-brand-800: #242493; /* Darker shade */
   --color-brand-900: #1a1a6d; /* Darkest shade */
@@ -17,8 +14,10 @@
   /* Grey */
   --color-grey-0: #fff;
   --color-grey-50: #f9fafb;
+  --color-grey-70: #f6f7f8;
   --color-grey-100: #f3f4f6;
   --color-grey-200: #e5e7eb;
+  --color-grey-250: #eff6ff;
   --color-grey-300: #d1d5db;
   --color-grey-400: #9ca3af;
   --color-grey-500: #6b7280;
@@ -26,6 +25,8 @@
   --color-grey-700: #374151;
   --color-grey-800: #1f2937;
   --color-grey-900: #111827;
+  --color-primary: #000;
+
   --color-blue-100: #e0f2fe;
   --color-blue-700: #0369a1;
   --color-green-100: #dcfce7;
@@ -38,8 +39,12 @@
   --color-indigo-700: #4338ca;
 
   --color-red-100: #fee2e2;
+  --color-red-600: #e43f45;
   --color-red-700: #b91c1c;
   --color-red-800: #991b1b;
+
+  --color-black: #333;
+  --color-stat-0: #bab9ff;
 
   --backdrop-color: rgba(255, 255, 255, 0.1);
 
@@ -242,6 +247,7 @@
 
 html {
   font-size: 62.5%;
+  scroll-behavior: smooth;
 }
 
 body {

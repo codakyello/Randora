@@ -31,10 +31,11 @@ function DarkModeProvider({ children }: { children: ReactNode }) {
 
   // Update the class on mount and whenever isDarkMode changes
   useLayoutEffect(() => {
-    if (pathName !== "/") {
-      console.log("Darkmode");
+    if (pathName.startsWith("/dashboard")) {
       document.documentElement.classList.toggle("dark-mode", isDarkMode);
       document.documentElement.classList.toggle("light-mode", !isDarkMode);
+    } else {
+      document.documentElement.classList.add("light-mode");
     }
     if (typeof window !== "undefined") {
       localStorage.setItem("isDarkMode", JSON.stringify(isDarkMode));

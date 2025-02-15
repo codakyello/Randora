@@ -4,7 +4,7 @@ import { formatDistanceFromNow, getTagName } from "../_utils/helpers";
 import Tag from "./Tag";
 import Row from "./Row";
 import Menus, { useMenu } from "./Menu";
-import { HiEye, HiTrash, HiPencil } from "react-icons/hi2";
+import { HiEye, HiTrash, HiPencil, HiEllipsisVertical } from "react-icons/hi2";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import Link from "next/link";
 import ConfirmDelete from "./ConfirmDelete";
@@ -86,7 +86,11 @@ export default function EventRow({ event }: { event: Event }) {
       <Box className="flex justify-center items-center flex-col gap-[.2rem]">
         {prizeCount}
       </Box>
-      <Menus.Toogle id={eventId} />
+
+      <Menus.Toogle id={eventId}>
+        <HiEllipsisVertical className="self-end h-10 w-10" />
+      </Menus.Toogle>
+
       <Menus.Menu id={eventId}>
         <Menus.Button
           icon={

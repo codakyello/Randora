@@ -1,13 +1,16 @@
 import { Box } from "@chakra-ui/react";
-import NavBar from "../_components/NavBar";
 import Pricing from "../_components/Pricing";
+import Modal from "../_components/Modal";
+import Menus from "../_components/Menu";
 
 export default function Page() {
   return (
-    <Box>
-      <NavBar />
-
-      <Pricing />
-    </Box>
+    <Modal>
+      <Menus>
+        <Box className="px-[2rem] min-h-screen bg-[var(--color-grey-50)]">
+          <Pricing />
+        </Box>
+      </Menus>
+    </Modal>
   );
 }

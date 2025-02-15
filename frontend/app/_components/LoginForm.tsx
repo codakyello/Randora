@@ -6,7 +6,7 @@ import { login as loginApi } from "../_lib/data-service";
 import Link from "next/link";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { Box } from "@chakra-ui/react";
-import Modal, { ModalOpen, ModalWindow } from "./Modal";
+import { ModalOpen, ModalWindow } from "./Modal";
 import ForgotPassword from "./ForgotPassword";
 import { showToastMessage } from "../_utils/utils";
 import Button from "./Button";
@@ -14,9 +14,13 @@ import Button from "./Button";
 function LoginForm({
   setEmail,
   setStep,
+  authType,
+  setAuthType,
 }: {
   setEmail: (email: string) => void;
   setStep: (step: number) => void;
+  authType?: string;
+  setAuthType?: React.Dispatch<React.SetStateAction<"login" | "signup">>;
 }) {
   const [loading, setLoading] = useState<boolean>(false);
   const [show, setShow] = useState<boolean>(false);
@@ -40,74 +44,83 @@ function LoginForm({
     setLoading(false);
   }
   return (
-    <Modal>
-      <Box className="flex flex-col gap-10 p-5 bg-[var(--color-grey-50)] h-screen items-center justify-center">
-        <h1>Randora</h1>
-        <form
-          onSubmit={handleSubmit}
-          className="flex justify-stretch flex-col py-[2.4rem] px-[4rem] bg-[var(--color-grey-0)] border border-[var(--color-grey-100)] rounded-[var(--border-radius-md)] text-[1.4rem] w-full max-w-[48rem]"
-        >
-          <h2 className="mb-[1.8rem]">Log in to your account</h2>
-          <Box className="flex flex-col">
-            <FormRow label="Email address" htmlFor="my-email">
-              <Input required={true} name="email" type="email" id="my-email" />
-            </FormRow>
-            <FormRow label="Password" htmlFor="my-password">
-              <div className="relative">
-                <Input
-                  required={true}
-                  className="w-full"
-                  name="password"
-                  type={show ? "text" : "password"}
-                  id="my-password"
-                />
+    <Box className="flex flex-col gap-10 p-5 bg-[var(--color-grey-50)] h-screen items-center justify-center">
+      <h1>Randora</h1>
+      <form
+        onSubmit={handleSubmit}
+        className="flex justify-stretch flex-col py-[2.4rem] px-[4rem] bg-[var(--color-grey-0)] border border-[var(--color-grey-100)] rounded-[var(--border-radius-md)] text-[1.4rem] w-full max-w-[48rem]"
+      >
+        <h2 className="mb-[1.8rem]">Log in to your account</h2>
+        <Box className="flex flex-col">
+          <FormRow label="Email address" htmlFor="my-email">
+            <Input required={true} name="email" type="email" id="my-email" />
+          </FormRow>
+          <FormRow label="Password" htmlFor="my-password">
+            <div className="relative">
+              <Input
+                required={true}
+                className="w-full"
+                name="password"
+                type={show ? "text" : "password"}
+                id="my-password"
+              />
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShow((prev) => !prev);
-                  }}
-                  className="absolute top-[1.5rem] right-5"
-                >
-                  {show ? <FaRegEye /> : <FaRegEyeSlash />}
-                </button>
-              </div>
-            </FormRow>
-          </Box>
+              <button
+                type="button"
+                onClick={() => {
+                  setShow((prev) => !prev);
+                }}
+                className="absolute top-[1.5rem] right-5"
+              >
+                {show ? <FaRegEye /> : <FaRegEyeSlash />}
+              </button>
+            </div>
+          </FormRow>
+        </Box>
 
-          <ModalOpen name="forgot-password">
+        <ModalOpen name="forgot-password">
+          <button
+            type="button"
+            className="text-[1.4rem] text-end font-semibold mb-2 "
+          >
+            Forgot Password?
+          </button>
+        </ModalOpen>
+
+        <ModalWindow name="forgot-password">
+          <ForgotPassword />
+        </ModalWindow>
+
+        <div className="flex flex-col gap-[.8rem] my-[1.2rem]">
+          <Button
+            action="submit"
+            className="w-full h-[5.2rem]"
+            loading={loading}
+            type="primary"
+          >
+            <p className="text-[1.6rem]">Login</p>
+          </Button>
+        </div>
+
+        <p className="mt-[1rem] text-center">
+          Don&apos;t have an account?{" "}
+          {authType && setAuthType ? (
             <button
-              type="button"
-              className="text-[1.4rem] text-end font-semibold mb-2 "
+              className="font-semibold"
+              onClick={() => {
+                setAuthType("signup");
+              }}
             >
-              Forgot Password?
+              Signup
             </button>
-          </ModalOpen>
-
-          <ModalWindow name="forgot-password">
-            <ForgotPassword />
-          </ModalWindow>
-
-          <div className="flex flex-col gap-[.8rem] my-[1.2rem]">
-            <Button
-              action="submit"
-              className="w-full h-[5.2rem]"
-              loading={loading}
-              type="primary"
-            >
-              <p className="text-[1.6rem]">Login</p>
-            </Button>
-          </div>
-
-          <p className="mt-[1rem] text-center">
-            Don&apos;t have an account?{" "}
+          ) : (
             <Link href={"/signup"} className="font-semibold ">
               Signup
             </Link>
-          </p>
-        </form>
-      </Box>
-    </Modal>
+          )}
+        </p>
+      </form>
+    </Box>
   );
 }
 

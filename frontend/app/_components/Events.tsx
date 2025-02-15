@@ -19,7 +19,7 @@ export default function Events() {
 
   const events = data?.events;
 
-  const event = events.find((event: Event) => event._id === eventId);
+  const event = events?.find((event: Event) => event._id === eventId);
 
   const count = data?.totalCount;
 

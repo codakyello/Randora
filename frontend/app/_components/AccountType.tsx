@@ -4,12 +4,12 @@ import Button from "@/app/_components/Button";
 import { UserIcon, BuildingOfficeIcon } from "@heroicons/react/24/outline";
 
 const AccountType = ({
-  setStep,
-  setAccountType,
+  onStep,
+  onAccountType,
   accountType,
 }: {
-  setStep: (step: number) => void;
-  setAccountType: (type: string) => void;
+  onStep: (step: number) => void;
+  onAccountType: (type: string) => void;
   accountType: string;
 }) => {
   const accountTypes = [
@@ -28,7 +28,7 @@ const AccountType = ({
   ];
 
   const handleTypeChange = (value: string) => {
-    setAccountType(value);
+    onAccountType(value);
   };
 
   return (
@@ -65,7 +65,7 @@ const AccountType = ({
         </RadioGroup>
 
         <Box className="flex w-full bg-[var(--color-grey-50)]">
-          <Button type="primary" onClick={() => setStep(2)} className="mt-6">
+          <Button type="primary" onClick={() => onStep(2)} className="mt-6">
             Next
           </Button>
         </Box>

@@ -4,8 +4,16 @@ import { Box } from "@chakra-ui/react";
 import Link from "next/link";
 import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
+import { User } from "../_utils/types";
+import Menus from "./Menu";
 
-export default function NavBar() {
+export default function NavBar({
+  user,
+  logout,
+}: {
+  user: User | null;
+  logout?: () => void;
+}) {
   useLayoutEffect(() => {
     document.documentElement.classList.add("light-mode");
   }, []);
@@ -14,7 +22,7 @@ export default function NavBar() {
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Features", path: "#features" },
+    { name: "Features", path: "/" },
     { name: "Pricing", path: "/pricing" },
   ];
 
@@ -38,16 +46,34 @@ export default function NavBar() {
         ))}
       </ul>
       <Box className="flex items-center gap-8">
-        <Link className="font-medium text-[1.8rem] " href={"/login"}>
-          Login
-        </Link>
+        {user ? (
+          <>
+            <Menus.Toogle id="userMenu">
+              <img
+                src={user.image}
+                alt="avatar"
+                className="w-[4rem] h-[4rem] rounded-full"
+              />
+            </Menus.Toogle>
 
-        <Link
-          className="font-medium rounded-[8px] px-[2rem] py-[.8rem] border border-[#000] [#000] text-[#000]"
-          href={"/signup"}
-        >
-          Sign Up
-        </Link>
+            <Menus.Menu id="userMenu">
+              <Menus.Button onClick={() => logout?.()}>Sign Out</Menus.Button>
+            </Menus.Menu>
+          </>
+        ) : (
+          <>
+            <Link className="font-medium text-[1.8rem] " href={"/login"}>
+              Login
+            </Link>
+
+            <Link
+              className="font-medium rounded-[8px] px-[2rem] py-[.8rem] border border-[#000] [#000] text-[#000]"
+              href={"/signup"}
+            >
+              Sign Up
+            </Link>
+          </>
+        )}
       </Box>
     </Box>
   );

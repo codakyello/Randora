@@ -9,14 +9,8 @@ import React, {
 import { useRouter } from "next/navigation";
 import { authenticate as authenticateApi } from "@/app/_lib/data-service";
 import Cookies from "js-cookie";
+import { User } from "../_utils/types";
 
-type User = {
-  _id: string;
-  email: string;
-  userName: string;
-  image: string;
-  organisationId: string;
-};
 const AuthContext = createContext<
   | {
       user: User | null;

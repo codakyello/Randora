@@ -11,7 +11,7 @@ import { sendInvite as sendInviteApi } from "../_lib/actions";
 import toast from "react-hot-toast";
 import useCustomMutation from "../_hooks/useCustomMutation";
 
-const URL = "https://mega-draw.vercel.app/api/v1";
+const URL = "https://randora-11b23c2bb02d.herokuapp.com/api/v1";
 // const DEV_URL = "http://localhost:5000/api/v1";
 
 export default function AddCollaboratorForm({

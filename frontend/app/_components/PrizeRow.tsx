@@ -4,7 +4,7 @@ import Row from "./Row";
 import Image from "next/image";
 import { Prize } from "../_utils/types";
 import Menus, { useMenu } from "./Menu";
-import { HiPencil, HiTrash } from "react-icons/hi2";
+import { HiEllipsisVertical, HiPencil, HiTrash } from "react-icons/hi2";
 import { deletePrize as deletePrizeApi } from "../_lib/actions";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import ConfirmDelete from "./ConfirmDelete";
@@ -81,7 +81,9 @@ export default function PrizeRow({
       <div className="relative grid items-end justify-end">
         {actions && (
           <>
-            <Menus.Toogle id={prizeId} />
+            <Menus.Toogle id={prizeId}>
+              <HiEllipsisVertical className="self-end h-10 w-10" />
+            </Menus.Toogle>
 
             <Menus.Menu id={prizeId}>
               <ModalOpen name="edit-prize">

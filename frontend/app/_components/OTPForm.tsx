@@ -7,16 +7,22 @@ import { resendOtp, verifyOtp } from "../_lib/data-service";
 import { useAuth } from "../_contexts/AuthProvider";
 import Button from "./Button";
 import SpinnerMini from "./SpinnerMini";
+import { useModal } from "./Modal";
 
 // Define prop types
 interface OtpFormProps {
   email: string;
-  setStep: (step: (prevStep: number) => number) => void;
+  onStep: (step: number) => void;
+  pricingPage?: boolean;
 }
 
 const OTP_EXPIRES = 5 * 60;
 
-const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
+const OtpForm: React.FC<OtpFormProps> = ({
+  email,
+  onStep,
+  pricingPage = false,
+}) => {
   const router = useRouter();
   const { login, setToken } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -25,6 +31,8 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
 
   const min = `${Math.floor(time / 60)}`.padStart(2, "0");
   const sec = `${time % 60}`.padStart(2, "0");
+
+  const { close } = useModal();
 
   // Set OTP expiration countdown
   useEffect(() => {
@@ -52,7 +60,9 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
     if (res.status !== "error") {
       login(res.data.user);
       setToken(res.token);
-      router.push("/dashboard");
+      if (pricingPage) {
+        close();
+      } else router.push("/dashboard");
     } else {
       if (res.message === "fetch failed")
         toast.error("Bad Internet connection");
@@ -205,11 +215,7 @@ const OtpForm: React.FC<OtpFormProps> = ({ email, setStep }) => {
           <p>{loading ? <SpinnerMini /> : "Continue"}</p>
         </Button>
 
-        <ChakraButton
-          onClick={() => setStep((step) => step - 1)}
-          h={"5.5rem"}
-          mt="2rem"
-        >
+        <ChakraButton onClick={() => onStep(1)} h={"5.5rem"} mt="2rem">
           <p className="text-[1.6rem]">Back</p>
         </ChakraButton>
       </form>

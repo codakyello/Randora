@@ -9,5 +9,5 @@ export default function Login() {
 
   if (step === 1) return <LoginForm setEmail={setEmail} setStep={setStep} />;
 
-  if (step === 2) return <OtpForm setStep={setStep} email={email} />;
+  if (step === 2) return <OtpForm onStep={setStep} email={email} />;
 }

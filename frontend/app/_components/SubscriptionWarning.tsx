@@ -57,7 +57,7 @@ export default function SubscriptionWarning({
             </p>
 
             <Link
-              href="/dashboard/billing"
+              href="/pricing"
               className="mr-3 inline-flex ml-5 text-[1.4rem] items-center px-4 py-2 border border-transparent rounded-md shadow-sm font-medium text-red-600 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-red-500 focus:ring-white"
             >
               Renew

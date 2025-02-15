@@ -13,14 +13,19 @@ import toast from "react-hot-toast";
 
 function SignUpForm({
   setEmail,
-  setStep,
+  onStep,
   accountType,
+  setAuthType,
+  authType,
 }: {
   setEmail: (email: string) => void;
-  setStep: (step: number) => void;
+  onStep: (step: number) => void;
   accountType: string;
+  setAuthType?: React.Dispatch<React.SetStateAction<"login" | "signup">>;
+  authType?: string;
 }) {
   const [loading, setLoading] = useState(false);
+  // const { open } = useModal();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -60,7 +65,7 @@ function SignUpForm({
     showToastMessage(res.status, res.message, "User created successfully");
     if (res.status !== "error") {
       setEmail(email);
-      setStep(3);
+      onStep(3);
     }
     setLoading(false);
   }
@@ -69,7 +74,7 @@ function SignUpForm({
       <h1 className="mb-10">Randora</h1>
       <form
         onSubmit={handleSubmit}
-        className="flex justify-stretch flex-col py-[2.4rem] px-[4rem] bg-[var(--color-grey-0)] border border-[var(--color-grey-100)] rounded-[var(--border-radius-md)] text-[1.4rem] w-full max-w-[48rem]"
+        className="flex justify-stretch flex-col py-[2.4rem] px-[4rem] bg-[var(--color-grey-0)] border border-[var(--color-grey-100)] rounded-[var(--border-radius-md)] text-[1.4rem] w-full max-w-[48rem] overflow-y-scroll no-scrollbar"
       >
         <h2 className="mb-[1.8rem]">
           Create your{" "}
@@ -129,22 +134,29 @@ function SignUpForm({
             loading={loading}
             type="primary"
           >
-            <p className="text-[1.6rem]">
-              {accountType === "individual"
-                ? "Get Started"
-                : "Start your free trial"}
-            </p>
+            <p className="text-[1.6rem]">Get started</p>
           </Button>
         </div>
 
         <p className="mt-[1rem] text-center">
           Have an account?{" "}
-          <Link
-            href={"/login"}
-            className="font-semibold text-[var(--color-primary)]"
-          >
-            Login
-          </Link>
+          {authType && setAuthType ? (
+            <button
+              onClick={() => {
+                setAuthType("login");
+              }}
+              className="font-semibold text-[var(--color-primary)]"
+            >
+              Login
+            </button>
+          ) : (
+            <Link
+              href={"/login"}
+              className="font-semibold text-[var(--color-primary)]"
+            >
+              Login
+            </Link>
+          )}
         </p>
       </form>
     </Box>

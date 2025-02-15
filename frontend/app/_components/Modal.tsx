@@ -49,10 +49,12 @@ export function ModalOpen({
 
 export function ModalWindow({
   children,
+  className,
   name,
   listenCapturing = false,
 }: {
   children: ReactElement;
+  className?: string;
   name: string;
   listenCapturing?: boolean;
 }) {
@@ -61,9 +63,11 @@ export function ModalWindow({
   const ref = useOutsideClick<HTMLDivElement>(close, listenCapturing);
 
   return isOpen === name ? (
-    <Box className="fixed bg-[#33333379] p-5 top-0 left-0 z-[90] flex items-center justify-center h-full w-screen backdrop-blur-sm">
+    <Box
+      className={`fixed ${className} bg-[#33333379] p-5 top-0 left-0 z-[90] flex items-center justify-center h-full w-screen backdrop-blur-sm`}
+    >
       <Box
-        className="max-w-[80rem] flex w-screen items-center justify-center relative"
+        className={`max-w-[80rem] flex w-screen items-center justify-center relative`}
         ref={ref}
       >
         {cloneElement(children, { onClose: close })}

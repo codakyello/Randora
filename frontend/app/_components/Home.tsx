@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { Box } from "@chakra-ui/react";
@@ -75,7 +76,7 @@ export default function Home() {
   if (isAuthenticating || authenticated) return null;
   return (
     <Box className="px-[2rem] bg-[var(--color-grey-50)]">
-      <NavBar />
+      <NavBar user={null} />
 
       <header
         style={{ height: "calc(100vh - 10rem)" }}
@@ -133,8 +134,11 @@ export default function Home() {
         </Box>
       </section>
 
-      <section className="max-w-[107rem]  mx-auto py-[20rem] flex flex-col gap-[6.4rem]">
-        <Box className="flex justify-between  gap-[4rem]">
+      <section
+        id="features"
+        className="max-w-[107rem]  mx-auto py-[20rem] flex flex-col gap-[6.4rem]"
+      >
+        <Box className="flex flex-col md:flex-row justify-between  gap-[4rem]">
           <Box className="w-[40rem] flex flex-col items-start gap-[1.6rem]">
             <p className="font-semibold flex gap-[1rem] pb-[1rem] border-b-[2px] border-b-[#d3d3d361]">
               <img src="/icons/editor_choice.svg" alt="Editors choice" />
@@ -183,7 +187,7 @@ export default function Home() {
         src={RandomizerImage}
       />
 
-      <section className="w-[107rem] flex items-center justify-center gap-[15rem] mx-auto py-[30rem]">
+      <section className="max-w-[107rem] grid grid-cols-1  md:grid-cols-2 items-center  mx-auto py-[30rem]">
         <Box className="flex flex-col items-start gap-[1.6rem]">
           <p className="font-semibold flex gap-[1rem] pb-[1rem] border-b-[2px] border-b-[#d3d3d361]">
             <img src="/icons/editor_choice.svg" alt="Editors choice" />
@@ -201,12 +205,12 @@ export default function Home() {
           </p>
         </Box>
 
-        <Image src={Canonball} alt="Canonball" />
+        <Image className="ml-auto" src={Canonball} alt="Canonball" />
       </section>
 
-      <section className="w-[107rem] flex flex-col  items-center mx-auto  gap-[10rem]">
-        <Box className="flex items-center gap-[10rem]">
-          <Box className="flex w-[40%] flex-col gap-[2.4rem] items-start">
+      <section className="max-w-[107rem] overflow-hidden flex flex-col  items-center mx-auto  gap-[10rem]">
+        <Box className="grid grid-cols-1 md:grid-cols-2 items-center gap-[2rem]">
+          <Box className="flex w-[80%] flex-col gap-[2.4rem] items-start">
             <p className="font-semibold flex gap-[1rem] pb-[1rem] border-b-[2px] border-b-[#d3d3d361]">
               <img src="/icons/editor_choice.svg" alt="Editors choice" />
               <span>The Randora Love</span>
@@ -229,12 +233,12 @@ export default function Home() {
           <img src="/img/big_gift.png" alt="Love" className="ml-auto" />
         </Box>
 
-        <Box className=" w-[107rem] flex gap-[1.6rem] items-start overflow-x-scroll no-scrollbar">
+        <Box className="w-[107rem] flex gap-[1.6rem] items-start overflow-x-scroll no-scrollbar">
           <Box className="flex gap-[1.6rem]">
             {testimonials.map(({ name, title, message }, index) => (
               <Box
                 key={index}
-                className="bg-[#bab9ff22] border-[.1px] border-[#c6c6c645] backdrop-blur-lg rounded-[20px] py-[2.4rem] px-[1.5rem] w-[30rem] flex flex-col gap-6"
+                className="bg-[#bab9ff22] border-[.1px] border-[#c6c6c645] backdrop-blur-lg rounded-[20px] py-[2rem] px-[1.5rem] w-[30rem] flex flex-col gap-6"
               >
                 <Box className="flex items-center gap-6">
                   {/* <img
@@ -256,18 +260,23 @@ export default function Home() {
 
       <Box className="h-[80rem] leading-[7rem] flex items-center justify-center rounded-[40px]">
         <h2 className="text-[5.7rem] text-center w-[80rem]">
-          <span className="block">Leverage the power </span> of Randora in
-          real-time, join progress.
+          <span>Leverage the power </span> of Randora{" "}
+          <img className="inline" alt="people" src="/img/people.svg" />
+          <span>in real-time, join progress.</span>
         </h2>
       </Box>
 
-      <footer className="mx-[5rem] p-[4.8rem] rounded-[5rem] bg-[#F3F4F6] h-[40rem]">
+      <footer className="relative mx-[2rem] p-[4.8rem] rounded-[5rem] bg-[#bab9ff30] h-[40rem]">
         <Box className="flex flex-col gap-[2rem]">
           <Link href={"/"}>
             <img src="img/logo/randora.svg" alt="logo" />
           </Link>
           <p>8, Adunni street, Ilaje, Bariga, Yaba, Lagos</p>
         </Box>
+
+        <p className="text-[1.4rem] absolute bottom-0 left-[50%] mb-10 translate-x-[-50%] text-[#474747]">
+          &copy;Copyright of Randora, {new Date().getFullYear()}.
+        </p>
       </footer>
     </Box>
   );

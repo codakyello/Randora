@@ -72,13 +72,6 @@ export default function UploadParticipants({
         },
       }
     );
-
-    // if (res?.status !== "error") {
-    //   onClose?.();
-    //   toast.success("Participants imported Successfully");
-    // } else {
-    //   setError(res?.message);
-    // }
   };
 
   return (
@@ -98,7 +91,14 @@ export default function UploadParticipants({
         * Csv must contain the column{" "}
         <span className="font-semibold text-[var(--color-primary)]">
           ticket number
-        </span>
+        </span>{" "}
+        (compulsory)
+      </p>
+
+      <p className="mt-2">
+        * Csv should the column{" "}
+        <span className="font-semibold text-[var(--color-primary)]">name</span>{" "}
+        (not compulsory)
       </p>
       <label
         className="block rounded-xl my-10 text-black w-full p-4 text-center border border-dashed cursor-pointer bg-gray-100 hover:bg-gray-200"

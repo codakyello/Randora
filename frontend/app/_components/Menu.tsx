@@ -11,7 +11,6 @@ import {
 } from "react";
 import { Box } from "@chakra-ui/react";
 import useOutsideClick from "../_hooks/useOutsideClick";
-import { HiEllipsisVertical } from "react-icons/hi2";
 
 import { createPortal } from "react-dom";
 
@@ -65,7 +64,7 @@ function Menu({ children, id }: { children: ReactNode; id: string }) {
   );
 }
 
-function Toggle({ id }: { id: string }) {
+function Toggle({ id, children }: { id: string; children: ReactNode }) {
   const ref = useRef<HTMLButtonElement>(null);
 
   const { setPosition, open, close, openId } = useMenu();
@@ -91,7 +90,7 @@ function Toggle({ id }: { id: string }) {
         onClick={handleClick}
         className="bg-none border-none p-1 rounded-[var(--border-radius-sm)] translate-x-2 transition-all duration-200 hover:bg-[var(--color-grey-50)]"
       >
-        <HiEllipsisVertical className="self-end h-10 w-10" />
+        {children}
       </button>
     </Box>
   );
@@ -101,12 +100,12 @@ function Button({
   icon,
   children,
   onClick,
-  disabled,
+  disabled = false,
 }: {
-  icon: ReactElement;
+  icon?: ReactElement;
   children: ReactNode;
   onClick: () => void;
-  disabled: boolean;
+  disabled?: boolean;
 }) {
   return (
     <button
