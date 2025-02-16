@@ -40,7 +40,10 @@ function LoginForm({
 
     showToastMessage(res.status, res.message, res.message);
 
-    if (res.status !== "error") setStep(2);
+    if (res.status !== "error") {
+      if (authType) setStep(3);
+      else setStep(2);
+    }
     setLoading(false);
   }
   return (
