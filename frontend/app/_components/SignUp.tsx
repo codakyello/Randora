@@ -53,5 +53,6 @@ export default function Signup() {
       />
     );
 
-  if (step === 3) return <OTPForm onStep={handleStep} email={email} />;
+  if (step === 3)
+    return <OTPForm step={step} onStep={handleStep} email={email} />;
 }

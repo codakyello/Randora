@@ -186,7 +186,12 @@ export default function Pricing() {
               />
             )
           ) : (
-            <OtpForm pricingPage={true} onStep={setStep} email={email} />
+            <OtpForm
+              step={step}
+              pricingPage={true}
+              onStep={setStep}
+              email={email}
+            />
           )}
         </>
       </ModalWindow>

@@ -12,6 +12,7 @@ import { useModal } from "./Modal";
 // Define prop types
 interface OtpFormProps {
   email: string;
+  step: number;
   onStep: (step: number) => void;
   pricingPage?: boolean;
 }
@@ -21,6 +22,7 @@ const OTP_EXPIRES = 5 * 60;
 const OtpForm: React.FC<OtpFormProps> = ({
   email,
   onStep,
+  step,
   pricingPage = false,
 }) => {
   const router = useRouter();
@@ -215,11 +217,7 @@ const OtpForm: React.FC<OtpFormProps> = ({
           <p>{loading ? <SpinnerMini /> : "Continue"}</p>
         </Button>
 
-        <ChakraButton
-          onClick={() => (pricingPage ? onStep(1) : onStep(2))}
-          h={"5.5rem"}
-          mt="2rem"
-        >
+        <ChakraButton onClick={() => onStep(step - 1)} h={"5.5rem"} mt="2rem">
           <p className="text-[1.6rem]">Back</p>
         </ChakraButton>
       </form>
