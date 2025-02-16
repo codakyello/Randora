@@ -161,10 +161,10 @@ export default function Pricing() {
         className="max-w-screen bg-[var(--color-grey-50)]"
         name="auth"
       >
-        <Box className="relative w-full">
+        <>
           <button
             onClick={close}
-            className="rounded-[10px] hover:bg-[#5555552d] right-0 top-[2rem] absolute hover:rounded-xl bg-[var(--color-grey-50)] "
+            className="rounded-[10px] hover:bg-[#5555552d] right-[2rem] top-[2rem] absolute hover:rounded-xl bg-[var(--color-grey-50)] "
           >
             <IoCloseOutline size={"4rem"} />
           </button>
@@ -188,7 +188,7 @@ export default function Pricing() {
           ) : (
             <OtpForm pricingPage={true} onStep={setStep} email={email} />
           )}
-        </Box>
+        </>
       </ModalWindow>
 
       {/* <ModalWindow name="login">

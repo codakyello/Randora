@@ -70,7 +70,7 @@ function SignUpForm({
     setLoading(false);
   }
   return (
-    <Box className="flex flex-col p-5 bg-[var(--color-grey-50)] h-screen items-center justify-center">
+    <Box className="flex w-screen flex-col p-5 bg-[var(--color-grey-50)] h-screen items-center justify-center">
       <h1 className="mb-10">Randora</h1>
       <form
         onSubmit={handleSubmit}

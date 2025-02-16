@@ -2,6 +2,10 @@ import Invite from "@/app/_components/Invite";
 import { validateInviteToken } from "@/app/_lib/data-service";
 import { notFound } from "next/navigation";
 
+export const metadata = {
+  title: "Invite",
+};
+
 export default async function Page({
   params: { organisationId },
   searchParams: { token },

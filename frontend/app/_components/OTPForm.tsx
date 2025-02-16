@@ -215,7 +215,11 @@ const OtpForm: React.FC<OtpFormProps> = ({
           <p>{loading ? <SpinnerMini /> : "Continue"}</p>
         </Button>
 
-        <ChakraButton onClick={() => onStep(1)} h={"5.5rem"} mt="2rem">
+        <ChakraButton
+          onClick={() => (pricingPage ? onStep(1) : onStep(2))}
+          h={"5.5rem"}
+          mt="2rem"
+        >
           <p className="text-[1.6rem]">Back</p>
         </ChakraButton>
       </form>

@@ -95,7 +95,7 @@ export default function CreateEditParticipantForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="px-[3rem] py-[3rem] rounded-[var(--border-radius-lg)] shadow-lg z-50 bg-[var(--color-grey-0)] w-full"
+      className="px-[3rem] py-[3rem] rounded-[var(--border-radius-lg)] shadow-lg z-50 bg-[var(--color-grey-0)] max-w-[80rem] w-full"
     >
       <Box className="flex justify-between">
         <h2 className="mb-[2rem]">

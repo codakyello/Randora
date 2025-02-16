@@ -64,12 +64,9 @@ export function ModalWindow({
 
   return isOpen === name ? (
     <Box
-      className={`fixed ${className} bg-[#33333379] p-5 top-0 left-0 z-[90] flex items-center justify-center h-full w-screen backdrop-blur-sm`}
+      className={`fixed ${className}  bg-[#33333379] p-5 top-0 left-0 z-[90] flex items-center justify-center h-screen w-screen backdrop-blur-sm`}
     >
-      <Box
-        className={`max-w-[80rem] flex w-screen items-center justify-center relative`}
-        ref={ref}
-      >
+      <Box className={`flex w-screen items-center justify-center `} ref={ref}>
         {cloneElement(children, { onClose: close })}
       </Box>
     </Box>
