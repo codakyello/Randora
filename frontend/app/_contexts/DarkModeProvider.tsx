@@ -35,6 +35,7 @@ function DarkModeProvider({ children }: { children: ReactNode }) {
       document.documentElement.classList.toggle("dark-mode", isDarkMode);
       document.documentElement.classList.toggle("light-mode", !isDarkMode);
     } else {
+      document.documentElement.classList.remove("dark-mode");
       document.documentElement.classList.add("light-mode");
     }
     if (typeof window !== "undefined") {
