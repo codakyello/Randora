@@ -1,9 +1,7 @@
-/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import { Box } from "@chakra-ui/react";
 import Link from "next/link";
-import RandomizerImage from "@/public/img/Randomizer_monents.png";
 import Canonball from "@/public/img/Canonball.png";
 import Image from "next/image";
 import Button from "./Button";
@@ -77,10 +75,9 @@ export default function Home() {
   return (
     <Box className="px-[2rem] bg-[var(--color-grey-50)]">
       <NavBar user={null} />
-
       <header
-        style={{ height: "calc(100vh - 10rem)" }}
-        className=" relative overflow-hidden p-5 mx-auto flex flex-col items-center justify-center"
+        style={{ minHeight: "calc(100vh - 5rem)" }}
+        className=" relative overflow-hidden py-[5rem] mx-auto flex flex-col items-center justify-center"
       >
         <Box className="flex flex-col items-center text-center justify-center">
           <h1 className="text-[6rem] font-bold leading-[7rem]">
@@ -104,39 +101,53 @@ export default function Home() {
         </Box>
 
         <img
-          className="absolute top-[3rem] left-[20rem]"
+          className="h-[15rem] top-[-6rem] right-[0rem] absolute sm:h-auto sm:top-[-8rem] sm:left-0 md:top-[3rem] md:left-[20rem]"
           src="/img/schedule.svg"
           alt="data"
         />
 
         <img
-          className="absolute left-0 bottom-0"
+          className="h-[15rem] bottom-[-4rem] left-[-2rem] sm:h-[20rem] md:h-[30rem]  absolute"
           src="/img/gift.svg"
           alt="gift"
         />
 
         <img
-          className="absolute right-0 bottom-0"
+          className="h-[15rem] sm:h-[25rem] md:h-[30rem] absolute right-0 bottom-0"
           src="/img/data.png"
           alt="data"
         />
       </header>
-
       <section className=" mt-[4.8rem]  text-center">
         <p className="font-medium text-[#474747] mb-[2.4rem]">
           World-class organisations trust Randora
         </p>
-        <Box className="flex gap-[4rem] justify-center items-center justfiy-center mx-auto ">
-          <img src="/img/logo/mimo.svg" className="h-[3rem]" alt="Client" />
-          <img src="/img/logo/ijgb.svg" className="h-[3rem]" alt="Client" />
-          <img src="/img/logo/octa.svg" className="h-[3rem]" alt="Client" />
-          <img src="/img/logo/juicyway.svg" className="h-[3rem]" alt="Client" />
+        <Box className="flex gap-[4rem] justify-center p- items-center justfiy-center mx-auto ">
+          <img
+            src="/img/logo/mimo.svg"
+            className="h-[2.5rem] md:h-[3rem]"
+            alt="Client"
+          />
+          <img
+            src="/img/logo/ijgb.svg"
+            className="h-[2.5rem] md:h-[3rem]"
+            alt="Client"
+          />
+          <img
+            src="/img/logo/octa.svg"
+            className="h-[2rem] md:h-[3rem]"
+            alt="Client"
+          />
+          <img
+            src="/img/logo/juicyway.svg"
+            className="h-[2rem] md:h-[3rem]"
+            alt="Client"
+          />
         </Box>
       </section>
-
       <section
         id="features"
-        className="max-w-[107rem]  mx-auto py-[20rem] flex flex-col gap-[6.4rem]"
+        className="max-w-[107rem]  mx-auto py-[10rem] md:py-[20rem] flex flex-col gap-[6.4rem]"
       >
         <Box className="flex flex-col md:flex-row justify-between  gap-[4rem]">
           <Box className="w-[40rem] flex flex-col items-start gap-[1.6rem]">
@@ -149,7 +160,7 @@ export default function Home() {
             </h2>
           </Box>
 
-          <Box className="w-[48rem] flex flex-col gap-[3rem] items-start">
+          <Box className="max-w-[48rem] flex flex-col gap-[3rem] items-start">
             <p className="leading-[3.2rem] text-[#767676]">
               Randora is a SaaS platform that helps businesses create memorable
               engagement campaigns while eliminating the administrative
@@ -164,7 +175,7 @@ export default function Home() {
           </Box>
         </Box>
 
-        <Box className="grid justify-center grid-cols-[repeat(auto-fit,_minmax(25rem,_25rem))] gap-[1.7rem]">
+        <Box className="grid grid-cols-[repeat(auto-fit,_minmax(25rem,_25rem))] gap-[1.7rem]">
           {features.map((feature, index) => (
             <Box
               key={index}
@@ -181,13 +192,17 @@ export default function Home() {
         </Box>
       </section>
 
-      <Image
-        className="mx-auto w-[130rem]"
+      {/* <Image
+        className="mx-auto"
         alt="Randomizer Moments"
         src={RandomizerImage}
+      /> */}
+      <img
+        src="/img/Randomizer_moments.png"
+        className="max-w-[140rem] w-full mx-auto"
+        alt="Randomizer Moments"
       />
-
-      <section className="max-w-[107rem] grid grid-cols-1  md:grid-cols-2 items-center  mx-auto py-[30rem]">
+      <section className="max-w-[107rem] grid grid-cols-1  md:grid-cols-2 items-center  mx-auto py-[10rem] md:py-[20rem]">
         <Box className="flex flex-col items-start gap-[1.6rem]">
           <p className="font-semibold flex gap-[1rem] pb-[1rem] border-b-[2px] border-b-[#d3d3d361]">
             <img src="/icons/editor_choice.svg" alt="Editors choice" />
@@ -207,7 +222,6 @@ export default function Home() {
 
         <Image className="ml-auto" src={Canonball} alt="Canonball" />
       </section>
-
       <section className="max-w-[107rem] overflow-hidden flex flex-col  items-center mx-auto  gap-[10rem]">
         <Box className="grid grid-cols-1 md:grid-cols-2 items-center gap-[2rem]">
           <Box className="flex w-[80%] flex-col gap-[2.4rem] items-start">
@@ -257,7 +271,6 @@ export default function Home() {
           </Box>
         </Box>
       </section>
-
       <Box className="h-[80rem] leading-[7rem] flex items-center justify-center rounded-[40px]">
         <h2 className="text-[5.7rem] text-center w-[80rem]">
           <span>Leverage the power </span> of Randora{" "}
@@ -265,7 +278,6 @@ export default function Home() {
           <span>in real-time, join progress.</span>
         </h2>
       </Box>
-
       <footer className="relative mx-[2rem] p-[4.8rem] rounded-[5rem] bg-[#bab9ff30] h-[40rem]">
         <Box className="flex flex-col gap-[2rem]">
           <Link href={"/"}>
