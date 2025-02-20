@@ -10,6 +10,8 @@ import { useEffect } from "react";
 import { useAuth } from "../_contexts/AuthProvider";
 import { useRouter } from "next/navigation";
 import MobileNav from "./MobileNav";
+import { MdEmail } from "react-icons/md";
+import { FaAddressBook, FaPhoneAlt } from "react-icons/fa";
 
 const features = [
   {
@@ -306,14 +308,32 @@ export default function Home() {
         </h2>
       </Box>
       <footer className="relative flex-col md:flex-row flex justify-between p-[4.8rem] rounded-[5rem] bg-[#bab9ff30] gap-[2rem] min-h-[40rem]">
-        <Box className="flex flex-col gap-[2rem]">
+        <Box className="flex flex-col gap-[3rem]">
           <Link href={"/"}>
             <img src="img/logo/randora.svg" alt="logo" />
           </Link>
-          <p>8, Adunni street, Ilaje, Bariga, Yaba, Lagos</p>
+          <Box className="hidden md:flex text-[1.6rem] flex-col gap-[.6rem] text-[#00000081]">
+            <Box className="flex flex-col gap-[1.6rem] text-[#00000081]">
+              <Box className="flex gap-[1rem] items-center">
+                <FaAddressBook className="text-[1.6rem] text-[#00000081]" />
+                <p>8, Adunni street, Ilaje, Bariga, Yaba, Lagos </p>
+              </Box>
+
+              <Box className="flex gap-[1rem] items-center">
+                <MdEmail className="text-[1.7rem] text-[#00000081]" />
+                <p> randorabusiness@gmail.com</p>
+              </Box>
+
+              <Box className="flex gap-[1rem] items-center">
+                <FaPhoneAlt className="text-[1.6rem] text-[#00000081]" />
+
+                <p>+2348163136350</p>
+              </Box>
+            </Box>
+          </Box>
         </Box>
 
-        <Box className="mt-[2rem] mb-[5rem] md:my-0 flex gap-[4rem] md:gap-[6rem]">
+        <Box className="mt-[2rem] md:my-0 flex gap-[4rem] md:gap-[6rem]">
           {footerNav.map(({ header, links }, index) => (
             <Box className="flex flex-col gap-4" key={index}>
               <h4 className="text-[1.6rem] mb-[1.5rem] text-[#00000081]">
@@ -330,6 +350,27 @@ export default function Home() {
               </ul>
             </Box>
           ))}
+        </Box>
+
+        <Box className="md:hidden mb-[3rem] mt-[1rem] text-[1.6rem] text-[#00000081] flex flex-col gap-[2rem]">
+          <Box className="flex flex-col gap-[1.6rem] text-[#00000081]">
+            <Box className="flex gap-[1rem] items-center">
+              <FaAddressBook className="text-[1.6rem] text-[#00000081]" />
+
+              <p>8, Adunni street, Ilaje, Bariga, Yaba, Lagos </p>
+            </Box>
+
+            <Box className="flex gap-[1rem] items-center">
+              <MdEmail className="text-[1.7rem] text-[#00000081]" />
+              <p> randorabusiness@gmail.com</p>
+            </Box>
+
+            <Box className="flex gap-[1rem] items-center">
+              <FaPhoneAlt className="text-[1.6rem] text-[#00000081]" />
+
+              <p>+2348163136350</p>
+            </Box>
+          </Box>
         </Box>
 
         <p className="text-[1.4rem] absolute bottom-0 left-[50%] mb-10 translate-x-[-50%] text-[#4747479a]">
