@@ -15,23 +15,27 @@ import { FaAddressBook, FaPhoneAlt } from "react-icons/fa";
 
 const features = [
   {
-    name: "Custom Events",
+    name1: "Custom",
+    name2: "Events",
     description:
       "Individuals and organizations can create and edit events, with organization accounts able to add collaborators for event management.",
   },
   {
-    name: "Participants Upload",
+    name1: "Participants",
+    name2: "Upload",
     description:
       "With our platform, individuals and organizations can easily upload large volumes of client data in one go, streamlining event participation.",
   },
   {
-    name: "Event Analytics",
+    name1: "Event",
+    name2: "Analytics",
     description:
       "Automatically tracks event success with detailed insights on participant engagement and prize distribution in a curated dashboard.",
   },
 
   {
-    name: "AI Integrations",
+    name1: "AI",
+    name2: "Generated Prizes",
     description:
       " Our new AI feature allows individuals and organisations automatically generate high-resolution images for prizes, enhancing listing quality.",
   },
@@ -215,8 +219,9 @@ export default function Home() {
               key={index}
               className="bg-white rounded-[10px] p-[2.4rem] flex flex-col gap-[1.6rem] shadow-[0px_4px_4px_4px_rgba(186,185,255,0.87)]"
             >
-              <h3 className="w-[14rem] font-medium leading-[2.4rem]">
-                {feature.name}
+              <h3 className="font-medium leading-[2.4rem]">
+                {feature.name1} <br />
+                {feature.name2}
               </h3>
               <p className="text-[1.3rem] leading-[2.4rem] text-[#2c2c2c]">
                 {feature.description}
