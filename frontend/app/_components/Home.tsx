@@ -37,7 +37,7 @@ const features = [
     name1: "AI",
     name2: "Generated Prizes",
     description:
-      " Our new AI feature allows individuals and organisations automatically generate high-resolution images for prizes, enhancing listing quality.",
+      " Our new AI feature allows organisations automatically generate high-resolution images for prizes, enhancing listing quality.",
   },
 ];
 
