@@ -111,7 +111,7 @@ export default function Pricing() {
           )}
         </Box>
 
-        <h1 className=" tracking-tight text-[6rem] leading-[7.2rem] max-w-[80rem] mx-auto mb-[.5rem]">
+        <h1 className=" tracking-tight mt-[5rem] text-[6rem] leading-[7.2rem] max-w-[80rem] mx-auto mb-[.5rem]">
           Try any of our plans
         </h1>
 
