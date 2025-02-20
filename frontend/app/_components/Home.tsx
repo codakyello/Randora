@@ -101,7 +101,7 @@ export default function Home() {
         </Box>
 
         <img
-          className="h-[15rem] top-[-6rem] right-[0rem] absolute sm:h-auto sm:top-[-8rem] sm:left-0 md:top-[3rem] md:left-[20rem]"
+          className="h-[15rem] top-0 right-[0rem] absolute sm:h-auto sm:top-[-8rem] sm:left-0 md:top-[3rem] md:left-[20rem]"
           src="/img/schedule.svg"
           alt="data"
         />
