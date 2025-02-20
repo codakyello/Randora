@@ -6,6 +6,7 @@ import { useLayoutEffect } from "react";
 import { usePathname } from "next/navigation";
 import { User } from "../_utils/types";
 import Menus from "./Menu";
+import NavToggle from "./NavToogle";
 
 export default function NavBar({
   user,
@@ -22,16 +23,16 @@ export default function NavBar({
 
   const navLinks = [
     { name: "Home", path: "/" },
-    { name: "Features", path: "/" },
+    { name: "Features", path: "#features" },
     { name: "Pricing", path: "/pricing" },
   ];
 
   return (
-    <Box className="h-[10rem] px-[4rem] flex items-center justify-between">
+    <Box className="bg-white h-[7rem] left-0 z-10 w-screen fixed p-[2rem] sm:px-[4rem] flex items-center justify-between">
       <Link href={"/"}>
         <img src="img/logo/randora.svg" alt="logo" />
       </Link>
-      <ul className="flex text-[1.8rem] font-medium gap-8 list-none">
+      <ul className="hidden md:flex text-[1.8rem] font-medium gap-8 list-none">
         {navLinks.map((link, index) => (
           <li key={index}>
             <Link
@@ -45,7 +46,7 @@ export default function NavBar({
           </li>
         ))}
       </ul>
-      <Box className="flex items-center gap-8">
+      <Box className="hidden md:flex items-center gap-8">
         {user ? (
           <>
             <Menus.Toogle id="userMenu">
@@ -75,6 +76,8 @@ export default function NavBar({
           </>
         )}
       </Box>
+
+      <NavToggle />
     </Box>
   );
 }

@@ -4,13 +4,13 @@ import { Box } from "@chakra-ui/react";
 import Link from "next/link";
 import { MdOutlineCancel, MdOutlineCheckCircleOutline } from "react-icons/md";
 import { useAuth } from "../_contexts/AuthProvider";
-import NavBar from "./NavBar";
 import { ModalWindow, useModal } from "./Modal";
 import SignUpForm from "./SignUpForm";
 import { useState } from "react";
 import OtpForm from "./OTPForm";
 import LoginForm from "./LoginForm";
 import { IoCloseOutline } from "react-icons/io5";
+import Menus from "./Menu";
 
 const plans = [
   {
@@ -74,7 +74,42 @@ export default function Pricing() {
   return (
     <>
       <Box className="text-center">
-        <NavBar user={user} logout={logout} />
+        {/* <NavBar user={user} logout={logout} /> */}
+
+        <Box className="flex h-[7rem] items-center justify-between gap-8">
+          <Link href={"/"}>
+            <img src="img/logo/randora.svg" alt="logo" />
+          </Link>
+
+          {user ? (
+            <>
+              <Menus.Toogle id="userMenu">
+                <img
+                  src={user.image}
+                  alt="avatar"
+                  className="w-[4rem] h-[4rem] rounded-full"
+                />
+              </Menus.Toogle>
+
+              <Menus.Menu id="userMenu">
+                <Menus.Button onClick={() => logout?.()}>Sign Out</Menus.Button>
+              </Menus.Menu>
+            </>
+          ) : (
+            <Box className="flex gap-8 items-center">
+              <Link className="font-medium text-[1.8rem] " href={"/login"}>
+                Login
+              </Link>
+
+              <Link
+                className="font-medium rounded-[8px] px-[2rem] py-[.8rem] border border-[#000] [#000] text-[#000]"
+                href={"/signup"}
+              >
+                Sign Up
+              </Link>
+            </Box>
+          )}
+        </Box>
 
         <h1 className=" tracking-tight text-[6rem] leading-[7.2rem] max-w-[80rem] mx-auto mb-[.5rem]">
           Try any of our plans

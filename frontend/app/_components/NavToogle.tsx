@@ -6,7 +6,7 @@ export default function NavToggle() {
   const { toggleNav, isOpen } = useNav();
   return (
     <button
-      className="md:hidden flex bg-[var(--color-grey-50)] h-16 items-center justify-center rounded-[var(--border-radius-md)] aspect-square"
+      className="md:hidden z-50 flex bg-[var(--color-grey-50)] h-16 items-center justify-center rounded-[var(--border-radius-md)] aspect-square"
       onClick={toggleNav}
     >
       {!isOpen ? (

@@ -5,6 +5,7 @@ import QueryProvider from "./_contexts/QueryProvider";
 import { Toaster } from "react-hot-toast";
 import { ChakraProvider } from "@chakra-ui/react";
 import { DarkModeProvider } from "./_contexts/DarkModeProvider";
+import { NavProvider } from "./_contexts/NavProvider";
 
 export const metadata = {
   title: {
@@ -31,7 +32,9 @@ export default function RootLayout({
         <ChakraProvider>
           <QueryProvider>
             <DarkModeProvider>
-              <AuthProvider>{children}</AuthProvider>
+              <NavProvider>
+                <AuthProvider>{children}</AuthProvider>
+              </NavProvider>
             </DarkModeProvider>
           </QueryProvider>
         </ChakraProvider>

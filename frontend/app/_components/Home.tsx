@@ -9,6 +9,7 @@ import NavBar from "./NavBar";
 import { useEffect } from "react";
 import { useAuth } from "../_contexts/AuthProvider";
 import { useRouter } from "next/navigation";
+import MobileNav from "./MobileNav";
 
 const features = [
   {
@@ -64,6 +65,35 @@ const testimonials = [
   },
 ];
 
+const footerNav = [
+  {
+    header: "About Product",
+    links: [
+      { name: "Pitch", path: "#" },
+      { name: "Updates", path: "#" },
+      { name: "Careers", path: "#" },
+    ],
+  },
+  {
+    header: "Company",
+    links: [
+      { name: "Patch", path: "#" },
+      { name: "Updated", path: "#" },
+      { name: "Beta test", path: "#" },
+    ],
+  },
+
+  {
+    header: "Support",
+    links: [
+      { name: "Help center", path: "#" },
+      { name: "Account information", path: "#" },
+      { name: "Early access", path: "#" },
+      { name: "Talk to support", path: "#" },
+    ],
+  },
+];
+
 export default function Home() {
   const { authenticated, isAuthenticating } = useAuth();
   const router = useRouter();
@@ -73,51 +103,53 @@ export default function Home() {
 
   if (isAuthenticating || authenticated) return null;
   return (
-    <Box className="px-[2rem] bg-[var(--color-grey-50)]">
-      <NavBar user={null} />
-      <header
-        style={{ minHeight: "calc(100vh - 5rem)" }}
-        className=" relative overflow-hidden py-[5rem] mx-auto flex flex-col items-center justify-center"
-      >
-        <Box className="flex flex-col items-center text-center justify-center">
-          <h1 className="text-[6rem] font-bold leading-[7rem]">
-            <span className="block">Manage your giveaways </span>
-            <span className="text-[#C5C5C5]">in one simple dashboard</span>
-          </h1>
+    <Box className="relative px-[2rem] bg-[var(--color-grey-50)]">
+      <MobileNav />
+      <Box style={{ height: "100vh" }}>
+        <NavBar user={null} />
 
-          <p className="text-[1.8rem] text-[#1E1E1E]  mt-[1.6rem] mb-[3.2rem]">
-            Unlock in real time, a better way to handle raffel draws.
-          </p>
-        </Box>
+        <header className=" h-full relative overflow-hidden py-[5rem] mx-auto flex flex-col items-center justify-center">
+          <Box className="flex flex-col items-center text-center justify-center">
+            <h1 className="text-[6rem] font-bold leading-[7rem]">
+              <span className="block">Manage your giveaways </span>
+              <span className="text-[#C5C5C5]">in one simple dashboard</span>
+            </h1>
 
-        <Box className="flex justify-center">
-          <Link
-            href="/signup"
-            className="w-[23rem] bg-[var(--color-brand-200)] flex items-center gap-[.5rem] justify-center text-[1.8rem] font-medium h-[5.5rem] border rounded-[10px]"
-          >
-            Sign Up
-            <img src="/img/send.svg" alt="Arrow send" />
-          </Link>
-        </Box>
+            <p className="text-[1.8rem] text-[#1E1E1E]  mt-[1.6rem] mb-[3.2rem]">
+              Unlock in real time, a better way to handle raffel draws.
+            </p>
+          </Box>
 
-        <img
-          className="h-[15rem] top-0 right-[0rem] absolute sm:h-auto sm:top-[-8rem] sm:left-0 md:top-[3rem] md:left-[20rem]"
-          src="/img/schedule.svg"
-          alt="data"
-        />
+          <Box className="flex justify-center">
+            <Link
+              href="/signup"
+              className="w-[23rem] bg-[var(--color-brand-200)] flex items-center gap-[.5rem] justify-center text-[1.8rem] font-medium h-[5.5rem] border rounded-[10px]"
+            >
+              Sign Up
+              <img src="/img/send.svg" alt="Arrow send" />
+            </Link>
+          </Box>
 
-        <img
-          className="h-[15rem] bottom-[-4rem] left-[-2rem] sm:h-[20rem] md:h-[30rem]  absolute"
-          src="/img/gift.svg"
-          alt="gift"
-        />
+          <img
+            className="h-[15rem] top-[5rem] right-[0rem] absolute sm:h-auto sm:top-[8rem] sm:left-0 md:top-[3rem] md:left-[20rem]"
+            src="/img/schedule.svg"
+            alt="data"
+          />
 
-        <img
-          className="h-[15rem] sm:h-[25rem] md:h-[30rem] absolute right-0 bottom-0"
-          src="/img/data.png"
-          alt="data"
-        />
-      </header>
+          <img
+            className="h-[15rem] bottom-[8rem] left-[-2rem] sm:h-[20rem] md:h-[30rem]  absolute"
+            src="/img/gift.svg"
+            alt="gift"
+          />
+
+          <img
+            className="h-[15rem] sm:h-[25rem] md:h-[30rem] absolute right-0 bottom-[7rem]"
+            src="/img/data.png"
+            alt="data"
+          />
+        </header>
+      </Box>
+
       <section className=" mt-[4.8rem]  text-center">
         <p className="font-medium text-[#474747] mb-[2.4rem]">
           World-class organisations trust Randora
@@ -175,7 +207,7 @@ export default function Home() {
           </Box>
         </Box>
 
-        <Box className="grid grid-cols-[repeat(auto-fit,_minmax(25rem,_25rem))] gap-[1.7rem]">
+        <Box className="grid sm:grid-cols-[repeat(auto-fit,_minmax(25rem,_25rem))] gap-[1.7rem]">
           {features.map((feature, index) => (
             <Box
               key={index}
@@ -255,11 +287,6 @@ export default function Home() {
                 className="bg-[#bab9ff22] border-[.1px] border-[#c6c6c645] backdrop-blur-lg rounded-[20px] py-[2rem] px-[1.5rem] w-[30rem] flex flex-col gap-6"
               >
                 <Box className="flex items-center gap-6">
-                  {/* <img
-      src={image}
-      alt={name}
-      className="w-20 h-20 rounded-full object-cover"
-    /> */}
                   <Box className="flex flex-col">
                     <p className="font-medium">{name}</p>
                     <p className="text-[1.2rem] text-gray-500">{title}</p>
@@ -278,7 +305,7 @@ export default function Home() {
           <span>in real-time, join progress.</span>
         </h2>
       </Box>
-      <footer className="relative p-[4.8rem] rounded-[5rem] bg-[#bab9ff30] h-[40rem]">
+      <footer className="relative flex-col md:flex-row flex justify-between p-[4.8rem] rounded-[5rem] bg-[#bab9ff30] gap-[2rem] min-h-[40rem]">
         <Box className="flex flex-col gap-[2rem]">
           <Link href={"/"}>
             <img src="img/logo/randora.svg" alt="logo" />
@@ -286,7 +313,26 @@ export default function Home() {
           <p>8, Adunni street, Ilaje, Bariga, Yaba, Lagos</p>
         </Box>
 
-        <p className="text-[1.4rem] absolute bottom-0 left-[50%] mb-10 translate-x-[-50%] text-[#474747]">
+        <Box className="mt-[2rem] mb-[5rem] md:my-0 flex gap-[4rem] md:gap-[6rem]">
+          {footerNav.map(({ header, links }, index) => (
+            <Box className="flex flex-col gap-4" key={index}>
+              <h4 className="text-[1.6rem] mb-[1.5rem] text-[#00000081]">
+                {header}
+              </h4>
+              <ul className="flex flex-col gap-8">
+                {links.map(({ name, path }, index) => (
+                  <li key={index}>
+                    <Link className="text-[#838383] text-[1.5rem]" href={path}>
+                      {name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Box>
+          ))}
+        </Box>
+
+        <p className="text-[1.4rem] absolute bottom-0 left-[50%] mb-10 translate-x-[-50%] text-[#4747479a]">
           &copy;Copyright of Randora, {new Date().getFullYear()}.
         </p>
       </footer>
