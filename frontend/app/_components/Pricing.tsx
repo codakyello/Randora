@@ -33,8 +33,8 @@ const plans = [
     features: [
       { included: true, feature: "Unlimited number of events" },
       { included: true, feature: "All event types" },
-      { included: true, feature: "Ai generated prize image" },
       { included: true, feature: "Event Analytics" },
+      { included: true, feature: "Ai generated prize image" },
       { included: false, feature: "Fully customisable lottery page" },
       { included: true, feature: "Upload of csv files and sanitisation" },
       { included: false, feature: "Adding & managing collaborators" },
