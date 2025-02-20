@@ -278,7 +278,7 @@ export default function Home() {
           <span>in real-time, join progress.</span>
         </h2>
       </Box>
-      <footer className="relative mx-[2rem] p-[4.8rem] rounded-[5rem] bg-[#bab9ff30] h-[40rem]">
+      <footer className="relative p-[4.8rem] rounded-[5rem] bg-[#bab9ff30] h-[40rem]">
         <Box className="flex flex-col gap-[2rem]">
           <Link href={"/"}>
             <img src="img/logo/randora.svg" alt="logo" />
