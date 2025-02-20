@@ -352,7 +352,7 @@ export default function Home() {
           ))}
         </Box>
 
-        <Box className="md:hidden mb-[3rem] mt-[1rem] text-[1.6rem] text-[#00000081] flex flex-col gap-[2rem]">
+        <Box className="md:hidden mb-[3rem] mt-[4rem] text-[1.6rem] text-[#00000081] flex flex-col gap-[2rem]">
           <Box className="flex flex-col gap-[1.6rem] text-[#00000081]">
             <Box className="flex gap-[1rem] items-center">
               <FaAddressBook className="text-[1.6rem] text-[#00000081]" />
