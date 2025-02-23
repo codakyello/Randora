@@ -11,6 +11,8 @@ import OtpForm from "./OTPForm";
 import LoginForm from "./LoginForm";
 import { IoCloseOutline } from "react-icons/io5";
 import Menus from "./Menu";
+import PaymentBox from "./PaymentBox";
+import { planType } from "../_utils/types";
 
 const plans = [
   {
@@ -63,12 +65,17 @@ export default function Pricing() {
   const [step, setStep] = useState(2);
   const [accountType, setAccountType] = useState<string>("");
   const [authType, setAuthType] = useState<"signup" | "login">("signup");
+  const [plan, setPlan] = useState<planType | null>(null);
 
   if (isAuthenticating) return null;
 
   const getStarted = function () {
     // check if the user is logged in first
-    if (!authenticated) open("auth");
+    if (!authenticated) return open("auth");
+
+    // Begin the payment process
+    // open the payment modal
+    open("payment");
   };
 
   return (
@@ -146,6 +153,7 @@ export default function Pricing() {
                 {plan.name.toLowerCase() !== "free" && (
                   <button
                     onClick={() => {
+                      setPlan(plan);
                       setAccountType("");
                       setAccountType(plan.name.toLowerCase());
                       getStarted();
@@ -231,9 +239,20 @@ export default function Pricing() {
         </>
       </ModalWindow>
 
-      {/* <ModalWindow name="login">
-        <LoginForm />
-      </ModalWindow> */}
+      <ModalWindow
+        name="payment"
+        className="max-w-screen bg-[var(--color-grey-50)]"
+      >
+        <>
+          <button
+            onClick={close}
+            className="rounded-[10px] hover:bg-[#5555552d] right-[2rem] top-[2rem] absolute hover:rounded-xl bg-[var(--color-grey-50)]"
+          >
+            <IoCloseOutline size={"4rem"} />
+          </button>
+          <PaymentBox plan={plan} />
+        </>
+      </ModalWindow>
     </>
   );
 }

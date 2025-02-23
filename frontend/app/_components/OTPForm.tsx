@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { Box, Button as ChakraButton, Text } from "@chakra-ui/react";
 import React, { useState, useEffect, FormEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -92,6 +93,8 @@ const OtpForm: React.FC<OtpFormProps> = ({
   }
   return (
     <Box className="flex p-5 bg-[var(--color-grey-50)] gap-[3.2rem] flex-col h-screen items-center justify-center">
+      <img src="img/logo/randora.svg" alt="logo" />
+
       <form
         onSubmit={handleSubmit}
         className="flex justify-stretch flex-col py-[2.4rem] px-[4rem] bg-[var(--color-grey-0)] border border-[var(--color-grey-100)] rounded-[var(--border-radius-md)] text-[1.4rem] w-full max-w-[45rem]"

@@ -70,8 +70,8 @@ function SignUpForm({
     setLoading(false);
   }
   return (
-    <Box className="flex w-screen flex-col p-5 bg-[var(--color-grey-50)] h-screen items-center justify-center">
-      <h1 className="mb-10">Randora</h1>
+    <Box className="flex gap-10 w-screen flex-col p-5 bg-[var(--color-grey-50)] h-screen items-center justify-center">
+      <img src="img/logo/randora.svg" alt="logo" />
       <form
         onSubmit={handleSubmit}
         className="flex justify-stretch flex-col py-[2.4rem] px-[4rem] bg-[var(--color-grey-0)] border border-[var(--color-grey-100)] rounded-[var(--border-radius-md)] text-[1.4rem] w-full max-w-[48rem] overflow-y-scroll no-scrollbar"

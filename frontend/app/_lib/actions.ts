@@ -353,3 +353,75 @@ export async function assignPrize({
 
   return data;
 }
+
+export async function createTransaction(
+  token: string | null,
+  {
+    userId,
+    currency,
+    amount,
+    paymentMethod,
+    paymentFor,
+  }: {
+    userId: string;
+    currency: string;
+    amount: number;
+    paymentMethod: string;
+    paymentFor: string;
+  }
+) {
+  const res = await fetch(`${URL}/transactions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      userId,
+      currency,
+      amount,
+      paymentMethod,
+      paymentFor,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) throw new Error(data.message);
+
+  const {
+    data: { transaction },
+  } = data;
+
+  return transaction;
+}
+
+export async function convertCurrency({
+  amount,
+  from,
+  to,
+}: {
+  amount: number;
+  from: string;
+  to: string;
+}) {
+  const res = await fetch(`https://api.spendjuice.com/exchange/convert`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ amount, from, to }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) throw new Error(data.message);
+
+  console.log(data);
+
+  const {
+    data: { converted_amount },
+  } = data;
+
+  return converted_amount;
+}

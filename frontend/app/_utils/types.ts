@@ -132,3 +132,9 @@ export interface SettingsRandora {
   coverLogo?: string;
   name?: string;
 }
+
+export type planType = {
+  name: string;
+  price: number;
+  features: { included: boolean; feature: string }[];
+};
