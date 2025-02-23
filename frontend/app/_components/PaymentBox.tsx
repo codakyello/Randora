@@ -7,13 +7,14 @@ import Spinner from "./Spinner";
 import { convertCurrency, createTransaction } from "../_lib/actions";
 import { useAuth } from "../_contexts/AuthProvider";
 import toast from "react-hot-toast";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export default function PaymentBox({ plan }: { plan: planType | null }) {
   const [isJuicywayLoaded, setIsJuicywayLoaded] = useState(false);
   const [ready, setReady] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { user, getToken } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     const checkJuicyway = () => {
@@ -59,12 +60,14 @@ export default function PaymentBox({ plan }: { plan: planType | null }) {
         window.Juicyway.PayWithJuice({
           onClose: () => {
             console.log("Payment widget closed.");
+            // redirect("/dashboard");
+            router.push("/dashboard");
           },
           onSuccess: (t) => {
             alert("Payment successful!");
-            redirect("/dashboard");
             // show success message
             console.log("Payment successful!", t);
+            router.push("/dashboard");
           },
           onError: (error: unknown) => console.error("Payment failed:", error),
           reference: transaction.reference,
