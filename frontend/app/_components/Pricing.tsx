@@ -144,7 +144,11 @@ export default function Pricing() {
                   <Link className="w-full" href={`/signup`}>
                     <button
                       disabled={authenticated}
-                      className="text-white py-[1.5rem] rounded-[10px] w-full bg-[var(--color-primary)]"
+                      className={` py-[1.5rem] rounded-[10px] w-full ${
+                        authenticated
+                          ? "border border-[#333] text-[#333]"
+                          : "text-white bg-[var(--color-primary)]"
+                      }`}
                     >
                       Get Started for Free
                     </button>
@@ -164,7 +168,13 @@ export default function Pricing() {
                         ? user?.accountType !== plan.name.toLowerCase()
                         : false
                     }
-                    className="text-white py-[1.5rem] rounded-[10px] w-full bg-[var(--color-primary)]"
+                    className={`py-[1.5rem] rounded-[10px] w-full ${
+                      user
+                        ? user?.accountType === plan.name.toLowerCase()
+                          ? "bg-[var(--color-primary)] text-white"
+                          : "border border-[#333] text-[#333]"
+                        : "bg-[var(--color-primary)] text-white"
+                    } `}
                   >
                     Get Started
                   </button>
