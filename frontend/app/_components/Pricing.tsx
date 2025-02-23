@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { Box } from "@chakra-ui/react";
@@ -244,6 +245,12 @@ export default function Pricing() {
         className="max-w-screen bg-[var(--color-grey-50)]"
       >
         <>
+          <img
+            className="absolute top-[2rem] left-[2rem]"
+            src="img/logo/randora.svg"
+            alt="logo"
+          />
+
           <button
             onClick={close}
             className="rounded-[10px] hover:bg-[#5555552d] right-[2rem] top-[2rem] absolute hover:rounded-xl bg-[var(--color-grey-50)]"
