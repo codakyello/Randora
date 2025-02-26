@@ -67,7 +67,7 @@ const AccountType = ({
         <Button
           type="primary"
           onClick={() => onStep(2)}
-          className="mt-6 w-full"
+          className="mt-6 w-full h-[5.2rem]"
         >
           Next
         </Button>
