@@ -312,7 +312,7 @@ export default function Home() {
           <span>in real-time, join progress.</span>
         </h2>
       </Box>
-      <footer className="relative flex-col md:flex-row flex justify-between p-[4.8rem] rounded-[5rem] bg-[#bab9ff30] gap-[2rem] min-h-[40rem]">
+      <footer className="relative flex-col md:flex-row flex justify-between p-[4.5rem] rounded-t-[5rem] bg-[#bab9ff30] gap-[2rem] min-h-[40rem]">
         <Box className="flex flex-col gap-[3rem]">
           <Link href={"/"}>
             <img src="img/logo/randora.svg" alt="logo" />

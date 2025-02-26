@@ -1,4 +1,3 @@
-import { Box } from "@chakra-ui/react";
 import Pricing from "../_components/Pricing";
 import Modal from "../_components/Modal";
 import Menus from "../_components/Menu";
