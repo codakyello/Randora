@@ -64,11 +64,13 @@ const AccountType = ({
           </Stack>
         </RadioGroup>
 
-        <Box className="flex w-full bg-[var(--color-grey-50)]">
-          <Button type="primary" onClick={() => onStep(2)} className="mt-6">
-            Next
-          </Button>
-        </Box>
+        <Button
+          type="primary"
+          onClick={() => onStep(2)}
+          className="mt-6 w-full"
+        >
+          Next
+        </Button>
       </Box>
     </Box>
   );

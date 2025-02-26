@@ -80,44 +80,44 @@ export default function Pricing() {
   };
 
   return (
-    <>
-      <Box className="text-center">
+    <Box className="bg-[var(--color-grey-50)]">
+      <Box className="flex h-[7rem] p-[2rem] sm:px-[4rem] items-center justify-between gap-8">
+        <Link href={"/"}>
+          <img src="img/logo/randora.svg" alt="logo" />
+        </Link>
+
+        {user ? (
+          <>
+            <Menus.Toogle id="userMenu">
+              <img
+                src={user.image}
+                alt="avatar"
+                className="w-[4rem] h-[4rem] rounded-full"
+              />
+            </Menus.Toogle>
+
+            <Menus.Menu id="userMenu">
+              <Menus.Button onClick={() => logout?.()}>Sign Out</Menus.Button>
+            </Menus.Menu>
+          </>
+        ) : (
+          <Box className="flex gap-8 items-center">
+            <Link className="font-medium text-[1.8rem] " href={"/login"}>
+              Login
+            </Link>
+
+            <Link
+              className="font-medium rounded-[8px] px-[2rem] py-[.8rem] border border-[#000] [#000] text-[#000]"
+              href={"/signup"}
+            >
+              Sign Up
+            </Link>
+          </Box>
+        )}
+      </Box>
+
+      <Box className="text-center px-[2rem] min-h-screen">
         {/* <NavBar user={user} logout={logout} /> */}
-
-        <Box className="flex h-[7rem] items-center justify-between gap-8">
-          <Link href={"/"}>
-            <img src="img/logo/randora.svg" alt="logo" />
-          </Link>
-
-          {user ? (
-            <>
-              <Menus.Toogle id="userMenu">
-                <img
-                  src={user.image}
-                  alt="avatar"
-                  className="w-[4rem] h-[4rem] rounded-full"
-                />
-              </Menus.Toogle>
-
-              <Menus.Menu id="userMenu">
-                <Menus.Button onClick={() => logout?.()}>Sign Out</Menus.Button>
-              </Menus.Menu>
-            </>
-          ) : (
-            <Box className="flex gap-8 items-center">
-              <Link className="font-medium text-[1.8rem] " href={"/login"}>
-                Login
-              </Link>
-
-              <Link
-                className="font-medium rounded-[8px] px-[2rem] py-[.8rem] border border-[#000] [#000] text-[#000]"
-                href={"/signup"}
-              >
-                Sign Up
-              </Link>
-            </Box>
-          )}
-        </Box>
 
         <h1 className=" tracking-tight mt-[5rem] text-[6rem] leading-[7.2rem] max-w-[80rem] mx-auto mb-[.5rem]">
           Try any of our plans
@@ -270,6 +270,6 @@ export default function Pricing() {
           <PaymentBox plan={plan} />
         </>
       </ModalWindow>
-    </>
+    </Box>
   );
 }

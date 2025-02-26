@@ -11,9 +11,7 @@ export default function Page() {
   return (
     <Modal>
       <Menus>
-        <Box className="px-[2rem] min-h-screen bg-[var(--color-grey-50)]">
-          <Pricing />
-        </Box>
+        <Pricing />
       </Menus>
     </Modal>
   );
