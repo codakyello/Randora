@@ -37,8 +37,8 @@ export async function getOrganisation(organisationId: string | undefined) {
 }
 
 export async function getUser() {
-  console.log("in get user");
   const token = await getToken();
+
   try {
     const res = await fetch(`${URL}/users/me`, {
       headers: {

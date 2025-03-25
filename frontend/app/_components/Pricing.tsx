@@ -14,6 +14,9 @@ import { IoCloseOutline } from "react-icons/io5";
 import Menus from "./Menu";
 import PaymentBox from "./PaymentBox";
 import { planType } from "../_utils/types";
+import { getOrganisation, getUser } from "../_lib/data-service";
+import toast from "react-hot-toast";
+import SpinnerMini from "./SpinnerMini";
 
 const plans = [
   {
@@ -67,15 +70,47 @@ export default function Pricing() {
   const [accountType, setAccountType] = useState<string>("");
   const [authType, setAuthType] = useState<"signup" | "login">("signup");
   const [plan, setPlan] = useState<planType | null>(null);
+  const [loading, setLoading] = useState(false);
 
   if (isAuthenticating) return null;
 
-  const getStarted = () => {
+  const getStarted = async () => {
     // check if the user is logged in first
-    if (!authenticated) return open("auth");
+    if (!authenticated || !user) return open("auth");
+    console.log(user);
 
     // Begin the payment process
     // open the payment modal
+    // Check if a subscription is already ongoing.
+    setLoading(true);
+    if (user.accountType === "organisation") {
+      console.log(user);
+      try {
+        const organisation = await getOrganisation(user.organisationId);
+        if (organisation.subscriptionStatus === "active")
+          return toast.error("You still have an active subscription");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          return toast.error(err.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      try {
+        const individual = await getUser();
+
+        if (individual.subscriptionStatus === "active")
+          return toast.error("You still have an active subscription");
+      } catch (err) {
+        if (err instanceof Error) {
+          return toast.error(err.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+    }
+
     open("payment");
   };
 
@@ -164,9 +199,7 @@ export default function Pricing() {
                       getStarted();
                     }}
                     disabled={
-                      user
-                        ? user?.accountType !== plan.name.toLowerCase()
-                        : false
+                      user?.accountType !== plan.name.toLowerCase() || loading
                     }
                     className={`py-[1.5rem] rounded-[10px] w-full ${
                       user
@@ -176,7 +209,11 @@ export default function Pricing() {
                         : "bg-[var(--color-primary)] text-white"
                     } `}
                   >
-                    Get Started
+                    {loading ? (
+                      <SpinnerMini className="mx-auto" />
+                    ) : (
+                      "Get Started"
+                    )}
                   </button>
                 )}
 
