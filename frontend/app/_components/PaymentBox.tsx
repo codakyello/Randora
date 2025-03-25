@@ -47,11 +47,17 @@ export default function PaymentBox({ plan }: { plan: planType | null }) {
     setIsLoading(true);
 
     try {
-      const amount = await convertCurrency({
+      let amount = await convertCurrency({
         amount: plan.price,
         from: "USD",
         to: "NGN",
       });
+
+      if (plan.name === "organisation") {
+        amount = amount + 20000;
+      } else {
+        amount = amount + 10000;
+      }
 
       if (!user) return;
 

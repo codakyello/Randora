@@ -422,7 +422,7 @@ export async function convertCurrency({
   const {
     data: { converted_amount },
   } = data;
-  return converted_amount + 20000;
+  return converted_amount;
 }
 
 export async function processTransaction({
