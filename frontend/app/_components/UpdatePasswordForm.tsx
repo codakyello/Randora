@@ -13,7 +13,7 @@ import {
 
 export default function UpdatePasswordForm() {
   const [loading, setLoading] = useState(false);
-  const { setToken } = useAuth();
+  const { user, login } = useAuth();
   const handleUnAuthorisedResponse = useHandleUnAuthorisedResponse();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -30,7 +30,7 @@ export default function UpdatePasswordForm() {
 
     const res = await updatePassword(formFields);
     if (res.status !== "error") {
-      setToken(res.token);
+      login(user, res.token);
     }
 
     setLoading(false);

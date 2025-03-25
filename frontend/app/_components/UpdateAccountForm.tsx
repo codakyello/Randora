@@ -72,18 +72,18 @@ export default function UpdateAccountForm({
       }
     }
 
-    const [res, res2] = await Promise.all([
+    const [user, res2] = await Promise.all([
       updateUser(formInputs),
       organisation &&
         updateOrganisation({ name: organisationName }, organisation._id),
     ]);
 
-    if (res?.status !== "error") {
-      login(res.user, token);
+    if (user?.status !== "error") {
+      login(user, token);
     }
 
     showToastMessage(
-      res?.status || res2?.status,
+      user?.status || res2?.status,
       "Failed to update profile",
       "Profile updated successfully"
     );
