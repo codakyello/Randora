@@ -212,7 +212,7 @@ export default function Pricing() {
                         : "bg-[var(--color-primary)] text-white"
                     } `}
                   >
-                    {loading ? (
+                    {loading && plan.name.toLowerCase() === accountType ? (
                       <SpinnerMini className="mx-auto" />
                     ) : (
                       "Get Started"
