@@ -11,13 +11,11 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
 function ResetPassword({ token }: { token: string }) {
-  console.log("token", token);
-
   const [loading, setLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
-  const { login, setToken } = useAuth();
+  const { login } = useAuth();
   const router = useRouter();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -33,8 +31,7 @@ function ResetPassword({ token }: { token: string }) {
     const res = await resetPassword({ password, confirmPassword, token });
 
     if (res.status !== "error") {
-      login(res.user);
-      setToken(res.token);
+      login(res.user, res.token);
       router.push("/dashboard");
     } else {
       toast.error(res.message);
