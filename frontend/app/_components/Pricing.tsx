@@ -70,7 +70,7 @@ export default function Pricing() {
 
   if (isAuthenticating) return null;
 
-  const getStarted = function () {
+  const getStarted = () => {
     // check if the user is logged in first
     if (!authenticated) return open("auth");
 

@@ -16,9 +16,11 @@ export type Collaborator = {
 
 // Type when creating Cabin
 export interface User {
-  _id: string;
-  userName: string;
-  email: string;
+  _id?: string;
+  userName?: string;
+  name?: string;
+  phone?: string;
+  email?: string;
   accountType?: string;
   image: string;
   organisationId?: string;

@@ -4,7 +4,11 @@ import { planType } from "../_utils/types";
 import Script from "next/script";
 import { useEffect, useState } from "react";
 import Spinner from "./Spinner";
-import { convertCurrency, createTransaction } from "../_lib/actions";
+import {
+  convertCurrency,
+  createTransaction,
+  processTransaction,
+} from "../_lib/actions";
 import { useAuth } from "../_contexts/AuthProvider";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -15,6 +19,8 @@ export default function PaymentBox({ plan }: { plan: planType | null }) {
   const [isLoading, setIsLoading] = useState(false);
   const { user, getToken } = useAuth();
   const router = useRouter();
+
+  const token = getToken();
 
   useEffect(() => {
     const checkJuicyway = () => {
@@ -49,24 +55,40 @@ export default function PaymentBox({ plan }: { plan: planType | null }) {
     try {
       if (!user) return;
 
-      const transaction = await createTransaction(getToken(), {
+      if (!user._id) {
+        throw new Error("User ID is undefined");
+      }
+
+      const transaction = await createTransaction(token, {
         userId: user._id,
         currency: "NGN",
         amount,
-        paymentMethod: "crypto",
+        paymentMethod: "bank_transfer",
         paymentFor: plan.name,
       });
+
+      console.log(transaction);
       if (isJuicywayLoaded)
         window.Juicyway.PayWithJuice({
           onClose: () => {
-            console.log("Payment widget closed.");
+            // console.log("Payment widget closed.");
             // redirect("/dashboard");
-            router.push("/dashboard");
+            // router.push("/dashboard");
           },
-          onSuccess: (t) => {
-            alert("Payment successful!");
-            // show success message
-            console.log("Payment successful!", t);
+          onSuccess: () => {
+            try {
+              processTransaction({
+                reference: transaction.reference,
+                eventType: "payment.session.succeded",
+              });
+
+              toast.success("Payment successful!");
+            } catch (error: unknown) {
+              if (error instanceof Error) {
+                alert("Error processing payment: " + error.message);
+                toast.error(error.message);
+              }
+            }
             router.push("/dashboard");
           },
           onError: (error: unknown) => console.error("Payment failed:", error),

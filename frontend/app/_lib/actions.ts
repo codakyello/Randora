@@ -425,3 +425,25 @@ export async function convertCurrency({
 
   return converted_amount;
 }
+
+export async function processTransaction({
+  reference,
+  eventType,
+}: {
+  reference: string;
+  eventType: "payment.session.succeded" | "payment.session.failed";
+}) {
+  const res = await fetch(`${URL}/transactions/process`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ reference, eventType }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) throw new Error(data.message);
+
+  return data;
+}

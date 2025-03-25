@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 import { ChakraProvider } from "@chakra-ui/react";
 import { DarkModeProvider } from "./_contexts/DarkModeProvider";
 import { NavProvider } from "./_contexts/NavProvider";
+import { authenticate } from "./_lib/data-service";
 
 export const metadata = {
   title: {
@@ -33,7 +34,9 @@ export default function RootLayout({
           <QueryProvider>
             <DarkModeProvider>
               <NavProvider>
-                <AuthProvider>{children}</AuthProvider>
+                <AuthProvider authenticateFn={authenticate}>
+                  {children}
+                </AuthProvider>
               </NavProvider>
             </DarkModeProvider>
           </QueryProvider>

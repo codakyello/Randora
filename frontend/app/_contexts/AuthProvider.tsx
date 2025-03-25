@@ -7,7 +7,7 @@ import React, {
   useReducer,
 } from "react";
 import { useRouter } from "next/navigation";
-import { authenticate as authenticateApi } from "@/app/_lib/data-service";
+// import { authenticate as authenticateApi } from "@/app/_lib/data-service";
 import Cookies from "js-cookie";
 import { User } from "../_utils/types";
 
@@ -18,8 +18,7 @@ const AuthContext = createContext<
       authenticated: boolean;
       isLogoutAction: boolean;
       logout: () => void;
-      login: (user: User | null) => void;
-      setToken: (token: string | null) => void;
+      login: (user: User | null, token: string | null) => void;
       getToken: () => string | null;
     }
   | undefined
@@ -81,7 +80,13 @@ function reducer(state: AuthState, action: ActionType) {
       return state;
   }
 }
-function AuthProvider({ children }: { children: ReactNode }) {
+function AuthProvider({
+  children,
+  authenticateFn,
+}: {
+  children: ReactNode;
+  authenticateFn: (token: string) => Promise<boolean>;
+}) {
   const router = useRouter();
   // const [user, setUser] = useState<User | null>(null);
   // const [isAuthenticating, setIsAuthenticating] = useState(true);
@@ -106,8 +111,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
 
       dispatch({ type: "token", payload: JSON.parse(token) });
 
-      console.log("token set");
-
       Cookies.set("token", JSON.parse(token));
     } else {
       // setIsAuthenticating(false);
@@ -131,7 +134,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
       dispatch({ type: "authenticating/start" });
 
       try {
-        const isAuthenticated = await authenticateApi(token);
+        const isAuthenticated = (await authenticateFn?.(token)) ?? false;
 
         if (!isAuthenticated) throw new Error("Not authenticated");
         dispatch({ type: "authenticated" });
@@ -156,17 +159,16 @@ function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [user, token]);
 
-  function login(user: User | null) {
+  function login(user: User | null, token: string | null) {
     dispatch({ type: "user", payload: user });
+    dispatch({ type: "token", payload: token });
 
     // Cookies.set("token", token);
   }
 
-  function setToken(token: string | null) {
-    dispatch({ type: "token", payload: token });
-
-    if (token) Cookies.set("token", token);
-  }
+  // function setToken(token: string | null) {
+  //   if (token) Cookies.set("token", token);
+  // }
 
   function logout() {
     localStorage.removeItem("user");
@@ -193,7 +195,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
         isAuthenticating,
         authenticated,
         isLogoutAction,
-        setToken,
         getToken,
       }}
     >

@@ -27,7 +27,7 @@ const OtpForm: React.FC<OtpFormProps> = ({
   pricingPage = false,
 }) => {
   const router = useRouter();
-  const { login, setToken } = useAuth();
+  const { login } = useAuth();
   const [loading, setLoading] = useState(false);
   const [time, setTimer] = useState(OTP_EXPIRES);
   const [otp, setOtp] = useState("");
@@ -61,8 +61,7 @@ const OtpForm: React.FC<OtpFormProps> = ({
     const res = await verifyOtp(email, otp);
 
     if (res.status !== "error") {
-      login(res.data.user);
-      setToken(res.token);
+      login(res.data.user, res.token);
       if (pricingPage) {
         close();
       } else router.push("/dashboard");
