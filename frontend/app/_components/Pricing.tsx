@@ -199,7 +199,10 @@ export default function Pricing() {
                       getStarted();
                     }}
                     disabled={
-                      user?.accountType !== plan.name.toLowerCase() || loading
+                      user
+                        ? user?.accountType !== plan.name.toLowerCase() ||
+                          loading
+                        : false
                     }
                     className={`py-[1.5rem] rounded-[10px] w-full ${
                       user
