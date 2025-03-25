@@ -28,6 +28,7 @@ export default function CreateEditEventForm({
   setEventId?: (id: string) => void;
 }) {
   const { open: openModal, close: closeModal } = useModal();
+
   const { close: closeMenu } = useMenu();
 
   const { mutate: updateEvent, isPending: isUpdating } =
