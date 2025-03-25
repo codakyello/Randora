@@ -79,7 +79,7 @@ export default function UpdateAccountForm({
     ]);
 
     if (res?.status !== "error") {
-      login(res);
+      login(res.user, token);
     }
 
     showToastMessage(
