@@ -53,7 +53,7 @@ export default function PaymentBox({ plan }: { plan: planType | null }) {
         to: "NGN",
       });
 
-      if (plan.name === "organisation") {
+      if (plan.name.toLowerCase() === "organisation") {
         amount = amount + 20000;
       } else {
         amount = amount + 10000;
