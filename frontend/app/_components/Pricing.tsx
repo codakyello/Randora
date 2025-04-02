@@ -274,7 +274,6 @@ export default function Pricing() {
             ) : (
               <LoginForm
                 setEmail={setEmail}
-                setStep={setStep}
                 authType={authType}
                 setAuthType={setAuthType}
               />
