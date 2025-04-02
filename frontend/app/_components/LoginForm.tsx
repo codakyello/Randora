@@ -9,22 +9,29 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { Box } from "@chakra-ui/react";
 import { ModalOpen, ModalWindow } from "./Modal";
 import ForgotPassword from "./ForgotPassword";
-import { showToastMessage } from "../_utils/utils";
+// import { showToastMessage } from "../_utils/utils";
 import Button from "./Button";
+import { useAuth } from "../_contexts/AuthProvider";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 function LoginForm({
   setEmail,
-  setStep,
   authType,
   setAuthType,
 }: {
   setEmail: (email: string) => void;
-  setStep: (step: number) => void;
+  // setStep: (step: number) => void;
   authType?: string;
   setAuthType?: React.Dispatch<React.SetStateAction<"login" | "signup">>;
 }) {
   const [loading, setLoading] = useState<boolean>(false);
   const [show, setShow] = useState<boolean>(false);
+  const router = useRouter();
+
+  // setStep()
+
+  const { login } = useAuth();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -35,17 +42,27 @@ function LoginForm({
     if (!email || !password) return;
 
     setLoading(true);
+
     setEmail(email);
 
     const res = await loginApi(formData);
 
-    showToastMessage(res.status, res.message, res.message);
+    // showToastMessage(res.status, res.message, res.message);
 
-    setStep(2);
     if (res.status !== "error") {
-      if (authType) setStep(3);
-      else setStep(2);
+      login(res.data.user, res.token);
+
+      router.push("/dashboard");
+    } else {
+      if (res.message === "fetch failed")
+        toast.error("Bad Internet connection");
+      else toast.error(res.message);
     }
+    // setStep(2);
+    // if (res.status !== "error") {
+    //   if (authType) setStep(3);
+    //   else setStep(2);
+    // }
     setLoading(false);
   }
   return (
