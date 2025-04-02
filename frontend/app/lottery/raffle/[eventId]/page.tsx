@@ -38,7 +38,7 @@ export default async function Page({
     console.log(participants.length, page);
 
     page++;
-    if (res?.participants.length < 20000) {
+    if (res?.participants.length < 10000) {
       break;
     }
   }
