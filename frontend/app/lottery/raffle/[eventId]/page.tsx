@@ -6,7 +6,7 @@ import {
   getOrganisation,
   getEventParticipants,
 } from "@/app/_lib/data-service";
-import { Participant } from "@/app/_utils/types";
+// import { Participant } from "@/app/_utils/types";
 import { Box } from "@chakra-ui/react";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronLeftIcon } from "lucide-react";
@@ -23,32 +23,16 @@ export default async function Page({
     getAllEventPrizes(params.eventId),
   ]);
 
-  const limit = 30000;
-  let page = 1;
-  const participants: Participant[] = [];
+  const limit = 50000;
 
-  // keep fetching increasing the page until we get all the participants
-  while (true) {
-    const res = await getEventParticipants(params.eventId, {
-      limit,
-      page,
-    });
+  const res = await getEventParticipants(params.eventId, {
+    limit,
+  });
 
-    participants.push(...res?.participants);
-    console.log(participants.length, page);
+  const participants = res?.participants;
 
-    page++;
-    if (res?.participants.length < limit) {
-      break;
-    }
-  }
   const { event, statusCode } = eventData || {};
   const { prizes } = prizesData || {};
-
-  // console.log(totalCount, participants.length);
-
-  // instead of fetching all of the participants data once, we can fetch the data in chunks of 1000 participants at a time
-  // const { participants } = await getEventAllParticipants(params.eventId, 0, 1000);
 
   const organisation = await getOrganisation(event?.organisationId);
 
