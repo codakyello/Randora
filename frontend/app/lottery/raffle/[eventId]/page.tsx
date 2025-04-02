@@ -30,7 +30,7 @@ export default async function Page({
   // keep fetching increasing the page until we get all the participants
   while (true) {
     const res = await getEventParticipants(params.eventId, {
-      limit: 20000,
+      limit: 10000,
       page,
     });
 
