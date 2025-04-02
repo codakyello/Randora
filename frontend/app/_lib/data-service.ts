@@ -564,21 +564,23 @@ export async function getEvent(eventId: string) {
 
 export async function getEventParticipants(
   eventId: string,
-  searchParams: {
-    page: string | null;
-    status: string | null;
-    sortBy: string | null;
+  searchParams?: {
+    page?: string | null | number;
+    status?: string | null;
+    sortBy?: string | null;
+    limit?: number | null;
   }
 ) {
   let statusCode;
   let query = "";
 
-  const page = searchParams.page || 1;
-  const status = searchParams.status;
-  const sort = searchParams.sortBy;
+  const page = searchParams?.page || 1;
+  const status = searchParams?.status;
+  const sort = searchParams?.sortBy;
+  const limit = searchParams?.limit || RESULTS_PER_PAGE;
 
   // Page
-  query += `?page=${page}&limit=${RESULTS_PER_PAGE}`;
+  query += `?page=${page}&limit=${limit}`;
 
   // Filter
   if (status && status === "winners") query += `&isWinner=true`;

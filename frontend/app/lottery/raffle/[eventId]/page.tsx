@@ -1,11 +1,12 @@
 import Modal from "@/app/_components/Modal";
 import Raffle from "@/app/_components/Raffel";
 import {
-  getEventAllParticipants,
   getAllEventPrizes,
   getEvent,
   getOrganisation,
+  getEventParticipants,
 } from "@/app/_lib/data-service";
+import { Participant } from "@/app/_utils/types";
 import { Box } from "@chakra-ui/react";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronLeftIcon } from "lucide-react";
@@ -17,15 +18,37 @@ export default async function Page({
 }: {
   params: { eventId: string };
 }) {
-  const [eventData, participantData, prizesData] = await Promise.all([
+  const [eventData, prizesData] = await Promise.all([
     getEvent(params.eventId),
-    getEventAllParticipants(params.eventId),
     getAllEventPrizes(params.eventId),
   ]);
 
+  // const limit = 20000;
+  let page = 1;
+  const participants: Participant[] = [];
+
+  // keep fetching increasing the page until we get all the participants
+  while (true) {
+    const res = await getEventParticipants(params.eventId, {
+      limit: 20000,
+      page,
+    });
+
+    participants.push(...res?.participants);
+    console.log(participants.length, page);
+
+    page++;
+    if (res?.participants.length < 20000) {
+      break;
+    }
+  }
   const { event, statusCode } = eventData || {};
-  const { participants } = participantData || {};
   const { prizes } = prizesData || {};
+
+  // console.log(totalCount, participants.length);
+
+  // instead of fetching all of the participants data once, we can fetch the data in chunks of 1000 participants at a time
+  // const { participants } = await getEventAllParticipants(params.eventId, 0, 1000);
 
   const organisation = await getOrganisation(event?.organisationId);
 
