@@ -207,7 +207,7 @@ export async function resetPassword({
 
 export async function authenticate(token: string) {
   try {
-    if (!token) return false;
+    if (!token) throw new Error("No token provided");
 
     const res = await fetch(`${URL}/users/verify-auth-token`, {
       headers: {
