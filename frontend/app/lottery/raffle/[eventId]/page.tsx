@@ -45,7 +45,7 @@ export default async function Page({
     page++;
 
     console.log(participants.length, page);
-    if (res?.participants.length < limit || participants.length > 50000) break;
+    if (res?.participants.length < limit || participants.length > 49999) break;
   }
 
   const { event, statusCode } = eventData || {};
