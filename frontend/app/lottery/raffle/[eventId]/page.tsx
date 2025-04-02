@@ -36,7 +36,6 @@ export default async function Page({
 
   const organisation = await getOrganisation(event?.organisationId);
 
-  console.log(organisation);
   if (statusCode === 404) return notFound();
 
   if (!event)
