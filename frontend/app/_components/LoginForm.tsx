@@ -41,6 +41,7 @@ function LoginForm({
 
     showToastMessage(res.status, res.message, res.message);
 
+    setStep(2);
     if (res.status !== "error") {
       if (authType) setStep(3);
       else setStep(2);
