@@ -23,14 +23,14 @@ export default async function Page({
     getAllEventPrizes(params.eventId),
   ]);
 
-  // const limit = 20000;
+  const limit = 30000;
   let page = 1;
   const participants: Participant[] = [];
 
   // keep fetching increasing the page until we get all the participants
   while (true) {
     const res = await getEventParticipants(params.eventId, {
-      limit: 10000,
+      limit,
       page,
     });
 
@@ -38,7 +38,7 @@ export default async function Page({
     console.log(participants.length, page);
 
     page++;
-    if (res?.participants.length < 10000) {
+    if (res?.participants.length < limit) {
       break;
     }
   }
