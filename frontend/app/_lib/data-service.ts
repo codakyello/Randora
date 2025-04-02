@@ -6,7 +6,7 @@ import { getToken } from "../_utils/serverUtils";
 import { SettingsRandora } from "../_utils/types";
 
 const URL = "https://randora-11b23c2bb02d.herokuapp.com/api/v1";
-// const DEV_URL = "http://localhost:5000/api/v1";
+const DEV_URL = "http://localhost:5000/api/v1";
 
 export async function getOrganisation(organisationId: string | undefined) {
   const token = await getToken();
@@ -78,7 +78,7 @@ export async function login(formData: FormData) {
   }
 
   try {
-    const res = await fetch(`${URL}/users/login`, {
+    const res = await fetch(`${DEV_URL}/users/login`, {
       method: "POST",
       body: JSON.stringify({
         email,
