@@ -6,7 +6,7 @@ import {
   getOrganisation,
   getEventParticipants,
 } from "@/app/_lib/data-service";
-// import { Participant } from "@/app/_utils/types";
+import { Participant } from "@/app/_utils/types";
 import { Box } from "@chakra-ui/react";
 import { formatDistanceToNow } from "date-fns";
 import { ChevronLeftIcon } from "lucide-react";
@@ -23,13 +23,30 @@ export default async function Page({
     getAllEventPrizes(params.eventId),
   ]);
 
-  const limit = 50000;
+  console.log(prizesData?.prizes);
 
-  const res = await getEventParticipants(params.eventId, {
-    limit,
-  });
+  // The backend cannot have a
+  // long running task of more than 10 seconds
+  let page = 1;
+  const limit = 10000;
 
-  const participants = res?.participants;
+  const participants: Participant[] = [];
+
+  while (true) {
+    console.log("in here");
+    const res = await getEventParticipants(params.eventId, {
+      limit,
+      page,
+    });
+
+    if (!res?.participants || !Array.isArray(res.participants)) break; // Ensure participants exist
+
+    participants.push(...res?.participants);
+    page++;
+
+    console.log(participants.length, page);
+    if (res?.participants.length < limit || participants.length > 50000) break;
+  }
 
   const { event, statusCode } = eventData || {};
   const { prizes } = prizesData || {};
