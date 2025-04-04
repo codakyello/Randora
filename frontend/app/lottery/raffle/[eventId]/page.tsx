@@ -8,7 +8,7 @@ import {
 } from "@/app/_lib/data-service";
 import { Participant } from "@/app/_utils/types";
 import { Box } from "@chakra-ui/react";
-import { formatDistanceToNow } from "date-fns";
+// import { formatDistanceToNow } from "date-fns";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -70,22 +70,22 @@ export default async function Page({
       </Box>
     );
 
-  if (new Date(event.startDate) > new Date())
-    return (
-      <Box className="h-screen bg-[var(--color-grey-0)] flex items-center justify-center text-center text-[1.5rem] font-semibold">
-        <h1 className="text-[3rem]">
-          Event starts in {formatDistanceToNow(new Date(event.startDate))}
-        </h1>
+  // if (new Date(event.startDate) > new Date())
+  //   return (
+  //     <Box className="h-screen bg-[var(--color-grey-0)] flex items-center justify-center text-center text-[1.5rem] font-semibold">
+  //       <h1 className="text-[3rem]">
+  //         Event starts in {formatDistanceToNow(new Date(event.startDate))}
+  //       </h1>
 
-        <Link
-          className="absolute flex items-center left-5 top-[4rem] text-[#0634f0] text-[1.6rem] font-semibold"
-          href={`/dashboard/events/${event._id}`}
-        >
-          <ChevronLeftIcon className="text-[2rem]" />
-          <p className="text-[var(--brand-color)]">Go Back</p>
-        </Link>
-      </Box>
-    );
+  //       <Link
+  //         className="absolute flex items-center left-5 top-[4rem] text-[#0634f0] text-[1.6rem] font-semibold"
+  //         href={`/dashboard/events/${event._id}`}
+  //       >
+  //         <ChevronLeftIcon className="text-[2rem]" />
+  //         <p className="text-[var(--brand-color)]">Go Back</p>
+  //       </Link>
+  //     </Box>
+  //   );
 
   return (
     <Modal>

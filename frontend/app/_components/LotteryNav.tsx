@@ -1,5 +1,4 @@
 import Link from "next/link";
-import DarkModeToggle from "./DarkModeToggle";
 import Logo from "./Logo";
 import { Box } from "@chakra-ui/react";
 import { ModalOpen } from "./Modal";
@@ -31,7 +30,7 @@ export default function LotteryNav({
           </Box>
         </ModalOpen>
 
-        <DarkModeToggle />
+        {/* <DarkModeToggle /> */}
       </Box>
     </header>
   );

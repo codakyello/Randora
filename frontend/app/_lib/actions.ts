@@ -82,8 +82,11 @@ export async function updateParticipant({
   // Check if the response was successful
   const data = await res.json();
   if (!res.ok) throw new Error(data.message);
+  const {
+    data: { participant },
+  } = data;
 
-  return { status: "success" };
+  return participant;
 }
 
 export async function deleteParticipant({
@@ -351,7 +354,13 @@ export async function assignPrize({
 
   if (!res.ok) throw new Error(data.message);
 
-  return data;
+  const {
+    data: { participant },
+  } = data;
+
+  console.log(participant);
+
+  return participant;
 }
 
 export async function createTransaction(

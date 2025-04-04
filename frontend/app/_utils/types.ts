@@ -87,6 +87,7 @@ export interface ParticipantForm {
   eventId?: string;
   isWinner?: boolean;
   prizeId?: string;
+  prize?: string;
 }
 
 export interface PrizeForm {

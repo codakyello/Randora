@@ -19,7 +19,9 @@ export default function ParticipantTable({
 }) {
   return (
     <Modal>
-      <Box className="max-h-[35rem] overflow-y-scroll">
+      <Box
+        className={`${actions ? "h-auto" : "max-h-[35rem]"} overflow-y-scroll`}
+      >
         <Table columns={["20rem, 25rem, 20rem, 20rem, 10rem, 1fr"]}>
           <Header
             headers={[

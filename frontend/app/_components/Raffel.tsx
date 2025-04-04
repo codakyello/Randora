@@ -10,7 +10,6 @@ import toast from "react-hot-toast";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import {
   assignPrize as assignPrizeApi,
-  updateParticipant as updateParticipantApi,
   updateEvent as updateEventApi,
 } from "../_lib/actions";
 import { useAuth } from "../_contexts/AuthProvider";
@@ -20,6 +19,7 @@ import { DownloadIcon } from "@chakra-ui/icons";
 import LotteryNav from "./LotteryNav";
 import Menus from "./Menu";
 import Image from "next/image";
+import { formatDistanceToNow } from "date-fns";
 
 export default function Raffle({
   organisation,
@@ -54,7 +54,7 @@ export default function Raffle({
   const { getToken } = useAuth();
   const token = getToken();
 
-  const { mutate: updateParticipant } = useCustomMutation(updateParticipantApi);
+  // const { mutate: updateParticipant } = useCustomMutation(updateParticipantApi);
 
   const { mutate: assignPrize } = useCustomMutation(assignPrizeApi);
 
@@ -89,7 +89,13 @@ export default function Raffle({
   );
 
   const canStart = () => {
-    console.log(event.remainingPrize);
+    if (new Date(event.startDate) > new Date()) {
+      toast.error(
+        `Event starts in ${formatDistanceToNow(new Date(event.startDate))}`
+      );
+      return false;
+    }
+
     if (event.remainingPrize < 1) {
       toast.error("No Prizes left to distribute");
       return false;
@@ -129,7 +135,6 @@ export default function Raffle({
       );
     }
 
-    // send a request to update participant by setting isWinner to true
     if (isSpinning) return false;
 
     if (availablePrizeCount === 0 || participants.length === 0) {
@@ -144,7 +149,6 @@ export default function Raffle({
   };
 
   const pickWinner = async () => {
-    console.log(allWinners);
     if (!canStart()) return;
 
     if (drumRoll) drumRoll.play();
@@ -169,50 +173,8 @@ export default function Raffle({
 
     setIsSpinning(false);
 
-    if (selectedParticipant && selectedPrize)
-      setAllWinners((prevWinners) => [
-        ...prevWinners,
-        {
-          ...selectedParticipant,
-          prize: selectedPrize,
-        },
-      ]);
     if (selectedParticipant && selectedPrize) {
-      // Update participant state to remove the winner
-      setParticipants((prevParticipants) =>
-        prevParticipants.filter(
-          (participant) => participant._id !== selectedParticipant._id
-        )
-      );
-
-      // update participant with prizeId and set isWinner true in db
-      updateParticipant(
-        {
-          participantId: selectedParticipant._id,
-          participantForm: {
-            isWinner: true,
-            prizeId: selectedPrize._id,
-          },
-          token,
-        },
-        {
-          onError: (err) => {
-            toast.error(err.message);
-          },
-        }
-      );
-
       // Update prize state to reduce quantity
-      setPrizes((prevPrizes) =>
-        prevPrizes.map((prize) =>
-          prize._id === selectedPrize._id
-            ? { ...prize, quantity: prize.quantity - 1 }
-            : prize
-        )
-      );
-
-      setSelectedPrize(null);
-      setPrizeWon(selectedPrize);
 
       assignPrize(
         {
@@ -221,11 +183,35 @@ export default function Raffle({
           token,
         },
         {
+          onSuccess: (participant) => {
+            // const { prize, ...participant } = participantData;
+            console.log(participant);
+
+            setAllWinners((prevWinners) => [...prevWinners, participant]);
+
+            setParticipants((prevParticipants) =>
+              prevParticipants.filter(
+                (prevParticipant) => prevParticipant._id !== participant._id
+              )
+            );
+
+            setPrizes((prevPrizes) =>
+              prevPrizes.map((prevPrize) =>
+                prevPrize._id === participant.prize._id
+                  ? { ...prevPrize, quantity: prevPrize.quantity - 1 }
+                  : prevPrize
+              )
+            );
+          },
+
           onError: (err) => {
             toast.error(err.message);
           },
         }
       );
+
+      setSelectedPrize(null);
+      setPrizeWon(selectedPrize);
 
       if (crash) crash.play();
 
@@ -262,8 +248,6 @@ export default function Raffle({
   const pickAllWinners = async () => {
     // Check if the user is online
 
-    if (!canStart()) return;
-
     // Start by emptying the winners
     setprizeWinners([]);
 
@@ -279,10 +263,15 @@ export default function Raffle({
       localPrize.quantity > 0 &&
       localParticipants.length > 0
     ) {
+      if (!isOnline) {
+        toast.error("You are offline. Please check your network connection.");
+        return false;
+      }
       if (drumRoll) drumRoll.play();
       if (resetRef.current) {
         resetGame();
         console.log("Game reset");
+
         return;
       }
 
@@ -292,6 +281,11 @@ export default function Raffle({
 
       // Simulate the spinning effect
       for (let i = 0; i < 8; i++) {
+        if (!isOnline) {
+          toast.error("You are offline. Please check your network connection.");
+          return false;
+        }
+
         if (resetRef.current) {
           resetGame();
           return;
@@ -314,50 +308,24 @@ export default function Raffle({
           (participant) => participant._id !== selectedParticipant?._id
         );
 
-        // Update the participant in the database
-        updateParticipant(
-          {
-            participantId: selectedParticipant._id,
-            participantForm: {
-              isWinner: true,
-              prizeId: localPrize._id,
-            },
-            token,
-          },
-          {
-            onError: (err) => {
-              toast.error(err.message);
-            },
-          }
-        );
-
-        setPrizes((prevPrizes) =>
-          prevPrizes.map((prize) =>
-            prize._id === selectedPrize?._id
-              ? { ...prize, quantity: prize.quantity - 1 }
-              : prize
-          )
-        );
-
         // Add the winner to the winners list
-        if (selectedParticipant && selectedPrize?.name && selectedPrize?._id) {
-          setprizeWinners((prevprizeWinners) => [
-            ...prevprizeWinners,
-            {
-              ...selectedParticipant,
-              prize: selectedPrize,
-            },
-          ]);
-
-          // where is the prize here
-          setAllWinners((prevWinners) => [
-            ...prevWinners,
-            {
-              ...selectedParticipant,
-              prize: selectedPrize,
-            },
-          ]);
-        }
+        // if (selectedParticipant && selectedPrize?.name && selectedPrize?._id) {
+        //     setprizeWinners((prevprizeWinners) => [
+        //       ...prevprizeWinners,
+        //       {
+        //         ...selectedParticipant,
+        //         prize: selectedPrize,
+        //       },
+        //     ]);
+        //     // where is the prize here
+        //     setAllWinners((prevWinners) => [
+        //       ...prevWinners,
+        //       {
+        //         ...selectedParticipant,
+        //         prize: selectedPrize,
+        //       },
+        //     ]);
+        // }
 
         // Update the prize quantity locally
         localPrize.quantity -= 1;
@@ -373,6 +341,23 @@ export default function Raffle({
             token,
           },
           {
+            onSuccess: (participant) => {
+              setPrizes((prevPrizes) =>
+                prevPrizes.map((prize) =>
+                  prize._id === participant.prize?._id
+                    ? { ...prize, quantity: prize.quantity - 1 }
+                    : prize
+                )
+              );
+
+              setParticipants((prevParticipants) =>
+                prevParticipants.filter(
+                  (prevParticipant) => prevParticipant._id !== participant._id
+                )
+              );
+              setprizeWinners((prevWinners) => [...prevWinners, participant]); // Update local winners with the new participant
+              setAllWinners((prevWinners) => [...prevWinners, participant]); // Update all winners with the new participant
+            },
             onError: (err) => {
               toast.error(err.message);
             },
@@ -384,7 +369,7 @@ export default function Raffle({
         setSelectedPrize(localPrize);
 
         // Add a delay between winners
-        await wait(1); // Adjust this for a better user experience
+        await wait(2); // Adjust this for a better user experience
       }
     }
     setSelectedPrize(null);
@@ -422,6 +407,7 @@ export default function Raffle({
   const downloadCSV = () => {
     // Convert participants to CSV
     const headers = ["Name", "Email", "Ticket Number", "Prize"];
+
     const rows = allWinners.map((winner) => [
       winner.name,
       winner.email,
@@ -596,7 +582,7 @@ export default function Raffle({
         </ModalWindow>
 
         <ModalWindow name="showprizeWinners">
-          <Box className="bg-[var(--color-grey-0)] rounded-2xl  h-[50rem] border-l border-l-[var(--color-grey-100)] w-full  p-[3rem]">
+          <Box className="relative bg-[var(--color-grey-0)] rounded-2xl  h-[50rem] border-l border-l-[var(--color-grey-100)] w-full  p-[3rem]">
             <Box className="flex justify-between">
               <h2>All Winners for {prizeWinners[0]?.prize?.name}</h2>
 
@@ -674,7 +660,7 @@ export default function Raffle({
         </ModalWindow>
 
         <ModalWindow name="prizes">
-          <Box className="bg-[var(--color-grey-0)] rounded-2xl  h-[50rem] border-l border-l-[var(--color-grey-100)] w-full overflow-y-scroll p-[3rem] space-y-6">
+          <Box className="bg-[var(--color-grey-0)] relative  rounded-2xl  h-[50rem] border-l border-l-[var(--color-grey-100)] max-w-[80rem] w-full overflow-y-scroll p-[3rem] space-y-6">
             <Box className="flex justify-between items-center">
               <h2>Select a prize</h2>
 
@@ -696,7 +682,7 @@ export default function Raffle({
         </ModalWindow>
 
         <ModalWindow name="show-winners">
-          <Box className="bg-[var(--color-grey-0)] rounded-2xl h-[55rem] border-l border-l-[var(--color-grey-100)] w-full p-[3rem]">
+          <Box className="bg-[var(--color-grey-0)] relative rounded-2xl h-[55rem] border-l border-l-[var(--color-grey-100)] max-w-[80rem] w-full p-[3rem]">
             <Box className="flex justify-between">
               <h2>
                 All Winners for {event.name} by {organisation.name}
