@@ -369,7 +369,7 @@ export default function Raffle({
         setSelectedPrize(localPrize);
 
         // Add a delay between winners
-        await wait(2); // Adjust this for a better user experience
+        await wait(2.2); // Adjust this for a better user experience
       }
     }
     setSelectedPrize(null);
@@ -416,6 +416,7 @@ export default function Raffle({
     ]);
 
     // Combine headers and rows into a CSV string
+
     const csvContent = [headers, ...rows]
       .map((row) => row.join(","))
       .join("\n");
@@ -507,6 +508,7 @@ export default function Raffle({
           </Box>
           <Box className="flex gap-4">
             <button
+              disabled={isSpinning}
               className="font-semibold text-[var(--color-grey-50)] w-[15rem] py-[1.2rem] px-[2rem] bg-[var(--brand-color)]  rounded-2xl"
               onClick={pickWinner}
             >
@@ -514,6 +516,7 @@ export default function Raffle({
             </button>
 
             <button
+              disabled={isSpinning}
               className="py-[1rem] px-[2rem] font-semibold border-2 border-[var(--brand-color)] text-[var(--brand-color)] rounded-2xl"
               onClick={pickAllWinners}
             >
