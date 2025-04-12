@@ -6,50 +6,29 @@ import {
   getOrganisation,
   getEventParticipants,
 } from "@/app/_lib/data-service";
-import { Participant } from "@/app/_utils/types";
 import { Box } from "@chakra-ui/react";
 // import { formatDistanceToNow } from "date-fns";
 import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+//serverless function cannot run for more than 30 seconds
 export default async function Page({
   params,
 }: {
   params: { eventId: string };
 }) {
-  const [eventData, prizesData] = await Promise.all([
+  const [eventData, prizesData, participantsData] = await Promise.all([
     getEvent(params.eventId),
     getAllEventPrizes(params.eventId),
+    getEventParticipants(params.eventId, { limit: 10 }),
   ]);
 
   console.log(prizesData?.prizes);
 
-  // The backend cannot have a
-  // long running task of more than 10 seconds
-  let page = 1;
-  const limit = 10000;
-
-  const participants: Participant[] = [];
-
-  while (true) {
-    console.log("in here");
-    const res = await getEventParticipants(params.eventId, {
-      limit,
-      page,
-    });
-
-    if (!res?.participants || !Array.isArray(res.participants)) break; // Ensure participants exist
-
-    participants.push(...res?.participants);
-    page++;
-
-    console.log(participants.length, page);
-    if (res?.participants.length < limit || participants.length > 49999) break;
-  }
-
   const { event, statusCode } = eventData || {};
   const { prizes } = prizesData || {};
+  const { totalCount: participantsCount } = participantsData || {};
 
   const organisation = await getOrganisation(event?.organisationId);
 
@@ -90,7 +69,7 @@ export default async function Page({
   return (
     <Modal>
       <Box className="bg-[var(--color-grey-0)]">
-        {participants?.length === 0 && (
+        {participantsCount === 0 && (
           <Box className="h-screen bg-[var(--color-grey-50)] flex items-center justify-center text-center text-[1.5rem] font-semibold">
             <h1 className="text-[3rem]">
               Please Add participants to this event
@@ -118,14 +97,13 @@ export default async function Page({
           <p className="text-[var(--brand-color)]">Go Back</p>
         </Link>
 
-        {participants?.length > 0 &&
+        {participantsCount &&
           prizes?.length > 0 &&
           event.status !== "completed" && (
             <Raffle
               organisation={organisation}
               prizeData={prizes}
               event={event}
-              participantData={participants}
             />
           )}
       </Box>

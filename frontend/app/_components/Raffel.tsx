@@ -20,21 +20,24 @@ import LotteryNav from "./LotteryNav";
 import Menus from "./Menu";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
+import { getEventParticipants } from "../_lib/data-service";
+import SpinnerFull from "./SpinnerFull";
 
 export default function Raffle({
   organisation,
   prizeData,
   event,
-  participantData,
 }: {
   organisation: Organisation;
   prizeData: Prize[];
   event: Event;
-  participantData: Participant[];
 }) {
-  const [participants, setParticipants] = useState<Participant[]>(() =>
-    participantData.filter((participant) => !participant.isWinner)
-  );
+  // const [participants, setParticipants] = useState<Participant[]>(() =>
+  //   participantData.filter((participant) => !participant.isWinner)
+  // );
+
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [isFetchingParticipants, setIsFetchingParticipants] = useState(true);
   const [prizes, setPrizes] = useState<Prize[]>(prizeData);
   const [isSpinning, setIsSpinning] = useState<boolean>(false);
   const [currentParticipant, setCurrentParticipant] =
@@ -43,9 +46,7 @@ export default function Raffle({
   const [prizeWon, setPrizeWon] = useState<Prize>();
   const [winner, setWinner] = useState<Participant | null>(null);
   const [prizeWinners, setprizeWinners] = useState<Participant[]>([]);
-  const [allWinners, setAllWinners] = useState<Participant[]>(() =>
-    participantData.filter((participant) => participant.isWinner)
-  );
+  const [allWinners, setAllWinners] = useState<Participant[]>([]);
   const [drumRoll, setDrumRoll] = useState<HTMLAudioElement | null>(null);
   const [crash, setCrash] = useState<HTMLAudioElement | null>(null);
   const { open: openModal, close } = useModal();
@@ -59,6 +60,58 @@ export default function Raffle({
   const { mutate: assignPrize } = useCustomMutation(assignPrizeApi);
 
   const { mutate: updateEvent } = useCustomMutation(updateEventApi);
+
+  console.log(allWinners.length, participants.length);
+  useEffect(() => {
+    const fetchEventParticipants = async () => {
+      let page = 1;
+      const limit = 10000;
+      const participants: Participant[] = [];
+      const winners: Participant[] = [];
+
+      while (true) {
+        console.log("Fetching participants");
+        const res = await getEventParticipants(event._id, {
+          limit,
+          page,
+        });
+
+        if (!res?.participants || !Array.isArray(res.participants)) {
+          toast.error(
+            "All participants couldn't be fetched. Please refresh the page."
+          );
+          break;
+        }
+
+        const filteredParticipants = res.participants.filter(
+          (participant) => !participant.isWinner
+        );
+        const winnersList = res.participants.filter(
+          (participant) => participant.isWinner
+        );
+
+        participants.push(...filteredParticipants);
+        winners.push(...winnersList);
+
+        page++;
+
+        // Update state without adding duplicates
+        setParticipants((prevParticipants) => [
+          ...prevParticipants,
+          ...filteredParticipants,
+        ]);
+        setAllWinners((prevWinners) => [...prevWinners, ...winnersList]);
+
+        if (res?.participants.length < limit) break;
+      }
+
+      console.log(participants.length);
+      setIsFetchingParticipants(false);
+    };
+
+    fetchEventParticipants().then(() => console.log("fetch finished"));
+    console.log("fetch finished");
+  }, []);
 
   useEffect(() => {
     setDrumRoll(new Audio("/effects/drum-roll-sound-effect.mp3"));
@@ -444,6 +497,7 @@ export default function Raffle({
     img.src = selectedPrize?.image || "";
   }, [selectedPrize]);
 
+  if (isFetchingParticipants) return <SpinnerFull />;
   return (
     <Menus>
       <Box
