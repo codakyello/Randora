@@ -70,7 +70,6 @@ export default function Raffle({
       const winners: Participant[] = [];
 
       while (true) {
-        console.log("Fetching participants");
         const res = await getEventParticipants(event._id, {
           limit,
           page,
