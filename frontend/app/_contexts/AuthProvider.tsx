@@ -120,7 +120,7 @@ function AuthProvider({
     }
   }, []);
 
-  // Check authenticated on mount and on router change
+  // Check authenticated on mount
   useEffect(() => {
     if (!token) {
       // setAuthenticated(false);

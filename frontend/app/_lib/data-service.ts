@@ -5,8 +5,9 @@ import { RESULTS_PER_PAGE } from "../_utils/constants";
 import { getToken } from "../_utils/serverUtils";
 import { SettingsRandora } from "../_utils/types";
 
-const URL = "https://mega-draw.vercel.app/api/v1";
-// const DEV_URL = "http://localhost:5000/api/v1";
+// const URL = "https://mega-draw.vercel.app/api/v1";
+// const URL = "http://localhost:5001/api/v1";
+const URL = "https://randora-backend.vercel.app/api/v1";
 
 export async function getOrganisation(organisationId: string | undefined) {
   const token = await getToken();
@@ -93,6 +94,8 @@ export async function login(formData: FormData) {
 
     // Check if the response was successful
     if (!res.ok) throw new Error(data.message || "Login failed");
+
+    console.log(data, "This is the data token");
 
     return data;
 
@@ -206,6 +209,7 @@ export async function resetPassword({
 }
 
 export async function authenticate(token: string) {
+  console.log(token, "This is the token");
   try {
     if (!token) throw new Error("No token provided");
 
@@ -219,12 +223,15 @@ export async function authenticate(token: string) {
         revalidate: 0,
       },
     });
-    if (!res.ok) throw new Error("");
     const data = await res.json();
-    console.log(data);
+
+    console.log(data, "This is the data");
+
+    if (!res.ok) throw new Error(data.message);
+
     return true;
   } catch (err) {
-    console.log(err);
+    console.log(err, "This is the error");
     return false;
   }
 }
