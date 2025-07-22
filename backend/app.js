@@ -25,7 +25,15 @@ require("./cronJobs/subscriptionRemider");
 
 dotenv.config({ path: "./config.env" });
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://www.randora.io",
+    ],
+    credentials: true, // if you're using cookies or sessions
+  })
+);
 
 app.use(helmet());
 
