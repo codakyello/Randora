@@ -3,7 +3,7 @@
 import { FormEvent, useState } from "react";
 import FormRow from "./FormRow";
 import Input from "./Input";
-import { signUp } from "../_lib/data-service";
+import {  signUp } from "../_lib/data-service";
 import Button from "./Button";
 import { Box } from "@chakra-ui/react";
 import { showToastMessage } from "@/app/_utils/utils";
@@ -11,21 +11,25 @@ import Link from "next/link";
 import * as jdenticon from "jdenticon";
 import supabase from "../supabase";
 import toast from "react-hot-toast";
+import router from "next/router";
+import { useAuth } from "../_contexts/AuthProvider";
 
 function SignUpForm({
-  setEmail,
-  onStep,
   accountType,
   setAuthType,
   authType,
+  onClose,
 }: {
-  setEmail: (email: string) => void;
   onStep: (step: number) => void;
   accountType: string;
   setAuthType?: React.Dispatch<React.SetStateAction<"login" | "signup">>;
   authType?: string;
+  onClose: () => void;
 }) {
   const [loading, setLoading] = useState(false);
+
+  const { login } = useAuth();
+
   // const { open } = useModal();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -63,11 +67,28 @@ function SignUpForm({
 
     const res = await signUp(formData, accountType);
 
-    showToastMessage(res.status, res.message, "User created successfully");
     if (res.status !== "error") {
-      setEmail(email);
-      onStep(3);
+      login(res.data.user, res.token);
+      showToastMessage(res.status, res.message, "User created successfully");
+
+
+      if (window.location.pathname === "/pricing") {
+        // close the modal
+        onClose?.()
+      }
+      
+      else router.push("/dashboard");
+      
+    } else {
+      if (res.message === "fetch failed")
+        toast.error("Bad Internet connection");
+      else toast.error(res.message);
     }
+    // setStep(2);
+    // if (res.status !== "error") {
+    //   if (authType) setStep(3);
+    //   else setStep(2);
+    // }
     setLoading(false);
   }
   return (

@@ -266,16 +266,19 @@ export default function Pricing() {
             authType === "signup" ? (
               <SignUpForm
                 accountType={accountType}
-                setEmail={setEmail}
                 setAuthType={setAuthType}
                 authType={authType}
                 onStep={setStep}
+                onClose={close}
+
               />
             ) : (
               <LoginForm
                 setEmail={setEmail}
                 authType={authType}
                 setAuthType={setAuthType}
+                onClose={close}
+
               />
             )
           ) : (

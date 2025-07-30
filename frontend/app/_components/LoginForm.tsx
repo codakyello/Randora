@@ -19,11 +19,13 @@ function LoginForm({
   setEmail,
   authType,
   setAuthType,
+  onClose,
 }: {
   setEmail: (email: string) => void;
   // setStep: (step: number) => void;
   authType?: string;
   setAuthType?: React.Dispatch<React.SetStateAction<"login" | "signup">>;
+  onClose?: () => void;
 }) {
   const [loading, setLoading] = useState<boolean>(false);
   const [show, setShow] = useState<boolean>(false);
@@ -52,7 +54,13 @@ function LoginForm({
     if (res.status !== "error") {
       login(res.data.user, res.token);
 
-      router.push("/dashboard");
+      if (window.location.pathname === "/pricing") {
+        // close the modal
+        onClose?.()
+      }
+      
+      else router.push("/dashboard");
+      
     } else {
       if (res.message === "fetch failed")
         toast.error("Bad Internet connection");
