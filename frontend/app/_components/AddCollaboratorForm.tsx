@@ -11,8 +11,7 @@ import { sendInvite as sendInviteApi } from "../_lib/actions";
 import toast from "react-hot-toast";
 import useCustomMutation from "../_hooks/useCustomMutation";
 
-const URL = "https://randora-11b23c2bb02d.herokuapp.com/api/v1";
-// const DEV_URL = "http://localhost:5000/api/v1";
+import { URL } from "../_utils/constants";
 
 export default function AddCollaboratorForm({
   onClose,
@@ -60,6 +59,7 @@ export default function AddCollaboratorForm({
           const data = await res.json();
 
           if (!res.ok) {
+            toast.error(data.message);
             throw new Error(data.message);
           }
 
@@ -124,7 +124,7 @@ export default function AddCollaboratorForm({
   console.log(searchResults);
 
   return (
-    <Box className="w-full  flex flex-col gap-[1.2rem] px-[3rem] py-[3rem] rounded-[var(--border-radius-lg)] shadow-lg z-50 bg-[var(--color-grey-0)]">
+    <Box className="w-[60rem]  flex flex-col gap-[1.2rem] px-[3rem] py-[3rem] rounded-[var(--border-radius-lg)] shadow-lg z-50 bg-[var(--color-grey-0)]">
       <Box className="flex w-full items-center mb-[2rem] justify-between">
         <h2>Add a Collaborator</h2>
         <button onClick={onClose}>

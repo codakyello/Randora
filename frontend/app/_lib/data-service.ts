@@ -4,10 +4,8 @@ import { revalidatePath } from "next/cache";
 import { RESULTS_PER_PAGE } from "../_utils/constants";
 import { getToken } from "../_utils/serverUtils";
 import { SettingsRandora } from "../_utils/types";
+import { URL } from "../_utils/constants";
 
-// const URL = "https://mega-draw.vercel.app/api/v1";
-// const URL = "http://localhost:5001/api/v1";
-const URL = "https://randora-backend.vercel.app/api/v1";
 
 export async function getOrganisation(organisationId: string | undefined) {
   const token = await getToken();

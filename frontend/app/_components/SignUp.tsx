@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import OTPForm from "@/app/_components/OTPForm";
+// import OTPForm from "@/app/_components/OTPForm";
 import SignUpForm from "@/app/_components/SignUpForm";
 import AccountType from "./AccountType";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -11,7 +10,7 @@ export default function Signup() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [email, setEmail] = useState<string>("");
+  // const [email, _] = useState<string>("");
 
   const step = Number(searchParams.get("step")) || 1;
 
@@ -52,6 +51,6 @@ export default function Signup() {
       />
     );
 
-  if (step === 3)
-    return <OTPForm step={step} onStep={handleStep} email={email} />;
+  // if (step === 3)
+  //   return <OTPForm step={step} onStep={handleStep} email={email} />;
 }

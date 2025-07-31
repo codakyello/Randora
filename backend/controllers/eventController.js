@@ -4,8 +4,8 @@ const Event = require("../models/EventModel");
 const { catchAsync, sendSuccessResponseData } = require("../utils/helpers");
 const APIFEATURES = require("../utils/apiFeatures");
 const AppError = require("../utils/appError");
-const User = require("../models/userModel");
 const Organisation = require("../models/organisationModel");
+const { FREE_EVENT_LIMIT } = require("../utils/const");
 
 module.exports.getAllEvents = catchAsync(async (req, res) => {
   const apiFeatures = new APIFEATURES(Event, req.query)
@@ -60,17 +60,14 @@ module.exports.createEvent = catchAsync(async (req, res) => {
   const { name } = req.body;
 
   // Check if the user is part of an organisation
+  
   const organisationId = req.user.organisationId;
+  let subscriptionStatus = req.user.subscriptionStatus;
 
-  let subscriptionStatus;
-
-  if (organisationId) {
-    const organisation = await Organisation.findById(organisationId);
-    subscriptionStatus = organisation?.subscriptionStatus;
-  } else {
-    const user = await User.findById(req.user.id);
-    subscriptionStatus = user?.isSubscribed;
-  }
+  if(organisationId)  {
+  const organisation = await Organisation.findById(organisationId);
+  subscriptionStatus = organisation.subscriptionStatus;
+  }   
 
   // Define the filter for event ownership
   const filter = organisationId ? { organisationId } : { userId: req.user.id };
@@ -81,9 +78,9 @@ module.exports.createEvent = catchAsync(async (req, res) => {
   // Check if the subscription allows creating more events
   if (
     (!subscriptionStatus || subscriptionStatus !== "active") &&
-    events.length >= 10
+    events.length >= FREE_EVENT_LIMIT 
   ) {
-    throw new AppError("Please upgrade your plan to create more events.", 402);
+    throw new AppError("You cannot create more than " + FREE_EVENT_LIMIT + " events on a free plan.", 402);
   }
 
   // Check if an event with the same name already exists for the user/org

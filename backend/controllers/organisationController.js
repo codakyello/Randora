@@ -94,9 +94,11 @@ module.exports.sendInvite = catchAsync(async (req, res) => {
   if (!organisation)
     throw new AppError("No organisation found with this ID", 404);
 
+  // that means its not expired
+  //when it expires what happens, this will not be found
   const existingInvite = organisation.collaborators.find(
     (collaborator) =>
-      collaborator.email === userEmail && collaborator.status === "pending"
+      collaborator.email === userEmail && collaborator.status === "pending" 
   );
   if (existingInvite)
     throw new AppError(
@@ -106,8 +108,8 @@ module.exports.sendInvite = catchAsync(async (req, res) => {
 
   const token = crypto.randomBytes(32).toString("hex");
 
-  // 2 days expiry
-  const expiresAt = new Date(Date.now() + 2 * 24 * 60 * 60 * 1000);
+  // 7 days expiry
+  const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   const user = await User.findOne({ email: userEmail });
   if (!user) throw new AppError("User not found", 404);
 

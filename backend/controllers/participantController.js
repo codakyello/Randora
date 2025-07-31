@@ -4,7 +4,7 @@ const csv = require("csv-parser");
 const Participant = require("../models/ParticipantsModel");
 const Event = require("../models/EventModel");
 const AppError = require("../utils/appError");
-const { ROW_LIMIT } = require("../utils/const");
+const { ROW_LIMIT, FREE_PARTICIPANT_LIMIT } = require("../utils/const");
 const Organisation = require("../models/organisationModel");
 
 module.exports.getAllParticipants = catchAsync(async (req, res) => {
@@ -22,7 +22,6 @@ module.exports.getParticipant = catchAsync(async (req, res) => {
 });
 
 module.exports.uploadParticipants = catchAsync(async (req, res) => {
-  console.log("uploadParticipants called");
   const csvBuffer = req.file?.buffer; // Access the uploaded CSV file as a buffer
   const eventId = req.body.eventId;
 
@@ -43,8 +42,6 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
   //   subscriptionStatus = organisation.subscriptionStatus;
   // }
 
-  if (subscriptionStatus !== "active")
-    throw new AppError("Please upgrade your plan to use this feature", 400);
 
   try {
     if (!csvBuffer) throw new AppError("No CSV File uploaded", 400);
@@ -95,15 +92,21 @@ module.exports.uploadParticipants = catchAsync(async (req, res) => {
         );
     });
 
-    if (participants.length > ROW_LIMIT) {
-      throw new AppError(
-        `You cannot upload more than ${ROW_LIMIT} rows at once. Please split your CSV file into smaller files.`
-      );
-    }
+    
 
-    if (participants.length === 0) {
+    if (subscriptionStatus !== "active" && participants.length > FREE_PARTICIPANT_LIMIT)
+      throw new AppError(`Please upgrade your plan to upload more than ${FREE_PARTICIPANT_LIMIT} rows`, 400);
+
+
+     if (participants.length > ROW_LIMIT) 
+      throw new AppError(
+        `You cannot upload more than ${ROW_LIMIT} rows at once. Please split your CSV file into smaller files.`, 400
+      );
+
+
+    if (participants.length === 0) 
       throw new AppError("CSV file is empty.", 400);
-    }
+    
 
     const hasTicketNumber = participants[0].hasOwnProperty("ticketnumber");
     const hasEmail = participants[0].hasOwnProperty("email");
