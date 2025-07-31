@@ -76,7 +76,6 @@ export default function Collaborators({
 
           <ModalWindow name="add-collaborator" listenCapturing={true}>
             <AddCollaboratorForm
-              organisation={organisation}
               collaborators={collaborators}
             />
           </ModalWindow>

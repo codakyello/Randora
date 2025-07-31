@@ -16,11 +16,10 @@ import { URL } from "../_utils/constants";
 export default function AddCollaboratorForm({
   onClose,
   collaborators,
-  organisation,
+  
 }: {
   onClose?: () => void;
   collaborators: Collaborator[];
-  organisation: Organisation;
 }) {
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [searchInput, setSearchInput] = useState("");
