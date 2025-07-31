@@ -24,7 +24,7 @@ function SignUpForm({
   accountType: string;
   setAuthType?: React.Dispatch<React.SetStateAction<"login" | "signup">>;
   authType?: string;
-  onClose: () => void;
+  onClose?: () => void;
 }) {
   const [loading, setLoading] = useState(false);
 

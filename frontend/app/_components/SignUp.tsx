@@ -48,7 +48,6 @@ export default function Signup() {
     return (
       <SignUpForm
         accountType={accountType}
-        setEmail={setEmail}
         onStep={handleStep}
       />
     );

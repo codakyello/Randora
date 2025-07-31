@@ -109,7 +109,7 @@ export default function PaymentBox({ plan }: { plan: planType | null }) {
             type: "bank_account",
           },
           customerId: "27930b96-96aa-40c6-b058-b0f27700dc66",
-          key: process.env.NEXT_PUBLIC_JUICYWAY_KEY, // Add the key property
+          key: process.env.NEXT_PUBLIC_JUICYWAY_KEY, 
 
           order: {
             identifier: transaction.reference,
