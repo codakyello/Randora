@@ -5,7 +5,7 @@ import Button from "./Button";
 import Input from "./Input";
 import { useEffect, useState } from "react";
 import SpinnerMini from "./SpinnerMini";
-import { Collaborator, Organisation, User } from "../_utils/types";
+import { Collaborator, User } from "../_utils/types";
 import { useAuth } from "../_contexts/AuthProvider";
 import { sendInvite as sendInviteApi } from "../_lib/actions";
 import toast from "react-hot-toast";
