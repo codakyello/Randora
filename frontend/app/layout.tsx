@@ -51,7 +51,7 @@ export default function RootLayout({
                 textAlign: "center",
                 background: "green",
                 color: "white",
-                fontSize: "16px",
+                fontSize: "14px",
               },
             },
             error: {
@@ -60,7 +60,7 @@ export default function RootLayout({
                 textAlign: "center",
                 background: "red",
                 color: "white",
-                fontSize: "16px",
+                fontSize: "14px",
               },
             },
           }}
