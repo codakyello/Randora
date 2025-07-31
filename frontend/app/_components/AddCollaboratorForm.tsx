@@ -22,7 +22,6 @@ export default function AddCollaboratorForm({
   collaborators: Collaborator[];
   organisation: Organisation;
 }) {
-  console.log(organisation);
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [loading, setLoading] = useState(false);
