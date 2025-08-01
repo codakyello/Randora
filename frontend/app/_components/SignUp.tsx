@@ -4,7 +4,6 @@
 import SignUpForm from "@/app/_components/SignUpForm";
 import AccountType from "./AccountType";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
 
 export default function Signup() {
   const searchParams = useSearchParams();
