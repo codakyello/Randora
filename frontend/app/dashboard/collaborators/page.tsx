@@ -3,7 +3,6 @@ import Filter from "@/app/_components/Filter";
 import Sort from "@/app/_components/Sort";
 import Collaborators from "@/app/_components/Collaborators";
 import SpinnerFull from "@/app/_components/SpinnerFull";
-import { Suspense } from "react";
 import { getUser } from "@/app/_lib/data-service";
 
 export const metadata = {
@@ -56,12 +55,7 @@ export default async function Page({
           />
         </Box>
       </Box>
-      <Suspense
-        key={`${searchParams.status}${searchParams.sortBy}`}
-        fallback={<SpinnerFull />}
-      >
-        <Collaborators organisationId={organisationId} />
-      </Suspense>
+      <Collaborators organisationId={organisationId} />
     </Box>
   );
 }

@@ -9,7 +9,6 @@ export const metadata = {
 export default async function SettingsPage() {
   const user = await getUser();
   const organisation = await getOrganisation(user?.organisationId);
-  console.log(organisation);
   return (
     <Modal>
       <div className="px-8">
