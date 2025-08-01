@@ -14,11 +14,7 @@ export default function Signup() {
 
   const step = Number(searchParams.get("step")) || 1;
 
-  console.log("step", step);
-
   const accountType = searchParams.get("accountType") || "individual";
-
-  console.log(accountType);
 
   // const [accountType, setAccountType] = useState("individual");
 

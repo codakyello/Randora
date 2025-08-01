@@ -263,7 +263,7 @@ exports.userSignUp = catchAsync(async (req, res) => {
   user = await User.create({ ...req.body, authType: "credentials" });
 
   // Generate OTP for the new user
-  const otp = await user.generateOtp();
+  // const otp = await user.generateOtp();
 
   // Handle organization account type
   if (req.body.accountType === "organisation") {
@@ -287,22 +287,24 @@ exports.userSignUp = catchAsync(async (req, res) => {
   await user.save({ validateBeforeSave: false });
 
   // Send OTP via email
-  try {
-    await new Email(user).sendOTP(otp);
-  } catch (e) {
-    console.error("Error sending OTP:", e);
-    throw new AppError(
-      "An error occurred while sending the OTP. Please try again later.",
-      500
-    );
-  }
+  // try {
+  //   await new Email(user).sendOTP(otp);
+  // } catch (e) {
+  //   console.error("Error sending OTP:", e);
+  //   throw new AppError(
+  //     "An error occurred while sending the OTP. Please try again later.",
+  //     500
+  //   );
+  // }
 
   // Send success response
-  res.status(200).json({
-    status: "success",
-    message:
-      "Sign up was successful. A one-time OTP has been sent to your email.",
-  });
+  // res.status(200).json({
+  //   status: "success",
+  //   message:
+  //     "Sign up was successful. A one-time OTP has been sent to your email.",
+  // });
+
+ createSendToken(user, res);
 });
 
 exports.adminSignUp = catchAsync(async (req, res) => {
