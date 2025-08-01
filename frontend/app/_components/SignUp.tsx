@@ -4,6 +4,7 @@
 import SignUpForm from "@/app/_components/SignUpForm";
 import AccountType from "./AccountType";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState } from "react";
 
 export default function Signup() {
   const searchParams = useSearchParams();
@@ -13,6 +14,8 @@ export default function Signup() {
   // const [email, _] = useState<string>("");
 
   const step = Number(searchParams.get("step")) || 1;
+
+  // const [step, setStep] = useState<number>(1);
 
   const accountType = searchParams.get("accountType") || "individual";
 

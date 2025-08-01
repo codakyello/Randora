@@ -65,6 +65,7 @@ export default function NavList({
         {NavItems.map((item) => (
           <li key={item.name}>
             <Link
+              prefetch={true}
               href={item.link}
               onClick={() => closeNav?.()}
               className={`flex gap-10 md:gap-5 items-center text-[var(--color-grey-600)] p-[1.7rem] md:py-[1.5rem] md:px-[2rem] font-medium text-[1.6rem] transition-all duration-300 rounded-2xl group ${
