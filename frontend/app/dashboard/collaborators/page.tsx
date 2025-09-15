@@ -2,18 +2,13 @@ import { Box } from "@chakra-ui/react";
 import Filter from "@/app/_components/Filter";
 import Sort from "@/app/_components/Sort";
 import Collaborators from "@/app/_components/Collaborators";
-import SpinnerFull from "@/app/_components/SpinnerFull";
 import { getUser } from "@/app/_lib/data-service";
 
 export const metadata = {
   title: "Collaborators",
 };
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: { status: string; sortBy: string };
-}) {
+export default async function Page() {
   // const token = await getToken();
   // const user = await getUser(token);
   // console.log(user);

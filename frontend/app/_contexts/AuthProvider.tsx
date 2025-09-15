@@ -145,7 +145,7 @@ function AuthProvider({
         dispatch({ type: "authenticating/finished" });
       }
     })();
-  }, [token]);
+  }, [token, authenticateFn]);
 
   // Set User (only when user is not null)
   useEffect(() => {

@@ -12,6 +12,8 @@ import { useRouter } from "next/navigation";
 import MobileNav from "./MobileNav";
 import { MdEmail } from "react-icons/md";
 import { FaAddressBook, FaPhoneAlt } from "react-icons/fa";
+import toast from "react-hot-toast";
+import { getEventTest } from "../_lib/data-service";
 
 const features = [
   {
@@ -103,11 +105,24 @@ const footerNav = [
 export default function Home() {
   const { authenticated, isAuthenticating } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getEventTest();
+        console.log(data);
+      } catch (err) {
+        if (err instanceof Error) toast.error(err.message);
+      }
+    })();
+  }, []);
+
   useEffect(() => {
     if (authenticated) router.push("/dashboard");
   }, [authenticated, router]);
 
   if (isAuthenticating || authenticated) return null;
+
   return (
     <Box className="relative px-[2rem] bg-[var(--color-grey-50)]">
       <MobileNav />
