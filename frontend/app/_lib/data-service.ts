@@ -6,14 +6,6 @@ import { getToken } from "../_utils/serverUtils";
 import { SettingsRandora } from "../_utils/types";
 import { URL } from "../_utils/constants";
 
-export async function getEventTest() {
-  try {
-    const event = await fetch("https://localhost:3000/api/test");
-    console.log(event);
-  } catch (err) {
-    if (err instanceof Error) throw new Error("Failed to get event");
-  }
-}
 export async function getOrganisation(organisationId: string | undefined) {
   const token = await getToken();
 
