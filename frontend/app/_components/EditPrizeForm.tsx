@@ -12,8 +12,8 @@ import toast from "react-hot-toast";
 import useCustomMutation from "../_hooks/useCustomMutation";
 import { useParams } from "next/navigation";
 import { useMenu } from "./Menu";
-import supabase from "../supabase";
 import FileInput from "./FileInput";
+import { uploadFile } from "../_lib/data-service";
 
 export default function EditPrizeForm({
   prizeToEdit,
@@ -50,24 +50,26 @@ export default function EditPrizeForm({
     };
 
     if (prizeFile instanceof File) {
-      const fileName = `${prizeFile.name}-${Date.now()}`;
-
       if (prizeFile.name) {
         setUploading(true);
+        try {
+          const fileFormData = new FormData();
+          fileFormData.append("file", prizeFile);
+          const response = await uploadFile(fileFormData);
+          const url = response.data?.data.ufsUrl;
 
-        const { data, error } = await supabase.storage
-          .from("cabin-images")
-          .upload(`public/${fileName}`, prizeFile, {
-            cacheControl: "3600",
-            upsert: false,
-          });
-
-        if (error) {
-          toast.error("Prize image could not be uploaded");
-          return;
+          if (!response.success) {
+            toast.error(
+              (response.message as string) || "Failed to upload prize image"
+            );
+          } else if (response.data && url) {
+            prizeForm.image = url;
+            // toast.success("Text logo uploaded successfully");
+          }
+        } catch (error) {
+          toast.error("Failed to upload text logo");
+          console.error("Failed to upload text logo:", error);
         }
-
-        prizeForm.image = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
       }
     }
     setUploading(false);

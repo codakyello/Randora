@@ -5,6 +5,25 @@ import { RESULTS_PER_PAGE } from "../_utils/constants";
 import { getToken } from "../_utils/serverUtils";
 import { SettingsRandora } from "../_utils/types";
 import { URL } from "../_utils/constants";
+import { utapi } from "@/server/uploadthing";
+
+export async function uploadFile(formData: FormData) {
+  console.log("in here, trying to upload a file");
+  try {
+    const file = formData.get("file") as File;
+    if (!file) throw new Error("No file provided");
+    const response = await utapi.uploadFiles(file);
+
+    if (response.error)
+      return { success: false, message: response.error.message };
+
+    return { success: true, data: response };
+  } catch (err) {
+    if (err instanceof Error)
+      console.log(err.message, `This is why upload failed`);
+    throw new Error("Failed to upload file");
+  }
+}
 
 export async function getOrganisation(organisationId: string | undefined) {
   const token = await getToken();
@@ -91,8 +110,6 @@ export async function login(formData: FormData) {
 
     // Check if the response was successful
     if (!res.ok) throw new Error(data.message || "Login failed");
-
-    console.log(data, "This is the data token");
 
     return data;
 
@@ -206,7 +223,6 @@ export async function resetPassword({
 }
 
 export async function authenticate(token: string) {
-  console.log(token, "This is the token");
   try {
     if (!token) throw new Error("No token provided");
 
@@ -221,8 +237,6 @@ export async function authenticate(token: string) {
       },
     });
     const data = await res.json();
-
-    console.log(data, "This is the data");
 
     if (!res.ok) throw new Error(data.message);
 

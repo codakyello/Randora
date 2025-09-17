@@ -16,7 +16,6 @@ import { URL } from "../_utils/constants";
 export default function AddCollaboratorForm({
   onClose,
   collaborators,
-  
 }: {
   onClose?: () => void;
   collaborators: Collaborator[];
@@ -65,7 +64,6 @@ export default function AddCollaboratorForm({
             data: { users },
           } = data;
 
-          console.log(users);
           // Ensure the data is an array
           if (Array.isArray(users)) {
             setSearchResults(users);
@@ -118,8 +116,6 @@ export default function AddCollaboratorForm({
 
     setLoading(false);
   };
-
-  console.log(searchResults);
 
   return (
     <Box className="w-[60rem]  flex flex-col gap-[1.2rem] px-[3rem] py-[3rem] rounded-[var(--border-radius-lg)] shadow-lg z-50 bg-[var(--color-grey-0)]">

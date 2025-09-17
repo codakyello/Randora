@@ -10,8 +10,8 @@ import { Box } from "@chakra-ui/react";
 import { HexColorPicker } from "react-colorful";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
 import Button from "./Button";
-import supabase from "../supabase";
 import SpinnerMini from "./SpinnerMini";
+import { useUploadFile } from "../_hooks/useUploadFile";
 
 const themePresets = [
   { primary: "#4F46E5" }, // Indigo
@@ -36,6 +36,7 @@ export default function SettingsForm({
   const [tempColor, setTempColor] = useState(settings.brandColor);
   const [isLoading, setIsLoading] = useState(false);
   const { close: closeModal } = useModal();
+  const { uploadFile } = useUploadFile();
 
   const handleLogoUpload =
     (type: "text" | "cover") => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,61 +100,54 @@ export default function SettingsForm({
 
     // Start image uploading
     setIsLoading(true);
-    if (textLogoFile instanceof File) {
-      const fileName = `${textLogoFile.name}-${Date.now()}`;
 
-      if (textLogoFile.name) {
-        try {
-          const { data, error } = await supabase.storage
-            .from("org-logos")
-            .upload(`public/${fileName}`, textLogoFile, {
-              cacheControl: "3600",
-              upsert: false,
-            });
+    // Handle text logo upload
+    if (textLogoFile instanceof File && textLogoFile.name) {
+      try {
+        const fileFormData = new FormData();
+        fileFormData.append("file", textLogoFile);
+        const response = await uploadFile(fileFormData);
+        const url = response.data?.data.ufsUrl;
 
-          if (error) {
-            throw new Error(error.message);
-          }
-          formInputs.textLogo = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
-        } catch (error) {
-          if (error instanceof Error) {
-            toast.error(error.message);
-          } else {
-            toast.error("Failed to upload text logo");
-          }
+        if (!response.success) {
+          toast.error(
+            (response.message as string) || "Failed to upload text logo"
+          );
+        } else if (response.data && url) {
+          formInputs.textLogo = url;
+          // toast.success("Text logo uploaded successfully");
         }
+      } catch (error) {
+        toast.error("Failed to upload text logo");
+        console.error("Failed to upload text logo:", error);
       }
     }
 
+    // Handle cover logo upload
+    if (coverLogoFile instanceof File && coverLogoFile.name) {
+      try {
+        const fileFormData = new FormData();
+        fileFormData.append("file", coverLogoFile);
+        const response = await uploadFile(fileFormData);
+        const url = response.data?.data.ufsUrl;
+
+        if (!response.success) {
+          toast.error(
+            (response.message as string) || "Failed to upload cover logo"
+          );
+        } else if (response.data && url) {
+          formInputs.coverLogo = url;
+          // toast.success("Cover logo uploaded successfully");
+        }
+      } catch (error) {
+        toast.error("Failed to upload cover logo");
+        console.error("Failed to upload cover logo:", error);
+      }
+    }
+
+    // If logos are cleared, ensure formInputs reflect that
     if (!settings.textLogo) formInputs.textLogo = "";
-
-    if (coverLogoFile instanceof File) {
-      const fileName = `${coverLogoFile.name}-${Date.now()}`;
-
-      if (coverLogoFile.name) {
-        try {
-          const { data, error } = await supabase.storage
-            .from("org-logos")
-            .upload(`public/${fileName}`, coverLogoFile, {
-              cacheControl: "3600",
-              upsert: false,
-            });
-
-          if (error) {
-            throw new Error(error.message);
-          }
-          formInputs.coverLogo = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
-        } catch (error) {
-          if (error instanceof Error) {
-            toast.error(error.message);
-          } else {
-            toast.error("Failed to upload cover logo");
-          }
-        }
-      }
-    }
-
-    if (!settings?.coverLogo) formInputs.coverLogo = "";
+    if (!settings.coverLogo) formInputs.coverLogo = "";
 
     if (!organisation?._id) {
       toast.error("Organisation not found here");

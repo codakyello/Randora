@@ -3,13 +3,12 @@
 import { FormEvent, useState } from "react";
 import FormRow from "./FormRow";
 import Input from "./Input";
-import {  signUp } from "../_lib/data-service";
+import { signUp, uploadFile } from "../_lib/data-service";
 import Button from "./Button";
 import { Box } from "@chakra-ui/react";
 import { showToastMessage } from "@/app/_utils/utils";
 import Link from "next/link";
 import * as jdenticon from "jdenticon";
-import supabase from "../supabase";
 import toast from "react-hot-toast";
 import router from "next/router";
 import { useAuth } from "../_contexts/AuthProvider";
@@ -42,23 +41,17 @@ function SignUpForm({
     const svg = jdenticon.toSvg(hash, 100);
 
     try {
-      const { data, error } = await supabase.storage
-        .from("avatars")
-        .upload(`public/${hash}.svg`, svg, {
-          contentType: "image/svg+xml",
-          cacheControl: "3600",
-          upsert: false,
-        });
+      const fileFormData = new FormData();
+      fileFormData.append("file", svg);
+      const response = await uploadFile(fileFormData);
+      const url = response.data?.data.ufsUrl;
 
-      if (error) {
-        throw new Error(error.message);
-      } else {
-        console.log("updloaded");
-
-        formData.append(
-          "image",
-          `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`
+      if (!response.success) {
+        toast.error(
+          (response.message as string) || "Failed to upload text logo"
         );
+      } else if (response.data && response.data.data.ufsUrl) {
+        formData.append("image", url as string);
       }
     } catch (error) {
       toast.error("Failed to upload avatar");
@@ -71,14 +64,10 @@ function SignUpForm({
       login(res.data.user, res.token);
       showToastMessage(res.status, res.message, "User created successfully");
 
-
       if (window.location.pathname === "/pricing") {
         // close the modal
-        onClose?.()
-      }
-      
-      else router.push("/dashboard");
-      
+        onClose?.();
+      } else router.push("/dashboard");
     } else {
       if (res.message === "fetch failed")
         toast.error("Bad Internet connection");

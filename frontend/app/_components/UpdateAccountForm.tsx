@@ -5,12 +5,12 @@ import FormRow from "./FormRow";
 import Input from "./Input";
 import FileInput from "./FileInput";
 import { Box } from "@chakra-ui/react";
-import supabase from "@/app/supabase";
 import toast from "react-hot-toast";
 import { updateOrganisation, updateUser } from "../_lib/data-service";
 import { useAuth } from "../_contexts/AuthProvider";
 import { Organisation, User } from "../_utils/types";
 import { showToastMessage } from "../_utils/utils";
+import { useUploadFile } from "../_hooks/useUploadFile";
 
 export default function UpdateAccountForm({
   user,
@@ -21,6 +21,7 @@ export default function UpdateAccountForm({
 }) {
   const { getToken, login } = useAuth();
   const [loading, setLoading] = useState(false);
+  const { uploadFile } = useUploadFile();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,31 +44,28 @@ export default function UpdateAccountForm({
     const token = getToken();
     if (!token) return;
 
-    // Start image uploading
     setLoading(true);
-    if (avatarFile instanceof File) {
-      const fileName = `${avatarFile.name}-${Date.now()}`;
 
+    // Start image uploading
+    if (avatarFile instanceof File) {
       if (avatarFile.name) {
         try {
-          const { data, error } = await supabase.storage
-            .from("avatars")
-            .upload(`public/${fileName}`, avatarFile, {
-              cacheControl: "3600",
-              upsert: false,
-            });
+          const fileFormData = new FormData();
+          fileFormData.append("file", avatarFile);
+          const response = await uploadFile(fileFormData);
+          const url = response.data?.data.ufsUrl;
 
-          if (error) {
-            throw new Error(error.message);
-          } else {
-            formInputs.image = `https://asvhruseebznfswjyxmx.supabase.co/storage/v1/object/public/${data.fullPath}`;
+          if (!response.success) {
+            toast.error(
+              (response.message as string) || "Failed to upload avatar image"
+            );
+          } else if (response.data && url) {
+            formInputs.image = url;
+            // toast.success("Text logo uploaded successfully");
           }
         } catch (error) {
-          if (error instanceof Error) {
-            toast.error(error.message);
-          } else {
-            toast.error("Failed to upload avatar");
-          }
+          toast.error("Failed to upload text logo");
+          console.error("Failed to upload text logo:", error);
         }
       }
     }

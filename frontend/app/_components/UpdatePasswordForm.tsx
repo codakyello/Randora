@@ -6,10 +6,7 @@ import Input from "./Input";
 import { FormEvent, useState } from "react";
 import { updatePassword } from "../_lib/data-service";
 import { useAuth } from "../_contexts/AuthProvider";
-import {
-  useHandleUnAuthorisedResponse,
-  showToastMessage,
-} from "@/app/_utils/utils";
+import { useHandleUnAuthorisedResponse } from "@/app/_utils/utils";
 
 export default function UpdatePasswordForm() {
   const [loading, setLoading] = useState(false);
@@ -36,13 +33,6 @@ export default function UpdatePasswordForm() {
     setLoading(false);
 
     handleUnAuthorisedResponse(res?.statusCode);
-
-    console.log(res.message);
-    showToastMessage(
-      res?.status,
-      res?.message,
-      "Password updated successfully"
-    );
   }
   return (
     <form
