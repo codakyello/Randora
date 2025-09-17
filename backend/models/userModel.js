@@ -55,7 +55,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ["active", "expired", "inactive"],
       required: true,
-      default: "inactive",
+      default: "active", //everyone subscription is free now
     },
 
     logo: String,

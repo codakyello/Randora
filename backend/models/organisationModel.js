@@ -20,7 +20,7 @@ const organisationSchema = new mongoose.Schema({
     type: String,
     enum: ["active", "expired", "inactive"],
     required: true,
-    default: "inactive",
+    default: "active", // all organisations subscription is free
   },
 
   collaborators: [
