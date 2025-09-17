@@ -12,30 +12,29 @@ import OtpForm from "./OTPForm";
 import LoginForm from "./LoginForm";
 import { IoCloseOutline } from "react-icons/io5";
 import Menus from "./Menu";
-import PaymentBox from "./PaymentBox";
 import { planType } from "../_utils/types";
 import { getOrganisation, getUser } from "../_lib/data-service";
 import toast from "react-hot-toast";
 import SpinnerMini from "./SpinnerMini";
 
 const plans = [
-  {
-    name: "Free",
-    price: 0,
-    features: [
-      { included: true, feature: "Up to 3 free events" },
-      { included: true, feature: "Only raffel events" },
-      { included: true, feature: "Event Analytics" },
-      { included: false, feature: "Ai generated prize image" },
-      { included: false, feature: "Fully customisable lottery page" },
-      { included: false, feature: "Upload of csv files and sanitisation" },
-      { included: false, feature: "Adding & managing collaborators" },
-    ],
-  },
+  // {
+  //   name: "Free",
+  //   price: 0,
+  //   features: [
+  //     { included: true, feature: "Up to 3 free events" },
+  //     { included: true, feature: "Only raffel events" },
+  //     { included: true, feature: "Event Analytics" },
+  //     { included: false, feature: "Ai generated prize image" },
+  //     { included: false, feature: "Fully customisable lottery page" },
+  //     { included: false, feature: "Upload of csv files and sanitisation" },
+  //     { included: false, feature: "Adding & managing collaborators" },
+  //   ],
+  // },
 
   {
     name: "Individual",
-    price: 99,
+    price: 0,
     features: [
       { included: true, feature: "Unlimited number of events" },
       { included: true, feature: "All event types" },
@@ -49,7 +48,7 @@ const plans = [
 
   {
     name: "Organisation",
-    price: 199,
+    price: 0,
     features: [
       { included: true, feature: "Unlimited number of events" },
       { included: true, feature: "All event types" },
@@ -71,6 +70,8 @@ export default function Pricing() {
   const [authType, setAuthType] = useState<"signup" | "login">("signup");
   const [plan, setPlan] = useState<planType | null>(null);
   const [loading, setLoading] = useState(false);
+
+  console.log(plan);
 
   if (isAuthenticating) return null;
 
@@ -270,7 +271,6 @@ export default function Pricing() {
                 authType={authType}
                 onStep={setStep}
                 onClose={close}
-
               />
             ) : (
               <LoginForm
@@ -278,7 +278,6 @@ export default function Pricing() {
                 authType={authType}
                 setAuthType={setAuthType}
                 onClose={close}
-
               />
             )
           ) : (
@@ -309,7 +308,7 @@ export default function Pricing() {
           >
             <IoCloseOutline size={"4rem"} />
           </button>
-          <PaymentBox plan={plan} />
+          {/* <PaymentBox plan={plan} /> */}
         </>
       </ModalWindow>
     </Box>
