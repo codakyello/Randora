@@ -112,6 +112,7 @@ export default function Raffle({
         setParticipants(updatedParticipants);
         setAllWinners(updatedWinners);
       } catch (error) {
+        console.log(error);
         toast.error("Could not refresh participants. Please try again.");
       } finally {
         if (showLoader) setIsFetchingParticipants(false);
@@ -218,21 +219,19 @@ export default function Raffle({
   }, []);
 
   const assignPrizeWithOptimism = useCallback(
-    (
-      {
-        optimistic,
-        original,
-        prizeId,
-        onSuccess,
-        onError,
-      }: {
-        optimistic: Participant;
-        original: Participant;
-        prizeId: string;
-        onSuccess?: (participant: Participant) => void;
-        onError?: () => void;
-      }
-    ) => {
+    ({
+      optimistic,
+      original,
+      prizeId,
+      onSuccess,
+      onError,
+    }: {
+      optimistic: Participant;
+      original: Participant;
+      prizeId: string;
+      onSuccess?: (participant: Participant) => void;
+      onError?: () => void;
+    }) => {
       assignPrize({
         prizeId,
         participantId: optimistic._id,
