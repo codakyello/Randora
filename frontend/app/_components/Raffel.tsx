@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import JSConfetti from "js-confetti";
 import { Box } from "@chakra-ui/react";
 import { ModalOpen, ModalWindow, useModal } from "./Modal";
@@ -22,6 +22,12 @@ import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { getEventParticipants } from "../_lib/data-service";
 import SpinnerFull from "./SpinnerFull";
+
+type AssignPrizeVariables = {
+  prizeId: string;
+  participantId: string;
+  token: string | null;
+};
 
 export default function Raffle({
   organisation,
@@ -57,60 +63,68 @@ export default function Raffle({
 
   // const { mutate: updateParticipant } = useCustomMutation(updateParticipantApi);
 
-  const { mutate: assignPrize } = useCustomMutation(assignPrizeApi);
+  const { mutateAsync: assignPrize } = useCustomMutation<
+    Participant,
+    AssignPrizeVariables
+  >(assignPrizeApi);
 
   const { mutate: updateEvent } = useCustomMutation(updateEventApi);
 
   console.log(allWinners.length, participants.length);
-  useEffect(() => {
-    const fetchEventParticipants = async () => {
-      let page = 1;
-      const limit = 10000;
-      const participants: Participant[] = [];
-      const winners: Participant[] = [];
+  const fetchEventParticipants = useCallback(
+    async ({ showLoader = false }: { showLoader?: boolean } = {}) => {
+      if (showLoader) setIsFetchingParticipants(true);
 
-      while (true) {
-        const res = await getEventParticipants(event._id, {
-          limit,
-          page,
-        });
+      try {
+        let page = 1;
+        const limit = 10000;
+        const updatedParticipants: Participant[] = [];
+        const updatedWinners: Participant[] = [];
 
-        if (!res?.participants || !Array.isArray(res.participants)) {
-          toast.error(
-            "All participants couldn't be fetched. Please refresh the page."
+        while (true) {
+          const res = await getEventParticipants(event._id, {
+            limit,
+            page,
+          });
+
+          if (!res?.participants || !Array.isArray(res.participants)) {
+            toast.error(
+              "All participants couldn't be fetched. Please refresh the page."
+            );
+            break;
+          }
+
+          const filteredParticipants = res.participants.filter(
+            (participant) => !participant.isWinner
           );
-          break;
+          const winnersList = res.participants.filter(
+            (participant) => participant.isWinner
+          );
+
+          updatedParticipants.push(...filteredParticipants);
+          updatedWinners.push(...winnersList);
+
+          if (res.participants.length < limit) break;
+
+          page++;
         }
 
-        const filteredParticipants = res.participants.filter(
-          (participant) => !participant.isWinner
-        );
-        const winnersList = res.participants.filter(
-          (participant) => participant.isWinner
-        );
-
-        participants.push(...filteredParticipants);
-        winners.push(...winnersList);
-
-        page++;
-
-        // Update state without adding duplicates
-        setParticipants((prevParticipants) => [
-          ...prevParticipants,
-          ...filteredParticipants,
-        ]);
-        setAllWinners((prevWinners) => [...prevWinners, ...winnersList]);
-
-        if (res?.participants.length < limit) break;
+        setParticipants(updatedParticipants);
+        setAllWinners(updatedWinners);
+      } catch (error) {
+        toast.error("Could not refresh participants. Please try again.");
+      } finally {
+        if (showLoader) setIsFetchingParticipants(false);
       }
+    },
+    [event._id]
+  );
 
-      console.log(participants.length);
-      setIsFetchingParticipants(false);
-    };
-
-    fetchEventParticipants().then(() => console.log("fetch finished"));
-    console.log("fetch finished");
-  }, []);
+  useEffect(() => {
+    fetchEventParticipants({ showLoader: true }).then(() =>
+      console.log("fetch finished")
+    );
+  }, [fetchEventParticipants]);
 
   useEffect(() => {
     setDrumRoll(new Audio("/effects/drum-roll-sound-effect.mp3"));
@@ -138,6 +152,118 @@ export default function Raffle({
   const availablePrizeCount = prizes.reduce(
     (acc, prize) => acc + prize.quantity,
     0
+  );
+
+  const applyWinnerLocally = useCallback(
+    (participant: Participant, fallbackPrizeId?: string) => {
+      setAllWinners((prevWinners) => [...prevWinners, participant]);
+      setParticipants((prevParticipants) =>
+        prevParticipants.filter(
+          (prevParticipant) => prevParticipant._id !== participant._id
+        )
+      );
+      setPrizes((prevPrizes) =>
+        prevPrizes.map((prevPrize) =>
+          prevPrize._id === (participant.prize?._id || fallbackPrizeId)
+            ? {
+                ...prevPrize,
+                quantity: Math.max(prevPrize.quantity - 1, 0),
+              }
+            : prevPrize
+        )
+      );
+    },
+    []
+  );
+
+  const revertWinnerAssignment = useCallback(
+    ({
+      optimistic,
+      original,
+      prizeId,
+    }: {
+      optimistic: Participant;
+      original: Participant;
+      prizeId?: string;
+    }) => {
+      setAllWinners((prevWinners) =>
+        prevWinners.filter((winner) => winner._id !== optimistic._id)
+      );
+      setprizeWinners((prevWinners) =>
+        prevWinners.filter((winner) => winner._id !== optimistic._id)
+      );
+      setParticipants((prevParticipants) => [...prevParticipants, original]);
+      setPrizes((prevPrizes) =>
+        prevPrizes.map((prevPrize) =>
+          prevPrize._id === prizeId
+            ? { ...prevPrize, quantity: prevPrize.quantity + 1 }
+            : prevPrize
+        )
+      );
+    },
+    []
+  );
+
+  const syncWinnerDetails = useCallback((participant: Participant) => {
+    setAllWinners((prevWinners) =>
+      prevWinners.map((winner) =>
+        winner._id === participant._id ? participant : winner
+      )
+    );
+    setprizeWinners((prevWinners) =>
+      prevWinners.map((winner) =>
+        winner._id === participant._id ? participant : winner
+      )
+    );
+  }, []);
+
+  const assignPrizeWithOptimism = useCallback(
+    (
+      {
+        optimistic,
+        original,
+        prizeId,
+        onSuccess,
+        onError,
+      }: {
+        optimistic: Participant;
+        original: Participant;
+        prizeId: string;
+        onSuccess?: (participant: Participant) => void;
+        onError?: () => void;
+      }
+    ) => {
+      assignPrize({
+        prizeId,
+        participantId: optimistic._id,
+        token,
+      })
+        .then((participant) => {
+          syncWinnerDetails(participant);
+          onSuccess?.(participant);
+          fetchEventParticipants();
+        })
+        .catch((error) => {
+          revertWinnerAssignment({
+            optimistic,
+            original,
+            prizeId,
+          });
+          onError?.();
+          const message =
+            error instanceof Error
+              ? error.message
+              : "Could not assign prize. Please try again.";
+          toast.error(message);
+        });
+    },
+    [
+      assignPrize,
+      token,
+      syncWinnerDetails,
+      revertWinnerAssignment,
+      fetchEventParticipants,
+    ]
   );
 
   const canStart = () => {
@@ -226,41 +352,30 @@ export default function Raffle({
     setIsSpinning(false);
 
     if (selectedParticipant && selectedPrize) {
-      // Update prize state to reduce quantity
+      const optimisticParticipant: Participant = {
+        ...selectedParticipant,
+        prize: selectedPrize,
+        isWinner: true,
+      };
 
-      assignPrize(
-        {
-          prizeId: selectedPrize._id,
-          participantId: selectedParticipant._id,
-          token,
+      applyWinnerLocally(optimisticParticipant, selectedPrize._id);
+
+      assignPrizeWithOptimism({
+        optimistic: optimisticParticipant,
+        original: selectedParticipant,
+        prizeId: selectedPrize._id,
+        onSuccess: (participant) => {
+          setWinner(participant);
+          setPrizeWon(participant.prize);
         },
-        {
-          onSuccess: (participant) => {
-            // const { prize, ...participant } = participantData;
-            console.log(participant);
-
-            setAllWinners((prevWinners) => [...prevWinners, participant]);
-
-            setParticipants((prevParticipants) =>
-              prevParticipants.filter(
-                (prevParticipant) => prevParticipant._id !== participant._id
-              )
-            );
-
-            setPrizes((prevPrizes) =>
-              prevPrizes.map((prevPrize) =>
-                prevPrize._id === participant.prize._id
-                  ? { ...prevPrize, quantity: prevPrize.quantity - 1 }
-                  : prevPrize
-              )
-            );
-          },
-
-          onError: (err) => {
-            toast.error(err.message);
-          },
-        }
-      );
+        onError: () => {
+          resetDrumRoll();
+          setIsSpinning(false);
+          close();
+          setWinner(null);
+          setPrizeWon(undefined);
+        },
+      });
 
       setSelectedPrize(null);
       setPrizeWon(selectedPrize);
@@ -289,7 +404,7 @@ export default function Raffle({
       launchConfetti(1500);
 
       // Open the modal with the final values
-      setWinner(selectedParticipant);
+      setWinner(optimisticParticipant);
       setCurrentParticipant(null);
 
       // setCurrentPrize(selectedPrize);
@@ -308,7 +423,7 @@ export default function Raffle({
     // Create local copies of state variables
     let localParticipants = [...participants];
     const localPrize = selectedPrize ? { ...selectedPrize } : null;
-    const localWinners = [...prizeWinners];
+    const winnersThisRound: Participant[] = [];
 
     while (
       localPrize &&
@@ -317,7 +432,7 @@ export default function Raffle({
     ) {
       if (!isOnline) {
         toast.error("You are offline. Please check your network connection.");
-        return false;
+        return;
       }
       if (drumRoll) drumRoll.play();
       if (resetRef.current) {
@@ -335,7 +450,7 @@ export default function Raffle({
       for (let i = 0; i < 8; i++) {
         if (!isOnline) {
           toast.error("You are offline. Please check your network connection.");
-          return false;
+          return;
         }
 
         if (resetRef.current) {
@@ -360,65 +475,40 @@ export default function Raffle({
           (participant) => participant._id !== selectedParticipant?._id
         );
 
-        // Add the winner to the winners list
-        // if (selectedParticipant && selectedPrize?.name && selectedPrize?._id) {
-        //     setprizeWinners((prevprizeWinners) => [
-        //       ...prevprizeWinners,
-        //       {
-        //         ...selectedParticipant,
-        //         prize: selectedPrize,
-        //       },
-        //     ]);
-        //     // where is the prize here
-        //     setAllWinners((prevWinners) => [
-        //       ...prevWinners,
-        //       {
-        //         ...selectedParticipant,
-        //         prize: selectedPrize,
-        //       },
-        //     ]);
-        // }
-
         // Update the prize quantity locally
         localPrize.quantity -= 1;
 
-        // Add the winner to the local winners list
-        localWinners.push(selectedParticipant);
+        const optimisticParticipant: Participant = {
+          ...selectedParticipant,
+          prize: { ...localPrize },
+          isWinner: true,
+        };
 
-        // Assign the prize to the participant in the database
-        assignPrize(
-          {
-            prizeId: localPrize._id,
-            participantId: selectedParticipant._id,
-            token,
+        winnersThisRound.push(optimisticParticipant);
+        setprizeWinners([...winnersThisRound]);
+        applyWinnerLocally(optimisticParticipant, localPrize._id);
+
+        assignPrizeWithOptimism({
+          optimistic: optimisticParticipant,
+          original: selectedParticipant,
+          prizeId: localPrize._id,
+          onError: () => {
+            localPrize.quantity += 1;
+            localParticipants.push(selectedParticipant);
+            const winnerIndex = winnersThisRound.findIndex(
+              (winner) => winner._id === optimisticParticipant._id
+            );
+            if (winnerIndex > -1) {
+              winnersThisRound.splice(winnerIndex, 1);
+              setprizeWinners([...winnersThisRound]);
+            }
+            resetDrumRoll();
+            setIsSpinning(false);
+            setSelectedPrize({ ...localPrize });
           },
-          {
-            onSuccess: (participant) => {
-              setPrizes((prevPrizes) =>
-                prevPrizes.map((prize) =>
-                  prize._id === participant.prize?._id
-                    ? { ...prize, quantity: prize.quantity - 1 }
-                    : prize
-                )
-              );
+        });
 
-              setParticipants((prevParticipants) =>
-                prevParticipants.filter(
-                  (prevParticipant) => prevParticipant._id !== participant._id
-                )
-              );
-              setprizeWinners((prevWinners) => [...prevWinners, participant]); // Update local winners with the new participant
-              setAllWinners((prevWinners) => [...prevWinners, participant]); // Update all winners with the new participant
-            },
-            onError: (err) => {
-              toast.error(err.message);
-            },
-          }
-        );
-
-        // Reflect changes in React state
-        setParticipants(localParticipants);
-        setSelectedPrize(localPrize);
+        setSelectedPrize({ ...localPrize });
 
         // Add a delay between winners
         await wait(2.2); // Adjust this for a better user experience
@@ -438,6 +528,8 @@ export default function Raffle({
 
     // Display the results
     openModal("showprizeWinners");
+
+    fetchEventParticipants();
   };
 
   const resetDrumRoll = function () {

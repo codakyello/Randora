@@ -76,7 +76,7 @@ module.exports.assignPrize = catchAsync(async (req, res) => {
     participantId,
     { prize: prizeId, isWinner: true },
     { new: true }
-  );
+  ).populate("prize");
 
   if (!participant) {
     throw new AppError("Participant not found", 404);
