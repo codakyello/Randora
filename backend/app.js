@@ -27,7 +27,11 @@ dotenv.config({ path: "./config.env" });
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://www.randora.io"],
+    origin: [
+      "http://localhost:3000",
+      "https://www.randora.io",
+      "https://randora.vercel.app",
+    ],
     credentials: true, // if you're using cookies or sessions
   })
 );
