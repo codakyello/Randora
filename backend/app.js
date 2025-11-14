@@ -18,7 +18,7 @@ const transactionRoutes = require("./routes/transactionRoutes");
 
 const app = express();
 
-//Cron Jobs
+//Cron Jobs`
 // require("./cronJobs/renewSubscription");
 require("./cronJobs/subscriptionExpiryCleanup");
 require("./cronJobs/subscriptionRemider");
@@ -27,10 +27,7 @@ dotenv.config({ path: "./config.env" });
 
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "https://www.randora.io",
-    ],
+    origin: ["http://localhost:3000", "https://www.randora.io"],
     credentials: true, // if you're using cookies or sessions
   })
 );
