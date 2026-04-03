@@ -21,7 +21,7 @@ function LoginForm({
   setAuthType,
   onClose,
 }: {
-  setEmail: (email: string) => void;
+  setEmail?: (email: string) => void;
   // setStep: (step: number) => void;
   authType?: string;
   setAuthType?: React.Dispatch<React.SetStateAction<"login" | "signup">>;
@@ -45,7 +45,7 @@ function LoginForm({
 
     setLoading(true);
 
-    setEmail(email);
+    setEmail?.(email);
 
     const res = await loginApi(formData);
 

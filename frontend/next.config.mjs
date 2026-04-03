@@ -34,6 +34,3 @@ const nextConfig = {
 };
 
 export default nextConfig;
-
-// Error: Invalid src prop (https://6hkxda8pcu.ufs.sh/f/iIOecV6sN7dCgAUTMJmp9VhNZnKoR5DAzQU43TpLyPs7b6Fv) on `next/image`, hostname "6hkxda8pcu.ufs.sh" is not configured under images in your `next.config.js`
-// See more info: https://nextjs.org/docs/messages/next-image-unconfigured-host
