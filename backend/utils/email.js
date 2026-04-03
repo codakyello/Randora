@@ -4,6 +4,17 @@ const path = require("path");
 const ejs = require("ejs");
 const AppError = require("./appError");
 
+const getMailErrorDetails = (error = {}) => ({
+  name: error.name,
+  message: error.message,
+  code: error.code,
+  command: error.command,
+  response: error.response,
+  responseCode: error.responseCode,
+  errno: error.errno,
+  syscall: error.syscall,
+});
+
 class Email {
   constructor(user) {
     this.transporter = nodemailer.createTransport({
@@ -19,32 +30,65 @@ class Email {
   }
 
   async send({ file, subject, body = {} }) {
-    const html = await ejs.renderFile(
-      path.join(__dirname, "../emails", `${file}.ejs`),
-      {
-        otp: body.otp,
-        url: body.resetUrl,
-        userName: this.user.userName,
-        inviterName: body.inviterName,
-        receiverName: body.receiverName,
-        inviteUrl: body.inviteUrl,
-        organisationName: body.organisationName,
-        daysRemaining: body.daysRemaining,
-        trackingUrl: "#",
-        supportUrl: "#",
-        ownerName: body.ownerName,
+    try {
+      const html = await ejs.renderFile(
+        path.join(__dirname, "../emails", `${file}.ejs`),
+        {
+          otp: body.otp,
+          url: body.resetUrl,
+          userName: this.user.userName,
+          inviterName: body.inviterName,
+          receiverName: body.receiverName,
+          inviteUrl: body.inviteUrl,
+          organisationName: body.organisationName,
+          daysRemaining: body.daysRemaining,
+          trackingUrl: "#",
+          supportUrl: "#",
+          ownerName: body.ownerName,
+        }
+      );
+
+      const info = await this.transporter.sendMail({
+        from: `Randora <${process.env.MAIL_USER}>`,
+        to: this.user.email,
+        subject,
+        html,
+        text: htmlToText(html),
+      });
+
+      const accepted = Array.isArray(info.accepted) ? info.accepted : [];
+      const rejected = Array.isArray(info.rejected) ? info.rejected : [];
+
+      console.log("[mail] sent", {
+        to: this.user.email,
+        subject,
+        accepted,
+        rejected,
+        response: info.response,
+        messageId: info.messageId,
+      });
+
+      if (!accepted.length || rejected.length) {
+        const deliveryError = new Error(
+          "SMTP transport did not accept the message recipient"
+        );
+        deliveryError.code = "MAIL_RECIPIENT_REJECTED";
+        deliveryError.response = info.response;
+        deliveryError.rejected = rejected;
+        throw deliveryError;
       }
-    );
 
-    await this.transporter.sendMail({
-      from: `Randora <${process.env.MAIL_USER}>`,
-      to: this.user.email,
-      subject,
-      html,
-      text: htmlToText(html),
-    });
-
-    console.log("sent");
+      return info;
+    } catch (error) {
+      console.error("[mail] failed", {
+        to: this.user.email,
+        file,
+        subject,
+        host: process.env.MAIL_HOST,
+        ...getMailErrorDetails(error),
+      });
+      throw error;
+    }
   }
 
   async sendWelcome() {
@@ -66,9 +110,8 @@ class Email {
         body: { resetUrl },
       });
     } catch (error) {
-      console.log(error);
       throw new AppError(
-        "An error occurred while sending the OTP. Please try again later.",
+        "An error occurred while sending the reset token. Please try again later.",
         500
       );
     }
@@ -82,8 +125,6 @@ class Email {
         body: { otp },
       });
     } catch (error) {
-      console.log(error);
-
       throw new AppError(
         "An error occurred while sending the OTP. Please try again later.",
         500
@@ -99,8 +140,6 @@ class Email {
         body: { inviteUrl, inviterName, organisationName },
       });
     } catch (error) {
-      console.log(error);
-
       throw new AppError(
         "An error occurred while sending the invite. Please try again later.",
         500

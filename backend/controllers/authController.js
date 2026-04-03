@@ -352,7 +352,8 @@ exports.adminLogin = catchAsync(async (req, res) => {
     throw new AppError("Incorrect email or password", 401);
 
   const otp = await admin.generateOtp();
-  console.log(otp);
+  await admin.save({ validateBeforeSave: false });
+
   try {
     await new Email(admin).sendOTP(otp);
   } catch (e) {
@@ -362,6 +363,11 @@ exports.adminLogin = catchAsync(async (req, res) => {
       500
     );
   }
+
+  res.status(200).json({
+    status: "success",
+    message: "A one time otp has been sent to your email",
+  });
 });
 
 module.exports.verifyUserOTP = catchAsync(async (req, res) => {
@@ -410,6 +416,7 @@ module.exports.resendUserOTP = catchAsync(async (req, res) => {
   if (!user) throw new AppError("No user with such email exists", 404);
 
   const otp = await user.generateOtp();
+  await user.save({ validateBeforeSave: false });
 
   try {
     await new Email(user).sendOTP(otp);
@@ -422,7 +429,6 @@ module.exports.resendUserOTP = catchAsync(async (req, res) => {
     );
   }
 
-  await user.save({ validateBeforeSave: false });
   res.status(200).json({
     status: "success",
     message: "A one time otp has been sent to your email",
